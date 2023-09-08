@@ -4,16 +4,13 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Collection;
 
 @Data
-public class UserResponse<T> {
+public class ApiResponse {
 
     private long timeStamp;
-    private Collection<T> data;
 
-    public UserResponse() {
+    public ApiResponse() {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
-
 }
