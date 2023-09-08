@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data;
+package ru.skillbox.socialnet.data.dto.response;
 
 
 import lombok.Data;
