@@ -10,7 +10,7 @@ public class PersonRs {
     private String country;
     private CurrencyRs currency;
     private String email;
-    private Integer id;
+    private Long id;
     private Boolean online;
     private String phone;
     private String photo;
