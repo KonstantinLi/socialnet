@@ -13,6 +13,7 @@ public class CorrectResponse<T> extends ApiResponse {
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
+    private Long total;
 
 
     public CorrectResponse() {
