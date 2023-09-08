@@ -3,7 +3,6 @@ package ru.skillbox.socialnet.data.dto.response;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 @EqualsAndHashCode(callSuper = true)
@@ -14,7 +13,7 @@ public class CorrectResponse<T> extends ApiResponse {
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private BigInteger total;
+    private Long total;
 
 
     public CorrectResponse() {
