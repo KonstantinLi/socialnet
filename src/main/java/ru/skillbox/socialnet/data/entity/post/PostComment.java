@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.post;
+package ru.skillbox.socialnet.data.entity.post;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.data.model.PersonEntity;
+import ru.skillbox.socialnet.data.entity.Person;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "post_comments")
-public class PostCommentEntity {
+public class PostComment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,14 +46,14 @@ public class PostCommentEntity {
   /** Автор  поста */
   @ManyToOne
   @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_comment_person"))
-  private PersonEntity author;
+  private Person author;
 
   @OneToMany
   @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_comment_parent_id"))
-  private List<PostCommentEntity> children = new ArrayList<>();
+  private List<PostComment> children = new ArrayList<>();
 
   /** Пост */
   @ManyToOne
   @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_comment_post"))
-  private PostEntity post;
+  private Post post;
 }

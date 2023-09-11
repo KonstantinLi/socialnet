@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model;
+package ru.skillbox.socialnet.data.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import ru.skillbox.socialnet.data.enums.FriendShipStatus;
 @Setter
 @Entity
 @Table(name = "friendships")
-public class FriendShipEntity {
+public class FriendShip {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +32,11 @@ public class FriendShipEntity {
 
   @ManyToOne
   @JoinColumn(name = "dst_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_friendship_person_dst"))
-  private PersonEntity destinationPerson;
+  private Person destinationPerson;
 
   @ManyToOne
   @JoinColumn(name = "src_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_friendship_person_src"))
-  private PersonEntity sourcePerson;
+  private Person sourcePerson;
 
   /** статус */
   @Column(name = "status_name")

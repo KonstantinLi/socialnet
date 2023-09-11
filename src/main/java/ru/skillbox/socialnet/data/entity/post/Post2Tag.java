@@ -1,6 +1,5 @@
-package ru.skillbox.socialnet.data.model.post;
+package ru.skillbox.socialnet.data.entity.post;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -15,22 +14,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "post_files")
-public class PostFileEntity {
+@Table(name = "post2tag")
+public class Post2Tag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  /** Название */
-  @Column(name = "name")
-  private String name;
-
-  /** Путь к файлу */
-  @Column(name = "path")
-  private String path;
+  @ManyToOne
+  @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "fk_post2tag_post"))
+  private Post post;
 
   @ManyToOne
-  @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_file_post"))
-  private PostEntity post;
+  @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "fk_post2tag_tag"))
+  private Tag tag;
 }
+

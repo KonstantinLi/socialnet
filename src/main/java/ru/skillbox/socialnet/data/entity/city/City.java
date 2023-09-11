@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.city;
+package ru.skillbox.socialnet.data.entity.city;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "cities")
-public class CityEntity {
+public class City {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class CityEntity {
   /** Страна */
   @ManyToOne
   @JoinColumn(name = "country_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_country"))
-  private CountryEntity country;
+  private Country country;
 
   @Column(name = "state")
   private String state;

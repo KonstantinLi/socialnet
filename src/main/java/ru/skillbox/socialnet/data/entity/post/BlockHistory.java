@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.post;
+package ru.skillbox.socialnet.data.entity.post;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,13 +12,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.data.model.PersonEntity;
+import ru.skillbox.socialnet.data.entity.Person;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "block_history")
-public class BlockHistoryEntity {
+public class BlockHistory {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,15 +35,15 @@ public class BlockHistoryEntity {
   /** Автор  поста */
   @ManyToOne
   @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_block_history_person"))
-  private PersonEntity author;
+  private Person author;
 
   /** Пост */
   @ManyToOne
   @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_block_history_post"))
-  private PostEntity post;
+  private Post post;
 
   /** Комментарий */
   @ManyToOne
   @JoinColumn(name = "comment_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_block_history_comment"))
-  private PostCommentEntity comment;
+  private PostComment comment;
 }

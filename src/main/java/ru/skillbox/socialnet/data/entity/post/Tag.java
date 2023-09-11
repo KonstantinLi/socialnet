@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.other;
+package ru.skillbox.socialnet.data.entity.post;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,23 +12,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "captcha")
-public class CaptchaEntity {
+@Table(name = "tags")
+public class Tag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  /** Код */
-  @Column(name = "code")
-  private String code;
-
-  /** Секретный код */
-  @Column(name = "secret_code")
-  private String secretСode;
-
-  /** Дата и время */
-  @Column(name = "time")
-  private String time;
+  /** Название тега */
+  @Column(name = "tag")
+  private String tag;
 
 }

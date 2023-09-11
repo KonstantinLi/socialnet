@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.post;
+package ru.skillbox.socialnet.data.entity.other;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,15 +12,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "tags")
-public class TagEntity {
+@Table(name = "currencies")
+public class Currency {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  /** Название тега */
-  @Column(name = "tag")
-  private String tag;
+  /** Наименование */
+  @Column(name = "name")
+  private String name;
+
+  /** Цена */
+  @Column(name = "price")
+  private String price;
+
+  /** Дата и время обновления */
+  @Column(name = "update_time")
+  private String updateTime;
 
 }

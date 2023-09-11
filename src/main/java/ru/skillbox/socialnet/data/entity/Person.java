@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model;
+package ru.skillbox.socialnet.data.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import ru.skillbox.socialnet.data.enums.MessagePermission;
 @Setter
 @Entity
 @Table(name = "persons")
-public class PersonEntity {
+public class Person {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -113,7 +113,7 @@ public class PersonEntity {
 
   @OneToOne
   @JoinColumn(name = "person_settings_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person_settings"))
-  private PersonSettingsEntity personSettings;
+  private PersonSettings personSettings;
 
 
   /** ссылка на телеграмм ? */

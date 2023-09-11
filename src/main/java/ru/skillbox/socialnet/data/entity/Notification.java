@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model;
+package ru.skillbox.socialnet.data.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ import ru.skillbox.socialnet.data.enums.NotificationType;
 @Setter
 @Entity
 @Table(name = "notifications")
-public class NotificationEntity {
+public class Notification {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +49,6 @@ public class NotificationEntity {
   /** Для кого уведомление */
   @ManyToOne
   @JoinColumn(name = "person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_notification_person"))
-  private PersonEntity person;
+  private Person person;
   
 }

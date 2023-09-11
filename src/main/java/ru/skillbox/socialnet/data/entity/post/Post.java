@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.post;
+package ru.skillbox.socialnet.data.entity.post;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,13 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.data.model.PersonEntity;
+import ru.skillbox.socialnet.data.entity.Person;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "posts")
-public class PostEntity {
+public class Post {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,15 +58,15 @@ public class PostEntity {
   /** Автор  поста */
   @ManyToOne
   @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person"))
-  private PersonEntity author;
+  private Person author;
 
   /** Теги  поста */
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "post2tag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-  private List<TagEntity> tags = new ArrayList<>();
+  private List<Tag> tags = new ArrayList<>();
 
   /** Файлы в посте */
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<PostFileEntity> files;
+  private List<PostFile> files;
 
 }

@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model.message;
+package ru.skillbox.socialnet.data.entity.message;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,13 +12,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.data.model.PersonEntity;
+import ru.skillbox.socialnet.data.entity.Person;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "dialogs")
-public class DialogEntity {
+public class Dialog {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +27,12 @@ public class DialogEntity {
   /** Первый участник */
   @ManyToOne
   @JoinColumn(name = "first_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_dialog_first_person"))
-  private PersonEntity firstPerson;
+  private Person firstPerson;
 
   /** Второй участник */
   @ManyToOne
   @JoinColumn(name = "second_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_dialog_second_person"))
-  private PersonEntity second_person_id;
+  private Person second_person_id;
 
   /** Дата и время последнего общения */
   @Column(name = "last_active_time")

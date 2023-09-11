@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model;
+package ru.skillbox.socialnet.data.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "likes")
-public class LikeEntity {
+public class Like {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +38,6 @@ public class LikeEntity {
   /** Автор  поста */
   @ManyToOne
   @JoinColumn(name = "person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_like_person"))
-  private PersonEntity person;
+  private Person person;
 
 }

@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.data.model;
+package ru.skillbox.socialnet.data.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "person_settings")
-public class PersonSettingsEntity {
+public class PersonSettings {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
