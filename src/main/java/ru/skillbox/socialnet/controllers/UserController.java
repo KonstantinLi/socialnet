@@ -15,7 +15,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById (@PathVariable(value = "id") Integer id,
-                                                                   @RequestHeader("authorization") String token) {
+                                                                  @RequestHeader("authorization") String token) {
         CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
         List<PersonRs> data = new ArrayList<>();
         data.add(new PersonRs());
