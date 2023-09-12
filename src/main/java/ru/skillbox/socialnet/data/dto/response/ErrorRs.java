@@ -6,12 +6,12 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ErrorResponse extends ApiResponse {
+public class ErrorRs extends ApiFatherRs {
 
     private String error;
     private String error_description;
 
-    public ErrorResponse() {
+    public ErrorRs() {
         super();
     }
 }

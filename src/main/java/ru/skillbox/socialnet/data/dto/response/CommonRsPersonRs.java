@@ -7,7 +7,7 @@ import java.util.Collection;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class CorrectResponse<T> extends ApiResponse {
+public class CommonRsPersonRs<T> extends ApiFatherRs {
 
     private Collection<T> data;
     private Integer itemPerPage;
@@ -16,7 +16,7 @@ public class CorrectResponse<T> extends ApiResponse {
     private Long total;
 
 
-    public CorrectResponse() {
+    public CommonRsPersonRs() {
         super();
     }
 
