@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Data
-public class ApiResponse {
+public class ApiFatherRs {
 
     private Long timeStamp;
 
-    public ApiResponse() {
+    public ApiFatherRs() {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 }
