@@ -2,7 +2,7 @@ package ru.skillbox.socialnet.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
-import ru.skillbox.socialnet.dto.CommentRq;
+import ru.skillbox.socialnet.dto.request.CommentRq;
 
 @Service
 public class CommentsService {

@@ -1,15 +1,13 @@
-package ru.skillbox.socialnet.dto;
+package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
-import java.util.List;
-
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PostRq {
-    private List<String> tags;
-    private String title;
-    private String postText;
+public class ErrorRs {
+    private String error;
+    private Long timestamp;
+    private String errorDescription;
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
 import ru.skillbox.socialnet.repository.LikesRepository;
-import ru.skillbox.socialnet.dto.LikeRq;
+import ru.skillbox.socialnet.dto.request.LikeRq;
 
 @Service
 @RequiredArgsConstructor

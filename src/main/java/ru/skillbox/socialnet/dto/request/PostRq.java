@@ -1,12 +1,15 @@
-package ru.skillbox.socialnet.dto;
+package ru.skillbox.socialnet.dto.request;
 
 import lombok.Data;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
+import java.util.List;
+
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CommentRq {
-    private String commentText;
-    private Integer parentId;
+public class PostRq {
+    private List<String> tags;
+    private String title;
+    private String postText;
 }

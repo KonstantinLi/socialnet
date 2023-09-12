@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.CommentRq;
+import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.service.CommentsService;
 
 @RestController

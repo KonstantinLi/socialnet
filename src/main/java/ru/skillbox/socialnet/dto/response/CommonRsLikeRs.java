@@ -1,7 +1,6 @@
-package ru.skillbox.socialnet.dto;
+package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
-import ru.skillbox.socialnet.dto.LikeRs;
 
 @Data
 public class CommonRsLikeRs {
