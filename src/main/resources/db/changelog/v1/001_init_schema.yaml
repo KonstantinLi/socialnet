@@ -118,7 +118,7 @@ databaseChangeLog:
                  id bigserial not null,
                  entity_id bigint,
                  time timestamp(6),
-                 type varchar(255),
+                 type smallint,
                  person_id bigint not null,
                  primary key (id)
                  );

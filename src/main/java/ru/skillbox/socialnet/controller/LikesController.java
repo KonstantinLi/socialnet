@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import ru.skillbox.socialnet.dto.request.LikeRq;
+import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.service.LikesService;
 
 @RestController
@@ -16,7 +17,7 @@ public class LikesController {
     public ResponseEntity<?> getLikes(
             @RequestParam String authorization,
             @RequestParam("item_id") Integer itemId,
-            @RequestParam String type
+            @RequestParam LikeType type
     ) {
         return likesService.getLikes(authorization, itemId, type);
     }
@@ -33,7 +34,7 @@ public class LikesController {
     public ResponseEntity<?> deleteLike(
             @RequestParam String authorization,
             @RequestParam("item_id") Integer itemId,
-            @RequestParam String type
+            @RequestParam LikeType type
     ) {
         return likesService.deleteLike(authorization, itemId, type);
     }

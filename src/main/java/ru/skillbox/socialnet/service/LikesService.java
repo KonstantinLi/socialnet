@@ -3,6 +3,7 @@ package ru.skillbox.socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.repository.LikesRepository;
 import ru.skillbox.socialnet.dto.request.LikeRq;
 
@@ -11,7 +12,7 @@ import ru.skillbox.socialnet.dto.request.LikeRq;
 public class LikesService {
     private final LikesRepository likesRepository;
 
-    public ResponseEntity<?> getLikes(String authorization, Integer itemId, String type) {
+    public ResponseEntity<?> getLikes(String authorization, Integer itemId, LikeType type) {
         // TODO: LikesService getLikes
         return null;
     }
@@ -21,7 +22,7 @@ public class LikesService {
         return null;
     }
 
-    public ResponseEntity<?> deleteLike(String authorization, Integer itemId, String type) {
+    public ResponseEntity<?> deleteLike(String authorization, Integer itemId, LikeType type) {
         // TODO: LikesService deleteLike
         return null;
     }
