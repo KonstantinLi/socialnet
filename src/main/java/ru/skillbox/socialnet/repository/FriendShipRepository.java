@@ -16,12 +16,13 @@ public interface FriendShipRepository extends CrudRepository<FriendShip, Long> {
      * @param shipStatus     - тип связи между персонами (если передать NULL, то запрос вернет все связи)
      * @return               - запрос вернет записи в таблице friendships между двумя персонами
      */
+
     @Query(value = "select * from friendships f where " +
                    "f.src_person_id = :src_person_id " +
                    "and f.dst_person_id = :dst_person_id " +
-                   "and (f.status_name = :shipStatus or :shipStatus = \"\"")
+                   "and (f.status_name = :shipStatus or :shipStatus = \"\"", nativeQuery = true)
     Iterable<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
-                                                     @Param("dst_person_id") long dst_person_id,
-                                                     @Param("shipStatus") FriendShipStatus shipStatus);
+                                                 @Param("dst_person_id") long dst_person_id,
+                                                 @Param("shipStatus") FriendShipStatus shipStatus);
 
 }

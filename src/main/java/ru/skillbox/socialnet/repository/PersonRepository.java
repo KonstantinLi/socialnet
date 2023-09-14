@@ -19,15 +19,20 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
      * @param currentPersonId - id текущей персоны
      * @return - запрос вернет друзей текущей персоны (переданной в параметре)
      */
+
     @Query(value = "select p from persons p where p.id in " +
             "(select f.dst_person_id from friendships f " +
             "where f.src_person_id = :currentPersonId " +
-            "and f.ftatus_name = \"FRIEND\")")
-    Page<Person> findPersonsByFriendship(@Param("currentPersonId") long currentPersonId, Pageable pageable);
+            "and f.status_name = :status_name)", nativeQuery = true)
+    Page<Person> findPersonsByFriendship(@Param("currentPersonId") long currentPersonId,
+                                         @Param("status_name") String statusName,
+                                         Pageable pageable);
 
     @Query(value = "select count(p) from persons p where p.id in " +
             "(select f.dst_person_id from friendships f " +
             "where f.src_person_id = :currentPersonId " +
-            "and f.ftatus_name = \"FRIEND\")")
-    long findCountPersonsByFriendship(@Param("currentPersonId") long currentPersonId);
+            "and f.status_name = :status_name)", nativeQuery = true)
+    long findCountPersonsByFriendship(@Param("currentPersonId") long currentPersonId,
+                                      @Param("status_name") String statusName);
+
 }

@@ -17,7 +17,10 @@ public class FriendsController {
     FriendShipService friendShipService;
 
     private ResponseEntity<?> generateResponseEntity(ApiFatherRs response) {
-        if (response instanceof ErrorRs){
+        if (response == null) {
+            //block/unblock correct response is null
+          return ResponseEntity.ok().build();
+        } else if (response instanceof ErrorRs){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } else {
              return ResponseEntity.ok(response);
@@ -55,7 +58,8 @@ public class FriendsController {
     @PostMapping("/block_unblock/{id}")
     public ResponseEntity<?> blockOrUnblockUserByUser(@RequestHeader(name = "authorization", required = true) String authorization,
                                                       @PathVariable(name = "id") int id) {
-        return ResponseEntity.ok().build();
+        ApiFatherRs response = friendShipService.blockOrUnblockUserByUser(id, authorization);
+        return generateResponseEntity(response);
     }
 
     @GetMapping("")
@@ -70,18 +74,21 @@ public class FriendsController {
     public ResponseEntity<?> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization", required = true) String authorization,
                                                      @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
                                                      @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
-        return ResponseEntity.ok().build();
+        ApiFatherRs response = friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
+        return generateResponseEntity(response);
     }
 
     @GetMapping("/recommendations")
     public ResponseEntity<?> getRecommendationFriends(@RequestHeader(name = "authorization", required = true) String authorization) {
-        return ResponseEntity.ok().build();
+        ApiFatherRs response = friendShipService.getRecommendationFriends(authorization);
+        return generateResponseEntity(response);
     }
 
     @GetMapping("/outgoing_requests")
     public ResponseEntity<?> getOutgoingRequestsByUser(@RequestHeader(name = "authorization", required = true) String authorization,
                                                        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
                                                        @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
-        return ResponseEntity.ok().build();
+        ApiFatherRs response = friendShipService.getOutgoingRequestsByUser(authorization, offset, perPage);
+        return generateResponseEntity(response);
     }
 }
