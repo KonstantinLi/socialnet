@@ -1,23 +1,34 @@
 server:
   port: 8083
 
+
 spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54321/socialnet?currentSchema=socialnet
+    url: jdbc:postgresql://localhost:54321/socialnet
     username: root
     password: root
 
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+    open-in-view: false
+    show-sql: true
 
   liquibase:
-    enabled: off
-    drop-first: false
+    enabled: true
+    drop-first: true
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
   lifetime: 1h
+
+logging:
+  level:
+    org.hibernate:
+      SQL: info
