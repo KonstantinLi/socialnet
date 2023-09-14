@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004_dialogs_data
+      author: Shushakov.SV
+      changes:
+        - sql:
+            sql:
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (1, 49, 78, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (2, 79, 87, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (3, 1, 2, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (4, 89, 69, '2023-09-06 13:49:24');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (5, 52, 53, '2023-09-02 10:53:09');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (6, 26, 62, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (7, 31, 24, '2023-09-03 20:48:47');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (8, 73, 18, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (9, 80, 73, '2023-09-10 13:44:52');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (10, 22, 24, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (11, 35, 73, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (12, 44, 71, '2023-09-13 10:37:37');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (13, 92, 92, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (14, 72, 77, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (15, 77, 26, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (16, 57, 56, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (17, 16, 13, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (18, 15, 40, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (19, 90, 3, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (20, 62, 59, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (21, 6, 46, '2023-09-08 20:02:23');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (22, 30, 67, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (23, 8, 49, '2023-09-04 12:52:12');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (24, 16, 64, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (25, 98, 10, '2023-09-05 04:33:01');
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (26, 73, 89, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (27, 35, 65, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (28, 80, 76, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (29, 63, 28, null);
+              insert into dialogs (id, first_person_id, second_person_id, last_active_time) values (30, 45, 27, null);
