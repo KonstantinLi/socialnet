@@ -38,7 +38,7 @@ public class FriendShipService {
         ErrorRs errorRs = new ErrorRs();
         errorRs.setError(error);
         errorRs.setError_description(error_description);
-        return new ErrorRs();
+        return errorRs;
     }
 
     private CommonRsComplexRs<ComplexRs> generateCommonRsComplexRs() {
