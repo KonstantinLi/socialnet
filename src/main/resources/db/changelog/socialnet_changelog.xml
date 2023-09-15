@@ -6,5 +6,12 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
   <include file="v1/001_init_schema.yaml" relativeToChangelogFile="true"/>
+  <include file="db/changelog/v1/002_person_settings_data.yaml"/>
+  <include file="db/changelog/v1/003_persons_data.yaml"/>
+  <include file="/db/changelog/v1/004_tags_data.yaml"/>
+  <include file="/db/changelog/v1/005_posts_data.yaml"/>
+  <include file="/db/changelog/v1/006_post_comments_data.yaml"/>
+  <include file="db/changelog/v1/007_likes_data.yaml"/>
+  <include file="db/changelog/v1/008_friendships_data.yaml"/>
 
 </databaseChangeLog>

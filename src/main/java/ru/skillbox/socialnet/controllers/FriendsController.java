@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.data.dto.response.ApiFatherRs;
-import ru.skillbox.socialnet.data.dto.response.CommonRsComplexRs;
-import ru.skillbox.socialnet.data.dto.response.ErrorRs;
+import ru.skillbox.socialnet.dto.response.ApiFatherRs;
+import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.services.FriendShipService;
 
 @RestController

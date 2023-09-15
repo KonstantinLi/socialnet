@@ -2,8 +2,8 @@ package ru.skillbox.socialnet.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.data.dto.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.data.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.PersonRs;
 
 import java.util.ArrayList;
 import java.util.List;
