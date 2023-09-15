@@ -1,9 +1,8 @@
 package ru.skillbox.socialnet.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -13,16 +12,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenUtils {
     private final JwtProperties jwtProperties;
 
     public String generateToken(UserDetails userDetails) {
-        List<String> roles = userDetails.getAuthorities()
-                .stream().map(GrantedAuthority::getAuthority)
-                .toList();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         Map<String, Object> claims = new HashMap<>() {{
             put("roles", roles);
@@ -40,6 +41,25 @@ public class JwtTokenUtils {
                 .compact();
     }
 
+    public boolean validateAccessToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException ex) {
+            log.error("JWT expired", ex);
+        } catch (IllegalArgumentException ex) {
+            log.error("Token is null, empty or only whitespace", ex);
+        } catch (MalformedJwtException ex) {
+            log.error("JWT is invalid", ex);
+        } catch (UnsupportedJwtException ex) {
+            log.error("JWT is not supported", ex);
+        } catch (SignatureException ex) {
+            log.error("Signature validation failed");
+        }
+
+        return false;
+    }
+
     private Claims getClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtProperties.getSecret())
@@ -47,8 +67,16 @@ public class JwtTokenUtils {
                 .getBody();
     }
 
-    public String getUsername(String token) {
+    public String getSubject(String token) {
         return getClaims(token).getSubject();
+    }
+
+    public Long getId(String token) {
+        return Long.parseLong(getSubject(token).split(",")[0]);
+    }
+
+    public String getEmail(String token) {
+        return getSubject(token).split(",")[1];
     }
 
     public List<String> getRoles(String token) {
