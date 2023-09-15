@@ -1,25 +1,27 @@
 package ru.skillbox.socialnet.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.data.dto.ComplexRs;
-import ru.skillbox.socialnet.data.dto.PersonRs;
-import ru.skillbox.socialnet.data.dto.response.ApiFatherRs;
-import ru.skillbox.socialnet.data.dto.response.CommonRsComplexRs;
-import ru.skillbox.socialnet.data.dto.response.CommonRsListPersonRs;
-import ru.skillbox.socialnet.data.dto.response.ErrorRs;
-import ru.skillbox.socialnet.data.entity.FriendShip;
-import ru.skillbox.socialnet.data.entity.Person;
-import ru.skillbox.socialnet.data.enums.FriendShipStatus;
+import ru.skillbox.socialnet.dto.ComplexRs;
+import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.ApiFatherRs;
+import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
+import ru.skillbox.socialnet.dto.response.ErrorRs;
+import ru.skillbox.socialnet.entity.FriendShip;
+import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class FriendShipService {
     @Autowired
@@ -27,10 +29,11 @@ public class FriendShipService {
     @Autowired
     PersonRepository personRepository;
     private final String NO_DATA_FOUND = "no data found";
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FriendShipService.class);
 
     public Person getAuthorizedUser(String authorization) {
         // TODO выясниить как по строке авторизации вычислить персону и написать имплементацию метода
-        Optional<Person> person = personRepository.findByemail(authorization);
+        Optional<Person> person = personRepository.findPesonByemail("eobyz@rambler.ru");
         return person.isPresent() ? person.get() : null;
     }
 
@@ -62,17 +65,26 @@ public class FriendShipService {
             if (destinationPerson.isPresent()) {
                 //текущая персона отправляет запрос на дружбу
                 FriendShip friendShip = new FriendShip();
+
                 friendShip.setSourcePerson(currentPerson);
                 friendShip.setDestinationPerson(destinationPerson.get());
                 friendShip.setSentTime(LocalDateTime.now());
                 friendShip.setStatus(FriendShipStatus.REQUEST);
-                friendShipRepository.save(friendShip);
+                try {
+                    friendShipRepository.save(friendShip);
+                } catch (Exception ex) {
+                    return generateErrorRs("error while creating Friendship request", ex.getMessage());
+                }
                 //принимающая сторона принимает запрос на дружбу
                 friendShip.setSourcePerson(destinationPerson.get());
                 friendShip.setDestinationPerson(currentPerson);
                 friendShip.setSentTime(LocalDateTime.now());
                 friendShip.setStatus(FriendShipStatus.RECEIVED_REQUEST);
-                friendShipRepository.save(friendShip);
+                try {
+                    friendShipRepository.save(friendShip);
+                } catch (Exception ex) {
+                    return generateErrorRs("error while creating Friendship request", ex.getMessage());
+                }
 
                 return generateCommonRsComplexRs();
             } else {
@@ -197,8 +209,11 @@ public class FriendShipService {
                     currentPerson.getId(), FriendShipStatus.FRIEND.name(), PageRequest.of(offset, perPage));
             CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
             ArrayList<PersonRs> personsData = new ArrayList<>();
-            while (personsPage.iterator().hasNext()) {
-                Person person = personsPage.iterator().next();
+
+            Iterator<Person> iterator = personsPage.iterator();
+            while (iterator.hasNext()) {
+                Person person = iterator.next();
+                log.info(person.getId() + " " + person.getFirstName());
                 PersonRs personRs = new PersonRs();
                 AssignPersonRsFieldsByPerson(personRs, person, FriendShipStatus.FRIEND, false);
                 personsData.add(personRs);
@@ -217,7 +232,7 @@ public class FriendShipService {
     public ApiFatherRs getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
-            long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
+            long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.REQUEST.name());
             Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.REQUEST.name(), PageRequest.of(offset, perPage));
             CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
@@ -285,7 +300,11 @@ public class FriendShipService {
         personRs.setCurrency(null);
         personRs.setEmail(person.getEmail());
         personRs.setId(person.getId());
-        personRs.setOnline(person.getOnlineStatus().equalsIgnoreCase("ONLINE"));
+        if (person.getOnlineStatus() != null) {
+            personRs.setOnline(person.getOnlineStatus().equalsIgnoreCase("ONLINE"));
+        } else {
+            personRs.setOnline(false);
+        }
         personRs.setPhone(person.getPhone());
         personRs.setPhoto(person.getPhoto());
         personRs.setToken(person.getChangePasswordToken());
@@ -293,12 +312,12 @@ public class FriendShipService {
         personRs.setBirth_date(String.valueOf(person.getBirthDate()));
         personRs.setFirst_name(person.getFirstName());
         personRs.setFriend_status(friendShipStatus.name());
-        personRs.setIs_blocked(person.isBlocked());
+        personRs.setIs_blocked(person.getIsBlocked());
         personRs.setIs_blocked_by_current_user(isBlocked);
         personRs.setLast_name(person.getLastName());
         personRs.setLast_online_time(person.getLastOnlineTime().toString());
         personRs.setMessages_permission(String.valueOf(person.getMessagePermission()));
         personRs.setReg_date(String.valueOf(person.getRegDate()));
-        personRs.setUser_deleted(person.isDeleted());
+        personRs.setUser_deleted(person.getIsDeleted());
     }
 }

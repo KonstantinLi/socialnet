@@ -6,15 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.skillbox.socialnet.data.entity.Person;
+import ru.skillbox.socialnet.entity.Person;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PersonRepository extends CrudRepository<Person, Long> {
-    Optional<Person> findByemail(String email);
+    @Query(value = "SELECT p FROM Person p WHERE p.email = :email")
+    Optional<Person> findPesonByemail( @Param("email") String email);
 
     /**
      *
