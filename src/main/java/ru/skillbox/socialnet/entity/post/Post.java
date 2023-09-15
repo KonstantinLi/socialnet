@@ -1,22 +1,11 @@
 package ru.skillbox.socialnet.entity.post;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.Person;
@@ -29,15 +18,15 @@ public class Post {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** Заблокирован */
   @Column(name = "is_blocked")
-  private boolean isBlocked;
+  private Boolean isBlocked;
 
   /** Удален */
   @Column(name = "is_deleted")
-  private boolean isDeleted;
+  private Boolean isDeleted;
 
   /** Дата и время создания */
   @Column(name = "time")
@@ -55,18 +44,25 @@ public class Post {
   @Column(name = "post_text", columnDefinition = "text")
   private String postText;
 
+  /** Автор  поста
+  @Column(name = "author_id", nullable = false)
+  private Long authorId; */
   /** Автор  поста */
   @ManyToOne
   @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person"))
   private Person author;
 
+
+
   /** Теги  поста */
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany
   @JoinTable(name = "post2tag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-  private List<Tag> tags = new ArrayList<>();
+  private List<Tag> tags;
+
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<PostComment> comments;
 
   /** Файлы в посте */
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PostFile> files;
-
 }

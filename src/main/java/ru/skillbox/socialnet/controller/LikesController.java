@@ -16,7 +16,7 @@ public class LikesController {
     @GetMapping
     public ResponseEntity<?> getLikes(
             @RequestParam String authorization,
-            @RequestParam("item_id") Integer itemId,
+            @RequestParam("item_id") Long itemId,
             @RequestParam LikeType type
     ) {
         return likesService.getLikes(authorization, itemId, type);
@@ -33,7 +33,7 @@ public class LikesController {
     @DeleteMapping
     public ResponseEntity<?> deleteLike(
             @RequestParam String authorization,
-            @RequestParam("item_id") Integer itemId,
+            @RequestParam("item_id") Long itemId,
             @RequestParam LikeType type
     ) {
         return likesService.deleteLike(authorization, itemId, type);

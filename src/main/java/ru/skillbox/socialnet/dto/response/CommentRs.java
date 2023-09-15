@@ -10,14 +10,14 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CommentRs {
     private PersonRs author;
-    private Long id;
-    private Integer likes;
-    private String time;
     private String commentText;
+    private Long id;
     private Boolean isBlocked;
     private Boolean isDeleted;
+    private Integer likes;
     private Boolean myLike;
     private Long parentId;
     private Long postId;
     private List<CommentRs> subComments;
+    private String time;
 }

@@ -18,11 +18,11 @@ public class Weather {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** ID */
   @Column(name = "open_weather_id")
-  private long openWeatherId;
+  private Long openWeatherId;
 
   /** Город */
   @Column(name = "city")

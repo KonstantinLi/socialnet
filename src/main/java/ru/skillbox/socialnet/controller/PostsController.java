@@ -4,21 +4,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.PostRq;
-import ru.skillbox.socialnet.service.PostsService;
+import ru.skillbox.socialnet.service.post.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class PostsController {
-    private final PostsService postsService;
+    private final GetPostByIdService getPostByIdService;
+    private final UpdatePostByIdService updatePostByIdService;
+    private final DeletePostByIdService deletePostByIdService;
+    private final RecoverPostByIdService recoverPostByIdService;
+    private final GetPostWallService getPostWallService;
+    private final CreatePostService createPostService;
+    private final GetPostsByQueryService getPostsByQueryService;
+    private final GetFeedsService getFeedsService;
 
     @GetMapping("/post/{id}")
     public ResponseEntity<?> getPostById(
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
-        return postsService.getPostById(authorization, id);
+        return getPostByIdService.getPostById(authorization, id);
     }
 
     @PutMapping("/post/{id}")
@@ -27,7 +35,7 @@ public class PostsController {
             @PathVariable Long id,
             @RequestBody PostRq postRq
     ) {
-        return postsService.updateById(authorization, id, postRq);
+        return updatePostByIdService.updateById(authorization, id, postRq);
     }
 
     @DeleteMapping("/post/{id}")
@@ -35,7 +43,7 @@ public class PostsController {
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
-        return postsService.deleteById(authorization, id);
+        return deletePostByIdService.deleteById(authorization, id);
     }
 
     @PutMapping("/post/{id}/recover")
@@ -43,7 +51,7 @@ public class PostsController {
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
-        return postsService.recoverPostById(authorization, id);
+        return recoverPostByIdService.recoverPostById(authorization, id);
     }
 
     @GetMapping("/users/{id}/wall")
@@ -53,7 +61,7 @@ public class PostsController {
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
     ) {
-        return postsService.getWall(authorization, id, offset, perPage);
+        return getPostWallService.getWall(authorization, id, offset, perPage);
     }
 
     @PostMapping("/users/{id}/wall")
@@ -63,7 +71,7 @@ public class PostsController {
             @PathVariable Long id,
             @RequestBody PostRq postRq
     ) {
-        return postsService.createPost(authorization, publishDate, id, postRq);
+        return createPostService.createPost(authorization, publishDate, id, postRq);
     }
 
     @GetMapping("/post")
@@ -77,7 +85,7 @@ public class PostsController {
             @RequestParam(required = false) List<String> tags,
             @RequestParam(defaultValue = "") String text
     ) {
-        return postsService.getPostsByQuery(
+        return getPostsByQueryService.getPostsByQuery(
                 authorization, author, dateFrom, dateTo, offset, perPage, tags, text
         );
     }
@@ -88,6 +96,6 @@ public class PostsController {
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
     ) {
-        return postsService.getFeeds(authorization, offset, perPage);
+        return getFeedsService.getFeeds(authorization, offset, perPage);
     }
 }

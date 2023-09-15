@@ -1,15 +1,7 @@
 package ru.skillbox.socialnet.entity.post;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +17,7 @@ public class PostComment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** Текст комментария */
   @Column(name = "comment_text", columnDefinition = "text")
@@ -33,15 +25,18 @@ public class PostComment {
 
   /** Заблокирован */
   @Column(name = "is_blocked")
-  private boolean isBlocked;
+  private Boolean isBlocked;
 
   /** Удален */
   @Column(name = "is_deleted")
-  private boolean isDeleted;
+  private Boolean isDeleted;
 
   /** Дата и время создания */
   @Column(name = "time")
   private LocalDateTime time;
+
+  @Column(name = "parent_id")
+  private Long parentId;
 
   /** Автор  поста */
   @ManyToOne
@@ -50,7 +45,7 @@ public class PostComment {
 
   @OneToMany
   @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_comment_parent_id"))
-  private List<PostComment> children = new ArrayList<>();
+  private List<PostComment> subComments;
 
   /** Пост */
   @ManyToOne

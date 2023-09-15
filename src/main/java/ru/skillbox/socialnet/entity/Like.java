@@ -12,14 +12,13 @@ import ru.skillbox.socialnet.entity.enums.LikeType;
 @Entity
 @Table(name = "likes")
 public class Like {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** ссылка на сущность */
   @Column(name = "entity_id")
-  private long entityId;
+  private Long entityId;
 
   /** тип */
   @Column(name = "type")
@@ -28,11 +27,9 @@ public class Like {
 
   /** Дата и время события */
   @Column(name = "time")
-  private LocalDateTime time;
+  private LocalDateTime time = LocalDateTime.now();
 
   /** Автор  поста */
-  @ManyToOne
-  @JoinColumn(name = "person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_like_person"))
-  private Person person;
-
+  @Column(name = "person_id", nullable = false)
+  private Long personId;
 }

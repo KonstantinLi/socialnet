@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.CommentRq;
-import ru.skillbox.socialnet.service.CommentsService;
+import ru.skillbox.socialnet.service.PostCommentsService;
 
 @RestController
 @RequestMapping("/api/v1/post")
 @RequiredArgsConstructor
-public class CommentsController {
-    private final CommentsService commentsService;
+public class PostCommentsController {
+    private final PostCommentsService postCommentsService;
 
     @PutMapping("/{id}/comments/{comment_id}")
     public ResponseEntity<?> editComment(
@@ -19,7 +19,7 @@ public class CommentsController {
             @PathVariable("comment_id") Long commentId,
             @RequestBody CommentRq commentRq
     ) {
-        return commentsService.editComment(authorization, id, commentId, commentRq);
+        return postCommentsService.editComment(authorization, id, commentId, commentRq);
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
@@ -28,7 +28,7 @@ public class CommentsController {
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
     ) {
-        return commentsService.deleteComment(authorization, id, commentId);
+        return postCommentsService.deleteComment(authorization, id, commentId);
     }
 
     @PutMapping("/{id}/comments/{comment_id}/recover")
@@ -37,7 +37,7 @@ public class CommentsController {
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
     ) {
-        return commentsService.recoverComment(authorization, id, commentId);
+        return postCommentsService.recoverComment(authorization, id, commentId);
     }
 
     @GetMapping("/{postId}/comments")
@@ -47,7 +47,7 @@ public class CommentsController {
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
     ) {
-        return commentsService.getComments(authorization, postId, offset, perPage);
+        return postCommentsService.getComments(authorization, postId, offset, perPage);
     }
 
     @PostMapping("/{postId}/comments")
@@ -56,6 +56,6 @@ public class CommentsController {
             @PathVariable Long postId,
             @RequestBody CommentRq commentRq
     ) {
-        return commentsService.createComment(authorization, postId, commentRq);
+        return postCommentsService.createComment(authorization, postId, commentRq);
     }
 }

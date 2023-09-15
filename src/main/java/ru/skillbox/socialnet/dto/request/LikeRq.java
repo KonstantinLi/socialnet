@@ -9,5 +9,5 @@ import ru.skillbox.socialnet.entity.enums.LikeType;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class LikeRq {
     private LikeType type;
-    private Integer itemId;
+    private Long itemId;
 }

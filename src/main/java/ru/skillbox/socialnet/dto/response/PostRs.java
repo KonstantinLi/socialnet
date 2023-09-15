@@ -10,7 +10,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostRs {
     private PersonRs author;
-    private CommentRs comments;
+    private List<CommentRs> comments;
     private Long id;
     private Integer likes;
     private List<String> tags;
@@ -18,6 +18,6 @@ public class PostRs {
     private String title;
     private String type;
     private boolean isBlocked;
-    private boolean myLike;
+    private Boolean myLike;
     private String postText;
 }

@@ -111,15 +111,17 @@ databaseChangeLog:
                  status_name varchar(255),
                  dst_person_id bigint not null,
                  src_person_id bigint not null,
+                 unique (src_person_id, dst_person_id),
                  primary key (id)
                  );
 
               create table likes (
                  id bigserial not null,
-                 entity_id bigint,
+                 entity_id bigint not null,
                  time timestamp(6),
-                 type smallint,
+                 type smallint not null,
                  person_id bigint not null,
+                 unique (person_id, entity_id, type),
                  primary key (id)
                  );
 
@@ -175,9 +177,9 @@ databaseChangeLog:
                  is_deleted boolean,
                  deleted_time timestamp(6),
                  last_online_time timestamp(6),
-                 message_permissions varchar(255),
+                 message_permissions smallint not null,
                  notifications_session_id varchar(255),
-                 online_status varchar(255),
+                 online_status boolean,
                  password varchar(255),
                  photo varchar(255),
                  reg_date timestamp(6),
@@ -218,8 +220,8 @@ databaseChangeLog:
                  title varchar(255),
                  post_text text,
                  time timestamp(6),
-                 is_blocked boolean,
-                 is_deleted boolean,
+                 is_blocked boolean not null,
+                 is_deleted boolean not null,
                  time_delete timestamp(6),
                  author_id bigint not null,
                  primary key (id)
@@ -238,6 +240,7 @@ databaseChangeLog:
               create table tags (
                  id bigserial not null,
                  tag varchar(255),
+                 unique (tag),
                  primary key (id)
                 );
 
@@ -247,6 +250,7 @@ databaseChangeLog:
                 clouds varchar(255),
                 date timestamp(6),
                 open_weather_id bigint,
+                unique (city),
                 primary key (id)
                );
 
@@ -264,8 +268,8 @@ databaseChangeLog:
               alter table if exists messages add constraint fk_messages_recipient foreign key (recipient_id) references persons;
               alter table if exists notifications add constraint fk_notification_person foreign key (person_id) references persons;
               alter table if exists persons add constraint fk_person_settings foreign key (person_settings_id) references person_settings;
-              alter table if exists post2tag add constraint fk_post2tag_post foreign key (post_id) references posts;
-              alter table if exists post2tag add constraint fk_post2tag_tag foreign key (tag_id) references tags;
+              alter table if exists post2tag add constraint fk_post2tag_post foreign key (post_id) references posts on delete cascade;
+              alter table if exists post2tag add constraint fk_post2tag_tag foreign key (tag_id) references tags on delete cascade;
               alter table if exists post_comments add constraint fk_comment_person foreign key (author_id) references persons;
               alter table if exists post_comments add constraint fk_comment_post foreign key (post_id) references posts;
               alter table if exists post_comments add constraint fk_comment_parent_id foreign key (parent_id) references post_comments;
