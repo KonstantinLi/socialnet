@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.data.entity.FriendShip;
 import ru.skillbox.socialnet.data.enums.FriendShipStatus;
 
+import java.util.List;
+
 @Repository
 public interface FriendShipRepository extends CrudRepository<FriendShip, Long> {
 
@@ -24,5 +26,4 @@ public interface FriendShipRepository extends CrudRepository<FriendShip, Long> {
     Iterable<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
                                                  @Param("dst_person_id") long dst_person_id,
                                                  @Param("shipStatus") FriendShipStatus shipStatus);
-
 }

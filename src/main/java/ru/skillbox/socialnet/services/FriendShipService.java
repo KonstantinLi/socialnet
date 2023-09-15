@@ -29,7 +29,7 @@ public class FriendShipService {
     private final String NO_DATA_FOUND = "no data found";
 
     public Person getAuthorizedUser(String authorization) {
-        /* TODO как-то по строке авторизации надо вычислить персону */
+        // TODO выясниить как по строке авторизации вычислить персону и написать имплементацию метода
         Optional<Person> person = personRepository.findByemail(authorization);
         return person.isPresent() ? person.get() : null;
     }
@@ -43,6 +43,7 @@ public class FriendShipService {
 
     private CommonRsComplexRs<ComplexRs> generateCommonRsComplexRs() {
         CommonRsComplexRs<ComplexRs> response = new CommonRsComplexRs<>();
+        //TODO выяснить откуда брать значение полей для класса ComplexRs и переписать создание класса
         ComplexRs complexRs = new ComplexRs(null, null, null, null);
         ArrayList<ComplexRs> complexRsList = new ArrayList<>();
         complexRsList.add(complexRs);
@@ -57,7 +58,6 @@ public class FriendShipService {
     public ApiFatherRs sendFriendshipRequest(int destinationPersonId, String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
-            long currentPersonId = currentPerson.getId();
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
             if (destinationPerson.isPresent()) {
                 //текущая персона отправляет запрос на дружбу
@@ -217,17 +217,36 @@ public class FriendShipService {
     public ApiFatherRs getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
-//ToDo написать имплементацию метода
-            return null;
+            long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
+            Page<Person> personsPage = personRepository.findPersonsByFriendship(
+                    currentPerson.getId(), FriendShipStatus.REQUEST.name(), PageRequest.of(offset, perPage));
+            CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
+            ArrayList<PersonRs> personsData = new ArrayList<>();
+            while (personsPage.iterator().hasNext()) {
+                Person person = personsPage.iterator().next();
+                PersonRs personRs = new PersonRs();
+                AssignPersonRsFieldsByPerson(personRs, person, FriendShipStatus.FRIEND, false);
+                personsData.add(personRs);
+            }
+            personsList.setData(personsData);
+            personsList.setItemPerPage(perPage);
+            personsList.setOffset(offset);
+            personsList.setPerPage(perPage);
+            personsList.setTotal(total);
+            return personsList;
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while get potencialFriendsList, current person not found");
+            return generateErrorRs(NO_DATA_FOUND, "error while get FriendshipList, current person not found");
         }
     }
 
     public ApiFatherRs getRecommendationFriends(String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
-//ToDo написать имплементацию метода
+/*ToDo выяснить алгоритм получения списка рекомендованных друзей и написать имплементацию метода
+    Список рекомендованных друзей решил получать так:
+    если нет друзей, то рандомом из таблицы Person 10 записей.
+    если друзья есть, то предлагать друзей друзей и если кол-во < 10, то дополнять рандомом до 10
+*/
             return null;
         } else {
             return generateErrorRs(NO_DATA_FOUND, "error while get reccomendationFriendsList, current person not found");

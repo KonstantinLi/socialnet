@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.data.entity.Person;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,17 +18,23 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
 
     /**
      *
-     * @param currentPersonId - id текущей персоны
+     * @param currentPersonId - текущая персона
      * @return - запрос вернет друзей текущей персоны (переданной в параметре)
      */
 
-    @Query(value = "select p from persons p where p.id in " +
+    @Query(value = "select * from persons p where p.id in " +
             "(select f.dst_person_id from friendships f " +
             "where f.src_person_id = :currentPersonId " +
-            "and f.status_name = :status_name)", nativeQuery = true)
+            "and f.status_name = :status_name)",
+           countQuery ="select COUNT(*) from persons p where p.id in " +
+                  "(select f.dst_person_id from friendships f " +
+                  "where f.src_person_id = :currentPersonId " +
+                  "and f.status_name = :status_name)",
+           nativeQuery = true)
     Page<Person> findPersonsByFriendship(@Param("currentPersonId") long currentPersonId,
                                          @Param("status_name") String statusName,
                                          Pageable pageable);
+
 
     @Query(value = "select count(p) from persons p where p.id in " +
             "(select f.dst_person_id from friendships f " +
@@ -34,5 +42,4 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
             "and f.status_name = :status_name)", nativeQuery = true)
     long findCountPersonsByFriendship(@Param("currentPersonId") long currentPersonId,
                                       @Param("status_name") String statusName);
-
 }
