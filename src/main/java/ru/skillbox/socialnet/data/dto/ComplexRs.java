@@ -5,9 +5,8 @@ import lombok.Data;
 @Data
 public class ComplexRs {
 
-    private String count;
-    private String id;
+    private Long count;
+    private Integer id;
     private String message;
-    private String messageId;
-
+    private Long messageId;
 }

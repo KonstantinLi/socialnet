@@ -1,11 +1,15 @@
 package ru.skillbox.socialnet.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.data.dto.ComplexRs;
 import ru.skillbox.socialnet.data.dto.PersonRs;
+import ru.skillbox.socialnet.data.dto.UserRq;
+import ru.skillbox.socialnet.data.dto.response.ApiResponse;
 import ru.skillbox.socialnet.data.dto.response.CorrectResponse;
-import ru.skillbox.socialnet.data.entity.other.UserData;
+import ru.skillbox.socialnet.data.dto.response.ErrorResponse;
+import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +19,68 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    @Autowired
+    private PersonService personService;
+
     @GetMapping("/{id}")
-    public ResponseEntity<CorrectResponse<PersonRs>> getUserById(@PathVariable(value = "id") Integer id,
-                                                                 @RequestHeader("authorization") String token) {
-        CorrectResponse<PersonRs> response = new CorrectResponse<>();
-        List<PersonRs> data = new ArrayList<>();
-        data.add(new PersonRs());
-        response.setData(data);
+    public ResponseEntity<ApiResponse> getUserById(@PathVariable(value = "id") Long id,
+                                                   @RequestHeader("authorization") String token) {
+        //TODO check if user is authorized to get this info (check token)
+        ApiResponse apiResponse = personService.getPersonRsById(id);
+
+        if (apiResponse instanceof ErrorResponse) {
+            return ResponseEntity.badRequest().body(apiResponse);
+        } else {
+            return ResponseEntity.ok(apiResponse);
+        }
+    }
+
+
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse> getMyInfo(@RequestHeader("authorization") String token) {
+        //TODO userID should be taken from token
+        Long userId = personService.getRandomIdFromDB();
+
+        return getUserById(userId, token);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<ApiResponse> updateMyInfo(@RequestHeader("authorization") String token,
+                                                    @RequestBody UserRq userData) {
+
+        //TODO userID should be taken from token
+        long userId = personService.getRandomIdFromDB();
+
+        ApiResponse apiResponse = personService.updateUserInfo(userId, userData);
+
+        if (apiResponse instanceof ErrorResponse) {
+            return ResponseEntity.badRequest().body(apiResponse);
+        } else {
+            return ResponseEntity.ok(apiResponse);
+        }
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse> deleteMyInfo(@RequestHeader("authorization") String token) {
+
+        //TODO userID should be taken from token
+        long userId = personService.getRandomIdFromDB();
+
+        ApiResponse apiResponse = personService.deletePersonById(userId);
+
+        if (apiResponse instanceof ErrorResponse) {
+            return ResponseEntity.badRequest().body(apiResponse);
+        } else {
+            return ResponseEntity.ok(apiResponse);
+        }
+    }
+
+    @PostMapping("/me/recover")
+    public ResponseEntity<ApiResponse> recoverUserInfo(@RequestHeader("authorization") String token) {
+        //TODO later
+        CorrectResponse<ComplexRs> response = new CorrectResponse<>();
+        response.setData(List.of(new ComplexRs()));
         return ResponseEntity.ok(response);
     }
 
@@ -45,41 +104,4 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
-    @GetMapping("/me")
-    public ResponseEntity<CorrectResponse<PersonRs>> getMyInfo(@RequestHeader("authorization") String token) {
-        CorrectResponse<PersonRs> response = new CorrectResponse<>();
-        List<PersonRs> data = new ArrayList<>();
-        data.add(new PersonRs());
-        response.setData(data);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/me")
-    public ResponseEntity<CorrectResponse<PersonRs>> updateUserById(@RequestHeader("authorization") String token,
-                                                                    @RequestBody UserData userData) {
-        CorrectResponse<PersonRs> response = new CorrectResponse<>();
-        List<PersonRs> data = new ArrayList<>();
-        data.add(new PersonRs());
-        response.setData(data);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/me")
-    public ResponseEntity<CorrectResponse<ComplexRs>> deleteUserById(@RequestHeader("authorization") String token) {
-        CorrectResponse<ComplexRs> response = new CorrectResponse<>();
-        List<ComplexRs> data = new ArrayList<>();
-        data.add(new ComplexRs());
-        response.setData(data);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/me/recover")
-    public ResponseEntity<CorrectResponse<ComplexRs>> recoverUserInfo(@RequestHeader("authorization") String token) {
-        CorrectResponse<ComplexRs> response = new CorrectResponse<>();
-        List<ComplexRs> data = new ArrayList<>();
-        data.add(new ComplexRs());
-        response.setData(data);
-        return ResponseEntity.ok(response);
-    }
 }
