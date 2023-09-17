@@ -24,7 +24,7 @@ public class Person {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** имя */
   @Column(name = "first_name")
@@ -76,7 +76,7 @@ public class Person {
 
   /** Конфигурационный код */
   @Column(name = "configuration_code")
-  private int configurationСode;
+  private Integer configurationСode;
 
   /** Дата и время удаления */
   @Column(name = "deleted_time")
@@ -118,6 +118,6 @@ public class Person {
 
   /** ссылка на телеграмм ? */
   @Column(name = "telegram_id")
-  private long telegramId;
+  private Long telegramId;
 
 }
