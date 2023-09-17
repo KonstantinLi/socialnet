@@ -22,7 +22,7 @@ public class Weather {
 
   /** ID */
   @Column(name = "open_weather_id")
-  private long openWeatherId;
+  private Long openWeatherId;
 
   /** Город */
   @Column(name = "city")
