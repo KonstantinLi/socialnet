@@ -1,13 +1,16 @@
 package ru.skillbox.socialnet.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.FriendShip;
+import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FriendShipRepository extends CrudRepository<FriendShip, Long> {
@@ -22,8 +25,32 @@ public interface FriendShipRepository extends CrudRepository<FriendShip, Long> {
     @Query(value = "select * from friendships f where " +
                    "f.src_person_id = :src_person_id " +
                    "and f.dst_person_id = :dst_person_id " +
-                   "and (f.status_name = :shipStatus or :shipStatus = \"\"", nativeQuery = true)
+                   "and (f.status_name = :shipStatus or :shipStatus = '')", nativeQuery = true)
     Iterable<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
                                                  @Param("dst_person_id") long dst_person_id,
-                                                 @Param("shipStatus") FriendShipStatus shipStatus);
+                                                 @Param("shipStatus") String shipStatus);
+
+    /**
+     *  удаляем все связи в таблице friendships между персонами, переданными в параметрах
+     * @param src_person_id
+     * @param dst_person_id
+     */
+    @Transactional
+    @Modifying
+    @Query(value =  "delete from friendships f " +
+            " where (f.src_person_id = :src_person_id and f.dst_person_id = :dst_person_id) " +
+            "   or  (f.src_person_id = :dst_person_id and f.dst_person_id = :src_person_id)", nativeQuery = true)
+    void delRelationsFromPersons(@Param("src_person_id") long src_person_id,
+                                 @Param("dst_person_id") long dst_person_id);
+
+    /**
+     *
+     * @param sourcePerson       - персона src
+     * @param destinationPerson  - персона dst
+     * @return  - запрос вернет значение статуса в таблице friendships между персонами, переданными в параметрах
+     */
+    @Query(value = "select f.status from FriendShip f " +
+            " where f.sourcePerson = :sourcePerson and f.destinationPerson = :destinationPerson ")
+    Optional<FriendShipStatus> getFriendhipStatusBetweenPersons(@Param("sourcePerson") Person sourcePerson,
+                                                                @Param("destinationPerson") Person destinationPerson);
 }

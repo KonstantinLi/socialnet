@@ -18,9 +18,8 @@ import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
+
 @Slf4j
 @Service
 public class FriendShipService {
@@ -33,7 +32,7 @@ public class FriendShipService {
 
     public Person getAuthorizedUser(String authorization) {
         // TODO выясниить как по строке авторизации вычислить персону и написать имплементацию метода
-        Optional<Person> person = personRepository.findPesonByemail("eobyz@rambler.ru");
+        Optional<Person> person = personRepository.findPesonByemail("tbartlet4@gizmodo.com");
         return person.isPresent() ? person.get() : null;
     }
 
@@ -63,35 +62,34 @@ public class FriendShipService {
         if (currentPerson != null) {
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
             if (destinationPerson.isPresent()) {
-                //текущая персона отправляет запрос на дружбу
-                FriendShip friendShip = new FriendShip();
-
+                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(
+                        currentPerson.getId(),  destinationPersonId, FriendShipStatus.REQUEST.name());
+                //текущая персона отправляет запрос на дружбу (если такой запрос уже был, то проапдейтится дата запроса)
+                FriendShip friendShip = friendShips.iterator().hasNext()
+                        ? friendShips.iterator().next()
+                        : new FriendShip();
                 friendShip.setSourcePerson(currentPerson);
                 friendShip.setDestinationPerson(destinationPerson.get());
                 friendShip.setSentTime(LocalDateTime.now());
                 friendShip.setStatus(FriendShipStatus.REQUEST);
-                try {
-                    friendShipRepository.save(friendShip);
-                } catch (Exception ex) {
-                    return generateErrorRs("error while creating Friendship request", ex.getMessage());
-                }
-                //принимающая сторона принимает запрос на дружбу
+                friendShipRepository.save(friendShip);
+                //принимающая сторона принимает запрос на дружбу (если запись в таблице уже есть, то проапдейтится поле даты)
+                friendShips = friendShipRepository.getFriendShipByIdsAndStatus(
+                        destinationPersonId, currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name());
+                friendShip = friendShips.iterator().hasNext()
+                        ? friendShips.iterator().next()
+                        : new FriendShip();
                 friendShip.setSourcePerson(destinationPerson.get());
                 friendShip.setDestinationPerson(currentPerson);
                 friendShip.setSentTime(LocalDateTime.now());
                 friendShip.setStatus(FriendShipStatus.RECEIVED_REQUEST);
-                try {
-                    friendShipRepository.save(friendShip);
-                } catch (Exception ex) {
-                    return generateErrorRs("error while creating Friendship request", ex.getMessage());
-                }
-
+                friendShipRepository.save(friendShip);
                 return generateCommonRsComplexRs();
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while creating Friendship request, destination person not found");
+                return generateErrorRs(NO_DATA_FOUND, "error while create Friendship request, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while creating Friendship request, current person not found");
+            return generateErrorRs(NO_DATA_FOUND, "error while create Friendship request, current person not found");
         }
     }
 
@@ -101,19 +99,23 @@ public class FriendShipService {
             long currentPersonId = currentPerson.getId();
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
             if (destinationPerson.isPresent()) {
-                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.FRIEND);
-                if (friendShips.iterator().hasNext()) {
+                //убеждаемся, что у каждой из персон есть записи о том, что они друзья, и удаляем эти записи
+                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.FRIEND.name());
+                Iterable<FriendShip> friendShips2 = friendShipRepository.getFriendShipByIdsAndStatus(destinationPerson.get().getId(), currentPersonId, FriendShipStatus.FRIEND.name());
+                if (friendShips.iterator().hasNext() && friendShips2.iterator().hasNext()) {
                     FriendShip friendShip = friendShips.iterator().next();
+                    friendShipRepository.delete(friendShip);
+                    friendShip =  friendShips2.iterator().next();
                     friendShipRepository.delete(friendShip);
                     return generateCommonRsComplexRs();
                 } else {
-                    return generateErrorRs(NO_DATA_FOUND, "error while deleting Friendship, Friendship not found");
+                    return generateErrorRs(NO_DATA_FOUND, "error while delete Friendship, Friendship not found");
                 }
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while deleting Friendship, destination person not found");
+                return generateErrorRs(NO_DATA_FOUND, "error while delete Friendship, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while deleting Friendship, current person not found");
+            return generateErrorRs(NO_DATA_FOUND, "error while delete Friendship, current person not found");
         }
     }
 
@@ -123,29 +125,33 @@ public class FriendShipService {
             long currentPersonId = currentPerson.getId();
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
             if (destinationPerson.isPresent()) {
-                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.FRIEND);
-                if (friendShips.iterator().hasNext()) {
-                    return generateErrorRs("record found", "error while adding Friendship, Friendship already exists");
-                } else {
-                    //удалить все запросы в друзья и т.д.
-                    Iterable<FriendShip> allFriendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), null);
-                    while (allFriendShips.iterator().hasNext()) {
-                        friendShipRepository.delete(allFriendShips.iterator().next());
-                    }
-                    //добавить друга
+                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.RECEIVED_REQUEST.name());
+                if (!friendShips.iterator().hasNext()) {
+                    return generateErrorRs(NO_DATA_FOUND, "error while add Friendship, dont find received request");
+                }  else {
+                    //удалить все запросы в друзья и т.д. !!! у обеих персон
+                    friendShipRepository.delRelationsFromPersons(currentPersonId, destinationPerson.get().getId());
+                    //добавить друга для первой персоны
                     FriendShip friendShip = new FriendShip();
                     friendShip.setSourcePerson(currentPerson);
                     friendShip.setDestinationPerson(destinationPerson.get());
                     friendShip.setSentTime(LocalDateTime.now());
                     friendShip.setStatus(FriendShipStatus.FRIEND);
                     friendShipRepository.save(friendShip);
+                    //добавить друга для второй персоны
+                    friendShip = new FriendShip();
+                    friendShip.setSourcePerson(destinationPerson.get());
+                    friendShip.setDestinationPerson(currentPerson);
+                    friendShip.setSentTime(LocalDateTime.now());
+                    friendShip.setStatus(FriendShipStatus.FRIEND);
+                    friendShipRepository.save(friendShip);
                     return generateCommonRsComplexRs();
                 }
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while adding Friendship, destination person not found");
+                return generateErrorRs(NO_DATA_FOUND, "error while add Friendship, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while adding Friendship, current person not found");
+            return generateErrorRs(NO_DATA_FOUND, "error while add Friendship, current person not found");
         }
     }
 
@@ -155,20 +161,26 @@ public class FriendShipService {
             long currentPersonId = currentPerson.getId();
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
             if (destinationPerson.isPresent()) {
-                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.RECEIVED_REQUEST);
-                //если найден запрос на добавление в друзья, то удалить его (DECLINE статуса не предусмотрено)
+                //ищем приходящий запрос на добавление в друзья у одной стороны и запрос дружбы с другой стороны
+                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.RECEIVED_REQUEST.name());
+                Iterable<FriendShip> friendShips2 = friendShipRepository.getFriendShipByIdsAndStatus(destinationPerson.get().getId(), currentPersonId, FriendShipStatus.REQUEST.name());
+                //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
                 if (friendShips.iterator().hasNext()) {
                     FriendShip friendShip = friendShips.iterator().next();
                     friendShipRepository.delete(friendShip);
-                    return generateCommonRsComplexRs();
                 } else {
-                    return generateErrorRs(NO_DATA_FOUND, "error while declining Friendship, Friendship request not found");
+                    return generateErrorRs(NO_DATA_FOUND, "error while decline Friendship, Friendship request not found");
                 }
+                if (friendShips2.iterator().hasNext()) {
+                    FriendShip friendShip = friendShips2.iterator().next();
+                    friendShipRepository.delete(friendShip);
+                }
+                return generateCommonRsComplexRs();
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while declining Friendship, destination person not found");
+                return generateErrorRs(NO_DATA_FOUND, "error while decline Friendship, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while declining Friendship, current person not found");
+            return generateErrorRs(NO_DATA_FOUND, "error while decline Friendship, current person not found");
         }
     }
 
@@ -178,7 +190,7 @@ public class FriendShipService {
             long currentPersonId = currentPerson.getId();
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
             if (destinationPerson.isPresent()) {
-                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.BLOCKED);
+                Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.BLOCKED.name());
                 //если найдена запись с заблокированной персоной, то надо эту запись удалить
                 if (friendShips.iterator().hasNext()) {
                     FriendShip friendShip = friendShips.iterator().next();
@@ -232,15 +244,16 @@ public class FriendShipService {
     public ApiFatherRs getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
-            long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.REQUEST.name());
+            long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name());
             Page<Person> personsPage = personRepository.findPersonsByFriendship(
-                    currentPerson.getId(), FriendShipStatus.REQUEST.name(), PageRequest.of(offset, perPage));
+                    currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name(), PageRequest.of(offset, perPage));
             CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
             ArrayList<PersonRs> personsData = new ArrayList<>();
-            while (personsPage.iterator().hasNext()) {
-                Person person = personsPage.iterator().next();
+            Iterator<Person> iterator = personsPage.iterator();
+            while (iterator.hasNext()) {
+                Person person = iterator.next();
                 PersonRs personRs = new PersonRs();
-                AssignPersonRsFieldsByPerson(personRs, person, FriendShipStatus.FRIEND, false);
+                AssignPersonRsFieldsByPerson(personRs, person, FriendShipStatus.RECEIVED_REQUEST, false);
                 personsData.add(personRs);
             }
             personsList.setData(personsData);
@@ -254,15 +267,73 @@ public class FriendShipService {
         }
     }
 
+    private ArrayList<Person> getRandomPersonsList(List<Long> personIds, int cnt) {
+        Iterable<Person> personsIterable = personRepository.randomGenerateFriendsForPerson(personIds, cnt);
+        Iterator<Person> personIterator = personsIterable.iterator();
+        ArrayList<Person> persons = new ArrayList<>();
+        while (personIterator.hasNext()) {
+            persons.add(personIterator.next());
+        }
+        return persons;
+    }
+
+    private ArrayList<Person> getFriendsOfFriendsByPerson(long personId) {
+        Iterable<Person> personsIterable = personRepository.getFriendsOfFriendsByPersonId(personId);
+        Iterator<Person> personIterator = personsIterable.iterator();
+        ArrayList<Person> persons = new ArrayList<>();
+        while (personIterator.hasNext()) {
+            persons.add(personIterator.next());
+        }
+        return persons;
+    }
+
+
+    private ArrayList<PersonRs> updatePersonsData(ArrayList<Person> persons, Person currentPerson) {
+        ArrayList<PersonRs> personsData = new ArrayList<>();
+        for (Person person : persons) {
+            PersonRs personRs = new PersonRs();
+            Optional<FriendShipStatus> optionalStatus = friendShipRepository.getFriendhipStatusBetweenPersons(currentPerson, person);
+            FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
+            AssignPersonRsFieldsByPerson(personRs, person, status, status == FriendShipStatus.BLOCKED);
+            personsData.add(personRs);
+        }
+        return personsData;
+    }
+
     public ApiFatherRs getRecommendationFriends(String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
-/*ToDo выяснить алгоритм получения списка рекомендованных друзей и написать имплементацию метода
-    Список рекомендованных друзей решил получать так:
-    если нет друзей, то рандомом из таблицы Person 10 записей.
-    если друзья есть, то предлагать друзей друзей и если кол-во < 10, то дополнять рандомом до 10
-*/
-            return null;
+            CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
+            ArrayList<Long> personsIds = new ArrayList<>();
+            ArrayList<PersonRs> personsData = new ArrayList<>();
+// Список рекомендованных друзей решил получать так:
+// посмотрим, есть ли у персоны друзья?
+            long friendsCount = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
+//  если нет друзей, то предлагаем рандомом из таблицы Person 10 записей.
+            if (friendsCount == 0) {
+                personsIds.add(currentPerson.getId());
+                ArrayList<Person>  persons = getRandomPersonsList(personsIds, 10);
+                personsData = updatePersonsData(persons, currentPerson);
+            } else {
+//    если друзья есть, то предлагать друзей друзей, и если их кол-во < 10, то дополнять рандомом до 10
+                ArrayList<Person> persons = getFriendsOfFriendsByPerson(currentPerson.getId());
+                int size = persons.size();
+                if (size < 10) {
+                    personsIds.add(currentPerson.getId());
+                    for (Person person : persons) {
+                        personsIds.add(person.getId());
+                    }
+                    ArrayList<Person> persons2 = getRandomPersonsList(personsIds, 10 - size);
+                    persons.addAll(persons2);
+                }
+                personsData = updatePersonsData(persons, currentPerson);
+            }
+            personsList.setData(personsData);
+            personsList.setItemPerPage(personsData.size());
+            personsList.setOffset(0);
+            personsList.setPerPage(personsData.size());
+            personsList.setTotal((long)personsData.size());
+            return personsList;
         } else {
             return generateErrorRs(NO_DATA_FOUND, "error while get reccomendationFriendsList, current person not found");
         }
@@ -276,8 +347,9 @@ public class FriendShipService {
                     currentPerson.getId(), FriendShipStatus.REQUEST.name(), PageRequest.of(offset, perPage));
             CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
             ArrayList<PersonRs> personsData = new ArrayList<>();
-            while (personsPage.iterator().hasNext()) {
-                Person person = personsPage.iterator().next();
+            Iterator<Person> iterator = personsPage.iterator();
+            while (iterator.hasNext()) {
+                Person person = iterator.next();
                 PersonRs personRs = new PersonRs();
                 AssignPersonRsFieldsByPerson(personRs, person, FriendShipStatus.REQUEST, false);
                 personsData.add(personRs);
@@ -300,24 +372,20 @@ public class FriendShipService {
         personRs.setCurrency(null);
         personRs.setEmail(person.getEmail());
         personRs.setId(person.getId());
-        if (person.getOnlineStatus() != null) {
-            personRs.setOnline(person.getOnlineStatus().equalsIgnoreCase("ONLINE"));
-        } else {
-            personRs.setOnline(false);
-        }
+        personRs.setOnline(person.getOnlineStatus() == null ? false : person.getOnlineStatus().equalsIgnoreCase("TRUE"));
         personRs.setPhone(person.getPhone());
         personRs.setPhoto(person.getPhoto());
         personRs.setToken(person.getChangePasswordToken());
         personRs.setWeather(null);
-        personRs.setBirth_date(String.valueOf(person.getBirthDate()));
+        personRs.setBirth_date(person.getBirthDate() == null ? null : person.getBirthDate().toString());
         personRs.setFirst_name(person.getFirstName());
         personRs.setFriend_status(friendShipStatus.name());
         personRs.setIs_blocked(person.getIsBlocked());
         personRs.setIs_blocked_by_current_user(isBlocked);
         personRs.setLast_name(person.getLastName());
-        personRs.setLast_online_time(person.getLastOnlineTime().toString());
-        personRs.setMessages_permission(String.valueOf(person.getMessagePermission()));
-        personRs.setReg_date(String.valueOf(person.getRegDate()));
+        personRs.setLast_online_time(person.getLastOnlineTime() == null ? null : person.getLastOnlineTime().toString());
+        personRs.setMessages_permission(person.getMessagePermission() == null ? null : person.getMessagePermission().toString());
+        personRs.setReg_date(person.getRegDate() == null ? null : person.getRegDate().toString());
         personRs.setUser_deleted(person.getIsDeleted());
     }
 }
