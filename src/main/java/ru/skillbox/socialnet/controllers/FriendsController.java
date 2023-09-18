@@ -1,5 +1,6 @@
 package ru.skillbox.socialnet.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,9 @@ import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.services.FriendShipService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/friends")
 public class FriendsController {
-
-    @Autowired
     FriendShipService friendShipService;
 
     private ResponseEntity<?> generateResponseEntity(ApiFatherRs response) {
