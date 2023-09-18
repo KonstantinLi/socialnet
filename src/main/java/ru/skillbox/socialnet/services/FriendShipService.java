@@ -1,5 +1,6 @@
 package ru.skillbox.socialnet.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,13 +23,11 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FriendShipService {
-    @Autowired
     FriendShipRepository friendShipRepository;
-    @Autowired
     PersonRepository personRepository;
     private final String NO_DATA_FOUND = "no data found";
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FriendShipService.class);
 
     public Person getAuthorizedUser(String authorization) {
         // TODO выясниить как по строке авторизации вычислить персону и написать имплементацию метода
