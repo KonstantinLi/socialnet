@@ -2,7 +2,8 @@ server:
   port: 8083
 
 client:
-  port: 8080
+  local: http://localhost:8080
+  remote: 217.107.219.242:8080
 
 spring:
 

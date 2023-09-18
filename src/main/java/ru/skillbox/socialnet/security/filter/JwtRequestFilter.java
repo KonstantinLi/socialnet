@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.filter;
+package ru.skillbox.socialnet.security.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.skillbox.socialnet.util.JwtTokenUtils;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 
 import java.io.IOException;
 import java.util.stream.Collectors;

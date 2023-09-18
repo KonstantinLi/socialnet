@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.service.impl;
+package ru.skillbox.socialnet.security.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.data.entity.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
@@ -19,7 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final PersonRepository personRepository;
 
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
             Person person = personRepository.findByEmail(email).orElseThrow(

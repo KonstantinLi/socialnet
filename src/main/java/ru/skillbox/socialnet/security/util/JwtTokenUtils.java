@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.util;
+package ru.skillbox.socialnet.security.util;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class JwtTokenUtils {
     public String generateToken(UserDetails userDetails) {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+                .toList();
 
         Map<String, Object> claims = new HashMap<>() {{
             put("roles", roles);
