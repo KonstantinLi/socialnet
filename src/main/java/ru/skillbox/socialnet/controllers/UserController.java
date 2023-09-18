@@ -38,7 +38,7 @@ public class UserController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse> getMyInfo(@RequestHeader("authorization") String token) {
+    public ResponseEntity<ApiResponse> getMyInfo(@RequestHeader(value = "authorization") String token) {
         //TODO userID should be taken from token
         Long userId = personService.getRandomIdFromDB();
 

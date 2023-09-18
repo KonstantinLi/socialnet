@@ -24,6 +24,9 @@ public class PersonRs {
         this.phone = person.getPhone();
         this.photo = person.getPhoto();
 
+        //TODO remove plug for token
+        this.token = "1";
+
         //TODO remove plug for weather
         this.weather = new WeatherRs();
         this.birth_date = person.getBirthDate().toString();
