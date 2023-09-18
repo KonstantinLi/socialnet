@@ -3,8 +3,9 @@ package ru.skillbox.socialnet.entity.post;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.Person;
@@ -45,7 +46,7 @@ public class PostComment {
 
   @OneToMany
   @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_comment_parent_id"))
-  private List<PostComment> subComments;
+  private Set<PostComment> subComments = new HashSet<>();
 
   /** Пост */
   @ManyToOne

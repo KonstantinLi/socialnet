@@ -101,7 +101,7 @@ public class Person {
   private String notificationSessionId;
 
   /** разрешение на получение сообщений: ALL - от всех пользователей (кроме заблокированных), FRIENDS - только от друзей */
-  @Enumerated(EnumType.ORDINAL)
+  @Enumerated(EnumType.STRING)
   @Column(name = "message_permissions")
   private MessagePermission messagePermissions;
 

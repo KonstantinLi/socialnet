@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,25 +46,25 @@ public class Post {
   @Column(name = "post_text", columnDefinition = "text")
   private String postText;
 
-  /** Автор  поста
-  @Column(name = "author_id", nullable = false)
-  private Long authorId; */
+  /** Автор  поста */
+  @Column(name = "author_id", nullable = false, insertable=false, updatable=false)
+  private Long authorId;
+
   /** Автор  поста */
   @ManyToOne
   @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person"))
   private Person author;
 
 
-
   /** Теги  поста */
   @ManyToMany
   @JoinTable(name = "post2tag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-  private List<Tag> tags;
+  private Set<Tag> tags = new HashSet<>();
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<PostComment> comments;
+  private Set<PostComment> comments = new HashSet<>();
 
   /** Файлы в посте */
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<PostFile> files;
+  private Set<PostFile> files = new HashSet<>();
 }

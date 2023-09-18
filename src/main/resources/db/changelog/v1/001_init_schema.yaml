@@ -107,8 +107,8 @@ databaseChangeLog:
 
               create table friendships (
                  id bigserial not null,
-                 sent_time timestamp(6),
-                 status_name varchar(255),
+                 sent_time timestamp(6) not null,
+                 status_name varchar(255) not null,
                  dst_person_id bigint not null,
                  src_person_id bigint not null,
                  unique (src_person_id, dst_person_id),
@@ -118,10 +118,10 @@ databaseChangeLog:
               create table likes (
                  id bigserial not null,
                  entity_id bigint not null,
-                 time timestamp(6),
-                 type smallint not null,
+                 time timestamp(6) not null,
+                 type varchar(255) not null,
                  person_id bigint not null,
-                 unique (person_id, entity_id, type),
+                 unique (person_id, type, entity_id),
                  primary key (id)
                  );
 
@@ -177,30 +177,31 @@ databaseChangeLog:
                  is_deleted boolean,
                  deleted_time timestamp(6),
                  last_online_time timestamp(6),
-                 message_permissions smallint not null,
+                 message_permissions varchar(255) not null,
                  notifications_session_id varchar(255),
-                 online_status boolean,
+                 online_status boolean not null,
                  password varchar(255),
                  photo varchar(255),
                  reg_date timestamp(6),
                  telegram_id bigint,
                  person_settings_id bigint not null,
+                 unique (e_mail),
                  primary key (id)
                 );
 
               create table post2tag (
                  id bigserial not null,
-                 post_id bigint,
-                 tag_id bigint,
+                 post_id bigint not null,
+                 tag_id bigint not null,
                  primary key (id)
                 );
 
               create table post_comments (
                  id bigserial not null,
-                 comment_text text,
-                 is_blocked boolean,
-                 is_deleted boolean,
-                 time timestamp(6),
+                 comment_text text not null,
+                 is_blocked boolean not null,
+                 is_deleted boolean not null,
+                 time timestamp(6) not null,
                  author_id bigint not null,
                  post_id bigint not null,
                  parent_id bigint,
@@ -217,9 +218,9 @@ databaseChangeLog:
 
               create table posts (
                  id bigserial not null,
-                 title varchar(255),
-                 post_text text,
-                 time timestamp(6),
+                 title varchar(255) not null,
+                 post_text text not null,
+                 time timestamp(6) not null,
                  is_blocked boolean not null,
                  is_deleted boolean not null,
                  time_delete timestamp(6),
@@ -239,16 +240,16 @@ databaseChangeLog:
 
               create table tags (
                  id bigserial not null,
-                 tag varchar(255),
+                 tag varchar(255) not null,
                  unique (tag),
                  primary key (id)
                 );
 
               create table weather (
                 id bigserial not null,
-                city varchar(255),
+                city varchar(255) not null,
                 clouds varchar(255),
-                date timestamp(6),
+                date timestamp(6) not null,
                 open_weather_id bigint,
                 unique (city),
                 primary key (id)

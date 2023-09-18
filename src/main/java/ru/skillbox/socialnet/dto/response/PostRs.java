@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostRs {
     private PersonRs author;
-    private List<CommentRs> comments;
+    private Set<CommentRs> comments;
     private Long id;
     private Integer likes;
-    private List<String> tags;
+    private Set<String> tags;
     private String time;
     private String title;
     private String type;

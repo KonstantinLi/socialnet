@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -18,6 +18,6 @@ public class CommentRs {
     private Boolean myLike;
     private Long parentId;
     private Long postId;
-    private List<CommentRs> subComments;
+    private Set<CommentRs> subComments;
     private String time;
 }

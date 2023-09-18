@@ -2,6 +2,7 @@ package ru.skillbox.socialnet.mapper;
 
 import org.mapstruct.*;
 
+import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.CommentRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
@@ -21,6 +22,9 @@ public interface PostMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Post postRqToPost(PostRq postRq, @MappingTarget Post post);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    PostComment commentRqToPostComment(CommentRq commentRq, @MappingTarget PostComment postComment);
+
     default String tagToString(Tag tag) {
         return tag.getTag();
     }
@@ -36,4 +40,5 @@ public interface PostMapper {
     CommentRs postCommentToCommentRs(PostComment postComment);
 
     WeatherRs weatherToWeatherRs(Weather weather);
+
 }

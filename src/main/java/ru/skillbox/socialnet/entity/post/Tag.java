@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -21,6 +22,6 @@ public class Tag {
   private String tag;
 
 
-  @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-  private Set<Post> posts;
+  @ManyToMany(mappedBy = "tags")
+  private Set<Post> posts = new HashSet<>();
 }

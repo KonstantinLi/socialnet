@@ -22,7 +22,7 @@ public class Like {
 
   /** тип */
   @Column(name = "type")
-  @Enumerated(EnumType.ORDINAL)
+  @Enumerated(EnumType.STRING)
   private LikeType type;
 
   /** Дата и время события */

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.PostRq;
-import ru.skillbox.socialnet.service.post.*;
+import ru.skillbox.socialnet.service.PostsService;
 
 import java.util.List;
 
@@ -12,21 +12,14 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class PostsController {
-    private final GetPostByIdService getPostByIdService;
-    private final UpdatePostByIdService updatePostByIdService;
-    private final DeletePostByIdService deletePostByIdService;
-    private final RecoverPostByIdService recoverPostByIdService;
-    private final GetPostWallService getPostWallService;
-    private final CreatePostService createPostService;
-    private final GetPostsByQueryService getPostsByQueryService;
-    private final GetFeedsService getFeedsService;
+    private final PostsService postsService;
 
     @GetMapping("/post/{id}")
     public ResponseEntity<?> getPostById(
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
-        return getPostByIdService.getPostById(authorization, id);
+        return postsService.getPostById(authorization, id);
     }
 
     @PutMapping("/post/{id}")
@@ -35,7 +28,7 @@ public class PostsController {
             @PathVariable Long id,
             @RequestBody PostRq postRq
     ) {
-        return updatePostByIdService.updateById(authorization, id, postRq);
+        return postsService.updateById(authorization, id, postRq);
     }
 
     @DeleteMapping("/post/{id}")
@@ -43,7 +36,7 @@ public class PostsController {
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
-        return deletePostByIdService.deleteById(authorization, id);
+        return postsService.deleteById(authorization, id);
     }
 
     @PutMapping("/post/{id}/recover")
@@ -51,7 +44,7 @@ public class PostsController {
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
-        return recoverPostByIdService.recoverPostById(authorization, id);
+        return postsService.recoverPostById(authorization, id);
     }
 
     @GetMapping("/users/{id}/wall")
@@ -61,7 +54,7 @@ public class PostsController {
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
     ) {
-        return getPostWallService.getWall(authorization, id, offset, perPage);
+        return postsService.getWall(authorization, id, offset, perPage);
     }
 
     @PostMapping("/users/{id}/wall")
@@ -71,21 +64,21 @@ public class PostsController {
             @PathVariable Long id,
             @RequestBody PostRq postRq
     ) {
-        return createPostService.createPost(authorization, publishDate, id, postRq);
+        return postsService.createPost(authorization, publishDate, id, postRq);
     }
 
     @GetMapping("/post")
     public ResponseEntity<?> getPostsByQuery(
             @RequestParam String authorization,
-            @RequestParam(defaultValue = "") String author,
-            @RequestParam(value = "date_from", defaultValue = "0") Long dateFrom,
-            @RequestParam(value = "date_to", defaultValue = "0") Long dateTo,
+            @RequestParam(required = false) String author,
+            @RequestParam(value = "date_from", required = false) Long dateFrom,
+            @RequestParam(value = "date_to", required = false) Long dateTo,
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage,
             @RequestParam(required = false) List<String> tags,
-            @RequestParam(defaultValue = "") String text
+            @RequestParam(required = false) String text
     ) {
-        return getPostsByQueryService.getPostsByQuery(
+        return postsService.getPostsByQuery(
                 authorization, author, dateFrom, dateTo, offset, perPage, tags, text
         );
     }
@@ -96,6 +89,6 @@ public class PostsController {
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
     ) {
-        return getFeedsService.getFeeds(authorization, offset, perPage);
+        return postsService.getFeeds(authorization, offset, perPage);
     }
 }

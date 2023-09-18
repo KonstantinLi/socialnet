@@ -8,5 +8,5 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CommentRq {
     private String commentText;
-    private Integer parentId;
+    private Long parentId;
 }
