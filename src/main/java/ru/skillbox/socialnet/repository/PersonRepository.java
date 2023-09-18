@@ -1,14 +1,12 @@
 package ru.skillbox.socialnet.repository;
 
-import jakarta.transaction.Transactional;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.data.entity.Person;
 
+import java.util.Optional;
+
 @Repository
-@Transactional
-public interface PersonRepository extends CrudRepository<Person, Long> {
-    Person findByEmail(String email);
-
-
+public interface PersonRepository extends JpaRepository<Person, Long> {
+    Optional<Person> findByEmail(String email);
 }
