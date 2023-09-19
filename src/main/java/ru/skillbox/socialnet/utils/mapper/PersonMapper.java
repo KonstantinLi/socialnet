@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.mapper;
+package ru.skillbox.socialnet.utils.mapper;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -8,7 +8,6 @@ import org.mapstruct.factory.Mappers;
 import ru.skillbox.socialnet.dto.PersonRs;
 
 import ru.skillbox.socialnet.entity.Person;
-import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 
 @Mapper
 public interface PersonMapper {
