@@ -12,7 +12,7 @@ public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorRs> handleBadRequestException(Exception exception) {
-        return new ResponseEntity<>(new ErrorRs(exception.getClass().getSimpleName(),
+        return new ResponseEntity<>(new ErrorRs("ИсключениеПлохойЗапрос",
                 exception.getLocalizedMessage()),
                 HttpStatus.BAD_REQUEST);
     }
