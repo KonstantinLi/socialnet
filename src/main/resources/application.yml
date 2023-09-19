@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8086
 
 
 spring:
@@ -21,7 +21,7 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
+    drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
 logging:
