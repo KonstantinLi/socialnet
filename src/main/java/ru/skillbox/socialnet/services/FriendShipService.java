@@ -2,7 +2,6 @@ package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-import ru.skillbox.socialnet.mapper.PersonMapper;
+import ru.skillbox.socialnet.utils.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
@@ -57,7 +56,7 @@ public class FriendShipService {
         return response;
     }
 
-    public ApiFatherRs sendFriendshipRequest(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(int destinationPersonId, String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
@@ -93,7 +92,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs deleteFriendById(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> deleteFriendById(int destinationPersonId, String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -119,7 +118,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs addFriendById(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> addFriendById(int destinationPersonId, String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -155,7 +154,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs declineFriendshipRequestById(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(int destinationPersonId, String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -184,7 +183,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs blockOrUnblockUserByUser(int destinationPersonId, String authorization) {
+    public void blockOrUnblockUserByUser(int destinationPersonId, String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -213,7 +212,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs getFriendsOfCurrentUser(String authorization, int offset, int perPage) {
+    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
@@ -240,7 +239,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
+    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name());
@@ -285,7 +284,6 @@ public class FriendShipService {
         return persons;
     }
 
-
     private ArrayList<PersonRs> updatePersonsData(ArrayList<Person> persons, Person currentPerson) {
         ArrayList<PersonRs> personsData = new ArrayList<>();
         for (Person person : persons) {
@@ -298,7 +296,7 @@ public class FriendShipService {
         return personsData;
     }
 
-    public ApiFatherRs getRecommendationFriends(String authorization) {
+    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(String authorization) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
@@ -337,7 +335,7 @@ public class FriendShipService {
         }
     }
 
-    public ApiFatherRs getOutgoingRequestsByUser(String authorization, int offset, int perPage) {
+    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.REQUEST.name());
