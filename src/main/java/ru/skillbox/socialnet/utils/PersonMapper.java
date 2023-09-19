@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.utils.mapper;
+package ru.skillbox.socialnet.utils;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -22,7 +22,7 @@ public interface PersonMapper {
     @Mapping(source = "person.regDate", target = "reg_date", dateFormat = "dd.MM.yyyy")
     @Mapping(source = "person.changePasswordToken", target = "token")
     default Boolean onlineStatusToBoolean(String onlineStatus) {
-        return onlineStatus.equalsIgnoreCase("TRUE");
+        return  onlineStatus==null ? false :  onlineStatus.equalsIgnoreCase("TRUE");
     }
     @Mapping(source = "person.onlineStatus", target = "online")
     @Mapping(source ="person.messagePermission", target = "messages_permission")
