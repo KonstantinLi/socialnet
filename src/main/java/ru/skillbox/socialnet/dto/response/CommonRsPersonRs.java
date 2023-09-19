@@ -1,23 +1,22 @@
 package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class CommonRsPersonRs<T> extends ApiFatherRs {
+public class CommonRsPersonRs<T> {
 
-    private Collection<T> data;
+    private Long timeStamp;
+    private T data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
     private Long total;
 
-
     public CommonRsPersonRs() {
-        super();
+        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 
 }
