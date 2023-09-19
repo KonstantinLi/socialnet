@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.dto.errs;
+package ru.skillbox.socialnet.errs;
 
 public class BadRequestException extends Exception {
 

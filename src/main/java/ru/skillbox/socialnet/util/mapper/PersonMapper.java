@@ -2,11 +2,14 @@ package ru.skillbox.socialnet.util.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.entity.Person;
 
 @Mapper(componentModel = "spring")
 public interface PersonMapper {
+
+    PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
 
     @Mapping(source = "lastName", target = "last_name")
     @Mapping(source = "firstName", target = "first_name")
