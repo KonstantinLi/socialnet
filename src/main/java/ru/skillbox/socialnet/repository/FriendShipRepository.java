@@ -1,8 +1,8 @@
 package ru.skillbox.socialnet.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,7 @@ import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import java.util.Optional;
 
 @Repository
-public interface FriendShipRepository extends CrudRepository<FriendShip, Long> {
+public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
 
     /**
      * @param src_person_id  - текущая персона (от имени которого запрашиваются данные)

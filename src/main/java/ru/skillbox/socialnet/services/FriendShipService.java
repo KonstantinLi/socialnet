@@ -7,14 +7,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.ComplexRs;
 import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.ApiFatherRs;
 import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
-import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-import ru.skillbox.socialnet.utils.mapper.PersonMapper;
+import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.utils.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
@@ -25,21 +24,15 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class FriendShipService {
-    FriendShipRepository friendShipRepository;
-    PersonRepository personRepository;
-    private final String NO_DATA_FOUND = "no data found";
+    private final FriendShipRepository friendShipRepository;
+    private final PersonRepository personRepository;
+    //private final JwtTokenUtils jwtTokenUtils;
 
     public Person getAuthorizedUser(String authorization) {
-        // TODO выясниить как по строке авторизации вычислить персону и написать имплементацию метода
+        //Long id = jwtTokenUtils.getId(authorization);
         Optional<Person> person = personRepository.findPesonByemail("tbartlet4@gizmodo.com");
+        //Optional<Person> person = personRepository.findById(id);
         return person.isPresent() ? person.get() : null;
-    }
-
-    private ErrorRs generateErrorRs(String error, String error_description) {
-        ErrorRs errorRs = new ErrorRs();
-        errorRs.setError(error);
-        errorRs.setError_description(error_description);
-        return errorRs;
     }
 
     private CommonRsComplexRs<ComplexRs> generateCommonRsComplexRs() {
@@ -56,7 +49,20 @@ public class FriendShipService {
         return response;
     }
 
-    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(int destinationPersonId, String authorization) {
+    private void saveFriendhipChanges(FriendShip friendShip,
+                                      Person sourcePerson,
+                                      Person destinationPerson,
+                                      LocalDateTime sentTime,
+                                      FriendShipStatus status) {
+        friendShip.setSourcePerson(sourcePerson);
+        friendShip.setDestinationPerson(destinationPerson);
+        friendShip.setSentTime(sentTime);
+        friendShip.setStatus(status);
+        friendShipRepository.save(friendShip);
+    }
+
+
+    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(int destinationPersonId, String authorization) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             Optional<Person> destinationPerson = personRepository.findById((long) destinationPersonId);
@@ -67,32 +73,24 @@ public class FriendShipService {
                 FriendShip friendShip = friendShips.iterator().hasNext()
                         ? friendShips.iterator().next()
                         : new FriendShip();
-                friendShip.setSourcePerson(currentPerson);
-                friendShip.setDestinationPerson(destinationPerson.get());
-                friendShip.setSentTime(LocalDateTime.now());
-                friendShip.setStatus(FriendShipStatus.REQUEST);
-                friendShipRepository.save(friendShip);
+                saveFriendhipChanges(friendShip, currentPerson, destinationPerson.get(), LocalDateTime.now(), FriendShipStatus.REQUEST);
                 //принимающая сторона принимает запрос на дружбу (если запись в таблице уже есть, то проапдейтится поле даты)
                 friendShips = friendShipRepository.getFriendShipByIdsAndStatus(
                         destinationPersonId, currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name());
                 friendShip = friendShips.iterator().hasNext()
                         ? friendShips.iterator().next()
                         : new FriendShip();
-                friendShip.setSourcePerson(destinationPerson.get());
-                friendShip.setDestinationPerson(currentPerson);
-                friendShip.setSentTime(LocalDateTime.now());
-                friendShip.setStatus(FriendShipStatus.RECEIVED_REQUEST);
-                friendShipRepository.save(friendShip);
+                saveFriendhipChanges(friendShip, destinationPerson.get(), currentPerson, LocalDateTime.now(), FriendShipStatus.RECEIVED_REQUEST);
                 return generateCommonRsComplexRs();
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while create Friendship request, destination person not found");
+                throw new BadRequestException("error while create Friendship request, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while create Friendship request, current person not found");
+            throw new BadRequestException("error while create Friendship request, current person not found");
         }
     }
 
-    public CommonRsComplexRs<ComplexRs> deleteFriendById(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> deleteFriendById(int destinationPersonId, String authorization) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -108,17 +106,17 @@ public class FriendShipService {
                     friendShipRepository.delete(friendShip);
                     return generateCommonRsComplexRs();
                 } else {
-                    return generateErrorRs(NO_DATA_FOUND, "error while delete Friendship, Friendship not found");
+                    throw new BadRequestException("error while delete Friendship, Friendship not found");
                 }
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while delete Friendship, destination person not found");
+                throw new BadRequestException("error while delete Friendship, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while delete Friendship, current person not found");
+            throw new BadRequestException("error while delete Friendship, current person not found");
         }
     }
 
-    public CommonRsComplexRs<ComplexRs> addFriendById(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> addFriendById(int destinationPersonId, String authorization) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -126,35 +124,29 @@ public class FriendShipService {
             if (destinationPerson.isPresent()) {
                 Iterable<FriendShip> friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.RECEIVED_REQUEST.name());
                 if (!friendShips.iterator().hasNext()) {
-                    return generateErrorRs(NO_DATA_FOUND, "error while add Friendship, dont find received request");
+                    throw new BadRequestException("error while add Friendship, dont find received request");
                 }  else {
-                    //удалить все запросы в друзья и т.д. !!! у обеих персон
-                    friendShipRepository.delRelationsFromPersons(currentPersonId, destinationPerson.get().getId());
-                    //добавить друга для первой персоны
-                    FriendShip friendShip = new FriendShip();
-                    friendShip.setSourcePerson(currentPerson);
-                    friendShip.setDestinationPerson(destinationPerson.get());
-                    friendShip.setSentTime(LocalDateTime.now());
-                    friendShip.setStatus(FriendShipStatus.FRIEND);
-                    friendShipRepository.save(friendShip);
-                    //добавить друга для второй персоны
-                    friendShip = new FriendShip();
-                    friendShip.setSourcePerson(destinationPerson.get());
-                    friendShip.setDestinationPerson(currentPerson);
-                    friendShip.setSentTime(LocalDateTime.now());
-                    friendShip.setStatus(FriendShipStatus.FRIEND);
-                    friendShipRepository.save(friendShip);
-                    return generateCommonRsComplexRs();
+                    FriendShip friendShip = friendShips.iterator().next();//  new FriendShip();
+                    saveFriendhipChanges(friendShip, currentPerson, destinationPerson.get(), LocalDateTime.now(), FriendShipStatus.FRIEND);
                 }
+                friendShips = friendShipRepository.getFriendShipByIdsAndStatus(currentPersonId, destinationPerson.get().getId(), FriendShipStatus.REQUEST.name());
+                if (!friendShips.iterator().hasNext()) {
+                    throw new BadRequestException("error while add Friendship, dont find request");
+                }  else {
+                    //добавить друга для второй персоны
+                    FriendShip friendShip = friendShips.iterator().next();// new FriendShip();
+                    saveFriendhipChanges(friendShip,destinationPerson.get(),currentPerson,LocalDateTime.now(),FriendShipStatus.FRIEND);
+                }
+                return generateCommonRsComplexRs();
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while add Friendship, destination person not found");
+                throw new BadRequestException("error while add Friendship, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while add Friendship, current person not found");
+            throw new BadRequestException("error while add Friendship, current person not found");
         }
     }
 
-    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(int destinationPersonId, String authorization) {
+    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(int destinationPersonId, String authorization) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -168,7 +160,7 @@ public class FriendShipService {
                     FriendShip friendShip = friendShips.iterator().next();
                     friendShipRepository.delete(friendShip);
                 } else {
-                    return generateErrorRs(NO_DATA_FOUND, "error while decline Friendship, Friendship request not found");
+                    throw new BadRequestException("error while decline Friendship, Friendship request not found");
                 }
                 if (friendShips2.iterator().hasNext()) {
                     FriendShip friendShip = friendShips2.iterator().next();
@@ -176,14 +168,14 @@ public class FriendShipService {
                 }
                 return generateCommonRsComplexRs();
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while decline Friendship, destination person not found");
+                throw new BadRequestException("error while decline Friendship, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while decline Friendship, current person not found");
+            throw new BadRequestException("error while decline Friendship, current person not found");
         }
     }
 
-    public void blockOrUnblockUserByUser(int destinationPersonId, String authorization) {
+    public void blockOrUnblockUserByUser(int destinationPersonId, String authorization) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long currentPersonId = currentPerson.getId();
@@ -197,22 +189,18 @@ public class FriendShipService {
                 } else {
                     //если запись не найдена, то надо персону заблокировать
                     FriendShip friendShip = new FriendShip();
-                    friendShip.setSourcePerson(currentPerson);
-                    friendShip.setDestinationPerson(destinationPerson.get());
-                    friendShip.setSentTime(LocalDateTime.now());
-                    friendShip.setStatus(FriendShipStatus.BLOCKED);
-                    friendShipRepository.save(friendShip);
+                    saveFriendhipChanges(friendShip, currentPerson, destinationPerson.get(), LocalDateTime.now(), FriendShipStatus.BLOCKED);
                 }
-                return null;
+                return;
             } else {
-                return generateErrorRs(NO_DATA_FOUND, "error while block/unblock Person, destination person not found");
+                throw new BadRequestException("error while block/unblock Person, destination person not found");
             }
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while block/unblock Person, current person not found");
+            throw new BadRequestException("error while block/unblock Person, current person not found");
         }
     }
 
-    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(String authorization, int offset, int perPage) {
+    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(String authorization, int offset, int perPage) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
@@ -235,11 +223,11 @@ public class FriendShipService {
             personsList.setTotal(total);
             return personsList;
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while get FriendshipList, current person not found");
+            throw new BadRequestException("error while get FriendshipList, current person not found");
         }
     }
 
-    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
+    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name());
@@ -260,7 +248,7 @@ public class FriendShipService {
             personsList.setTotal(total);
             return personsList;
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while get FriendshipList, current person not found");
+            throw new BadRequestException("error while get FriendshipList, current person not found");
         }
     }
 
@@ -296,7 +284,7 @@ public class FriendShipService {
         return personsData;
     }
 
-    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(String authorization) {
+    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(String authorization) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
@@ -331,11 +319,11 @@ public class FriendShipService {
             personsList.setTotal((long)personsData.size());
             return personsList;
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while get reccomendationFriendsList, current person not found");
+            throw new BadRequestException("error while get reccomendationFriendsList, current person not found");
         }
     }
 
-    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(String authorization, int offset, int perPage) {
+    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(String authorization, int offset, int perPage) throws BadRequestException {
         Person currentPerson = getAuthorizedUser(authorization);
         if (currentPerson != null) {
             long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.REQUEST.name());
@@ -356,7 +344,7 @@ public class FriendShipService {
             personsList.setTotal(total);
             return personsList;
         } else {
-            return generateErrorRs(NO_DATA_FOUND, "error while get FriendshipList, current person not found");
+            throw new BadRequestException("error while get FriendshipList, current person not found");
         }
     }
 }
