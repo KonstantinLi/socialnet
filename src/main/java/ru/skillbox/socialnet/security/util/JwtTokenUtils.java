@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.skillbox.socialnet.config.JwtProperties;
-import ru.skillbox.socialnet.data.entity.Person;
+import ru.skillbox.socialnet.entity.Person;
 
 import java.util.Date;
 import java.util.HashMap;

@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8086
 
 client:
   local: http://localhost:8080
@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:54321/socialnet
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/socialnet
     username: root
     password: root
 
@@ -24,7 +24,7 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
+    drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
 jwt:
