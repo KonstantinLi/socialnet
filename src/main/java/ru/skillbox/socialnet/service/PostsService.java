@@ -103,7 +103,7 @@ public class PostsService extends PostsAbstractService {
         Long myId = getMyId(authorization);
 
         return getPostResponse(
-                fetchPost(id, false),
+                fetchPost(id, null),
                 myId
         );
     }
@@ -342,7 +342,14 @@ public class PostsService extends PostsAbstractService {
 
         fillAuthor(postRs.getAuthor(), myId);
 
-        postRs.setType(String.valueOf(post.getIsDeleted() ? PostType.DELETED : PostType.POSTED));
+        postRs.setType(String.valueOf(
+                post.getIsDeleted()
+                        ? PostType.DELETED
+                        : post.getTime().isAfter(LocalDateTime.now())
+                                ? PostType.QUEUED
+                                : PostType.POSTED
+                )
+        );
         postRs.setComments(postRs.getComments().stream()
                 .filter(commentRs -> commentRs.getParentId() == null).collect(Collectors.toSet())
         );

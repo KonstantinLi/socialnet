@@ -1,6 +1,5 @@
 package ru.skillbox.socialnet.service;
 
-import org.springframework.security.core.AuthenticationException;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.Friendship;
 import ru.skillbox.socialnet.entity.enums.FriendshipStatus;
@@ -26,7 +25,11 @@ public abstract class PostsAbstractService {
         Optional<Post> optionalPost;
 
         try {
-            optionalPost = getPostsRepository().findByIdAndIsDeleted(id, isDeleted);
+            if (isDeleted == null) {
+                optionalPost = getPostsRepository().findById(id);
+            } else {
+                optionalPost = getPostsRepository().findByIdAndIsDeleted(id, isDeleted);
+            }
         } catch (Exception e) {
             throw new InternalServerErrorException("fetchPost", e);
         }
