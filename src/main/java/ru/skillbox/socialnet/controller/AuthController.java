@@ -10,6 +10,8 @@ import ru.skillbox.socialnet.dto.request.PersonRs;
 import ru.skillbox.socialnet.dto.request.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.request.response.ComplexRs;
+import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.model.LoginInfo;
 import ru.skillbox.socialnet.service.impl.AuthServiceImpl;
 import ru.skillbox.socialnet.services.AuthService;
@@ -19,25 +21,20 @@ import ru.skillbox.socialnet.services.AuthService;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-//    private final AuthServiceImpl authServiceImpl;
 
     @PostMapping("/logout")
-    public ResponseEntity<CommonRsComplexRs<PersonRs>> postLogoutRequest(@RequestParam String authorization) {
+    public CommonRsComplexRs<ComplexRs> logout(@RequestParam String authorization) throws CommonException {
         return authService.logout(authorization);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonRsPersonRs<PersonRs>> postLoginRequest(@RequestBody LoginInfo loginInfo) {
+    public CommonRsPersonRs<PersonRs> login(@RequestBody LoginInfo loginInfo) throws CommonException {
         return authService.login(loginInfo);
+//        return null;
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<CommonRsPersonRs<PersonRs>> postLoginRequest(@RequestBody LoginUser loginUser) {
-//        return authServiceImpl.login(loginUser);
-//    }
-
     @GetMapping("/captcha")
-    public ResponseEntity<CaptchaRs> getCaptchaRequest() {
+    public CaptchaRs captcha() {
         return authService.captcha();
     }
 }

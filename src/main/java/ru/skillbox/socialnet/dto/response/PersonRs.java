@@ -8,22 +8,29 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PersonRs {
     private String about;
-    private String birthDate;
     private String city;
     private String country;
+//    currency
     private String email;
-    private String firstName;
-    private String friendStatus;
     private Long id;
-    private Boolean isBlocked;
-    private Boolean isBlockedByCurrentUser;
-    private String lastName;
-    private String lastOnlineTime;
-//    private MessagePermission messagesPermission;
     private Boolean online;
     private String phone;
     private String photo;
-    private String regDate;
     private String token;
-    private Boolean userDeleted;
+//    weather
+private String birth_date;
+    private String first_name;
+    private String friend_status;
+
+    private Boolean is_blocked;
+    private Boolean is_blocked_by_current_user;
+    private String last_name;
+    private String last_online_time;
+//    private MessagePermission messagesPermission;
+
+
+
+    private String reg_date;
+
+    private Boolean user_deleted;
 }

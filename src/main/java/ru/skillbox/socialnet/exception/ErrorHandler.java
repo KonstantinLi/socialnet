@@ -1,5 +1,6 @@
-package ru.skillbox.socialnet.dto.request.exception;
+package ru.skillbox.socialnet.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,12 +19,12 @@ public class ErrorHandler {
 //    }
 
     @ExceptionHandler(CommonException.class)
-    public ResponseEntity<ErrorRs> handleUnexpectedErrorException(CommonException ex) {
-        ex.printStackTrace();
-        ErrorRs errorResponse = new ErrorRs();
-        errorResponse.setError(ex.getMessage());
-        errorResponse.setError_description(ex.getMessage());
-        return null;
-//                new ResponseEntity<Response>(errorResponse);
+    public ResponseEntity<ErrorRs> handle(Exception exception) {
+        ErrorRs errorRs = new ErrorRs();
+        errorRs.setError("");
+        errorRs.setError_description(exception.getLocalizedMessage());
+        ResponseEntity responseEntity = new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
+        return responseEntity;
     }
+
 }

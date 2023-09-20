@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.model;
 import lombok.Data;
 
 @Data
-public class RegistrationInfo {
+public class RegisterRq {
      private String code;
      private String codeSecret;
      private String email;

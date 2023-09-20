@@ -9,11 +9,12 @@ import java.util.Collection;
 @Data
 public class CommonRsComplexRs<T> extends ApiFatherRs {
 
-    private Collection<T> data;
+    private T data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
     private Long total;
+    private Integer timestamp;
 
 
     public CommonRsComplexRs() {

@@ -6,13 +6,14 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.data.entity.Person;
 import ru.skillbox.socialnet.dto.request.PersonRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.model.RegistrationInfo;
+import ru.skillbox.socialnet.dto.request.response.ComplexRs;
+import ru.skillbox.socialnet.dto.request.response.RegisterRs;
+import ru.skillbox.socialnet.exception.CommonException;
+import ru.skillbox.socialnet.model.RegisterRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.utils.ValidationUtilsRq;
 
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +21,19 @@ public class AccountService {
     public PersonRepository personRepository;
     public final ValidationUtilsRq validationUtils;
 
-    public ResponseEntity<CommonRsPersonRs<PersonRs>> registration(RegistrationInfo registrationInfo) {
-        validationUtils.validationRegPassword(registrationInfo.getPasswd1(), registrationInfo.getPasswd2());
-        validationUtils.validationCode(registrationInfo.getCode(), registrationInfo.getCodeSecret());
+    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws CommonException {
+        validationUtils.validationRegPassword(registerRq.getPasswd1(), registerRq.getPasswd2());
+        validationUtils.validationCode(registerRq.getCode(), registerRq.getCodeSecret());
 
-        Person person = addPerson(registrationInfo);
+        Person person = addPerson(registerRq);
         personRepository.save(person);
-        CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
-        List<PersonRs> data = new ArrayList<>();
-        PersonRs personRs = new PersonRs();
-        personRs.setEmail(person.getEmail());
-        data.add(personRs);
-        response.setData(data);
-        return ResponseEntity.ok(response);
+        RegisterRs<ComplexRs> response = new RegisterRs<>();
+        ComplexRs complexRs = new ComplexRs();
+        response.setData(complexRs);
+        return response;
     }
 
-    private Person addPerson(RegistrationInfo registrationInfo) {
+    private Person addPerson(RegisterRq registrationInfo) {
         Person person = new Person();
         person.setEmail(registrationInfo.getEmail());
         person.setPassword(getEncodedPassword(registrationInfo.getPasswd1()));

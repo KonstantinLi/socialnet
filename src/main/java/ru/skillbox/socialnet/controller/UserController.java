@@ -8,6 +8,7 @@ import ru.skillbox.socialnet.data.entity.Person;
 import ru.skillbox.socialnet.dto.request.PersonRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.services.UserService;
 import ru.skillbox.socialnet.utils.ValidationUtilsRq;
 
@@ -28,14 +29,12 @@ private final UserService userService;
     public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById (@PathVariable(value = "id") Integer id,
                                                                    @RequestHeader("authorization") String token) {
         CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
-        List<PersonRs> data = new ArrayList<>();
-        data.add(new PersonRs());
-        response.setData(data);
+        response.setData(new PersonRs());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserMe (@RequestParam("authorization") String token) {
-        return userService.userMe();
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestParam("authorization") String token) throws CommonException {
+        return userService.userMe(token);
     }
 }
