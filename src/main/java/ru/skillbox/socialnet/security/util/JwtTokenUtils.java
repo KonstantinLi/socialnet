@@ -3,10 +3,9 @@ package ru.skillbox.socialnet.security.util;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.skillbox.socialnet.config.JwtProperties;
+import ru.skillbox.socialnet.data.entity.Person;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,13 +18,9 @@ import java.util.Map;
 public class JwtTokenUtils {
     private final JwtProperties jwtProperties;
 
-    public String generateToken(UserDetails userDetails) {
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-
+    public String generateToken(Person person) {
         Map<String, Object> claims = new HashMap<>() {{
-            put("roles", roles);
+            put("roles", List.of("ROLE_USER"));
         }};
 
         Date now = new Date();
@@ -33,7 +28,7 @@ public class JwtTokenUtils {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(person.getId() + "," + person.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(expired)
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
