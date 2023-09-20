@@ -9,7 +9,7 @@ public class RegisterRs<T> extends  ApiFatherRs{
 
     private T data;
     private String email;
-    private Integer timestamp;
+    private Long timestamp;
 
 
     public RegisterRs() {

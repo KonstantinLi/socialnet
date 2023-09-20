@@ -1,24 +1,23 @@
 package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.data.entity.Person;
-import ru.skillbox.socialnet.dto.request.PersonRs;
-import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.request.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.response.RegisterRs;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.model.RegisterRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.utils.ValidationUtilsRq;
+import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
+import java.security.Timestamp;
 import java.util.Base64;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-    public PersonRepository personRepository;
+    public final PersonRepository personRepository;
     public final ValidationUtilsRq validationUtils;
 
     public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws CommonException {
@@ -30,6 +29,8 @@ public class AccountService {
         RegisterRs<ComplexRs> response = new RegisterRs<>();
         ComplexRs complexRs = new ComplexRs();
         response.setData(complexRs);
+        response.setEmail(person.getEmail());
+        response.setTimestamp(new Date().getTime()); //todo long or int?
         return response;
     }
 

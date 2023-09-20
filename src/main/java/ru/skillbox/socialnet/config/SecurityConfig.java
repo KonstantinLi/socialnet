@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/register").permitAll()
                         .requestMatchers("/api/v1/auth/captcha").permitAll()
                         .requestMatchers("/api/v1/auth/password/recovery").permitAll()
+                        .requestMatchers("/api/v1/account/register").permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

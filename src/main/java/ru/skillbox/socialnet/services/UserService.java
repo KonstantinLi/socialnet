@@ -9,7 +9,10 @@ import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.util.JwtTokenUtils;
-import ru.skillbox.socialnet.utils.ValidationUtilsRq;
+import ru.skillbox.socialnet.util.ValidationUtilsRq;
+import ru.skillbox.socialnet.util.mapper.PersonMapper;
+
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -18,15 +21,16 @@ public class UserService {
     private final JwtTokenUtils jwtTokenUtils;
     private final PersonRepository personRepository;
     public CommonRsPersonRs<PersonRs> userMe(String token) throws CommonException {
+        Person person = null;
         Long id = jwtTokenUtils.getId(token);
         try {
-            Person person = personRepository.findById(id).get();
+            person = personRepository.findById(id).orElseThrow();
         } catch (BadCredentialsException ex) {
-            validationUtils.validationAuthorization();
+            validationUtils.validationUser();
         }
         CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
-        PersonRs personRs = new PersonRs();
-        //смапить person в personRs
+        response.setTimeStamp(new Date().getTime());
+        PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
         personRs.setToken(token);
         return response;
     }

@@ -13,8 +13,8 @@ public class CommonRsComplexRs<T> extends ApiFatherRs {
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private Long total;
-    private Integer timestamp;
+    private Integer total;
+    private Long timestamp;
 
 
     public CommonRsComplexRs() {

@@ -12,8 +12,8 @@ public class CommonRsPersonRs<T> extends ApiFatherRs {
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private Integer timestamp;
-    private Long total;
+    private Long timestamp;
+    private Integer total;
 
 
     public CommonRsPersonRs() {

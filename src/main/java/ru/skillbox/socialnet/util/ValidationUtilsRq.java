@@ -1,12 +1,9 @@
-package ru.skillbox.socialnet.utils;
+package ru.skillbox.socialnet.util;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.exception.ErrorHandler;
-import ru.skillbox.socialnet.exception.WrongLoginOrPasswordException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,19 +17,17 @@ public class ValidationUtilsRq extends RuntimeException {
 
     public <T> void validationCode(String code1, String code2) throws CommonException {
         if (!code1.equals(code2)) {
-//            throw new CommonException(HttpStatusCode.valueOf(400), "Captcha code is not correct", HttpStatus.BAD_REQUEST);
             throw new CommonException("Введенный код не совпадает с кодом картинки");
         }
     }
 
     public <T> void validationEmail(String email) throws CommonException {
         if (email.isEmpty()) {
-//            throw new CommonException(HttpStatusCode.valueOf(400), "Field 'email' is empty", HttpStatus.BAD_REQUEST);
             throw new CommonException("Поле 'email' не заполнено");
         }
     }
 
-    public <T> void validationAuthorization() throws CommonException {
+    public <T> void validationUser() throws CommonException {
             throw new CommonException("Пользователь не найден");
     }
 

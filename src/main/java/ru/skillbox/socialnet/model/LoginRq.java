@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.model;
 import lombok.Data;
 
 @Data
-public class LoginInfo {
+public class LoginRq {
     String email;
     String password;
 }
