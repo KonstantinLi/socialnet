@@ -47,21 +47,30 @@ public class Post {
   private String postText;
 
   /** Автор  поста */
-  @Column(name = "author_id", nullable = false, insertable=false, updatable=false)
-  private Long authorId;
-
-  /** Автор  поста */
   @ManyToOne
-  @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person"))
+  @JoinColumn(
+          name = "author_id",
+          nullable = false,
+          referencedColumnName = "id",
+          foreignKey = @ForeignKey(name = "fk_person")
+  )
   private Person author;
 
 
   /** Теги  поста */
   @ManyToMany
-  @JoinTable(name = "post2tag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  @JoinTable(
+          name = "post2tag",
+          joinColumns = @JoinColumn(name = "post_id"),
+          inverseJoinColumns = @JoinColumn(name = "tag_id")
+  )
   private Set<Tag> tags = new HashSet<>();
 
-  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(
+          mappedBy = "post",
+          cascade = CascadeType.ALL,
+          orphanRemoval = true
+  )
   private Set<PostComment> comments = new HashSet<>();
 
   /** Файлы в посте */

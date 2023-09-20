@@ -6,7 +6,7 @@ import ru.skillbox.socialnet.entity.Person;
 import java.util.Set;
 
 public interface PersonsRepository extends CrudRepository<Person, Long> {
-    Set<Person> findAllByFirstNameAndLastName(String firstName, String lastName);
-    Set<Person> findAllByFirstName(String firstName);
-    Set<Person> findAllByLastName(String lastName);
+    Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
+    Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
+    Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 }

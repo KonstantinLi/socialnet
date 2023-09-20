@@ -37,8 +37,8 @@ public interface PostMapper {
     @Mapping(target = "userDeleted", source = "isDeleted")
     PersonRs personToPersonRs(Person person);
 
+    @Mapping(target = "postId", source = "post.id")
     CommentRs postCommentToCommentRs(PostComment postComment);
 
     WeatherRs weatherToWeatherRs(Weather weather);
-
 }

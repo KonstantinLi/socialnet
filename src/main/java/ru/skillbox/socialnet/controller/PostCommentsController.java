@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.CommentRq;
+import ru.skillbox.socialnet.dto.response.CommonRsCommentRs;
+import ru.skillbox.socialnet.dto.response.CommonRsListCommentRs;
 import ru.skillbox.socialnet.service.PostCommentsService;
 
 @RestController
@@ -13,7 +15,7 @@ public class PostCommentsController {
     private final PostCommentsService postCommentsService;
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> editComment(
+    public CommonRsCommentRs editComment(
             @RequestParam String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId,
@@ -23,7 +25,7 @@ public class PostCommentsController {
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public ResponseEntity<?> deleteComment(
+    public CommonRsCommentRs deleteComment(
             @RequestParam String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
@@ -32,7 +34,7 @@ public class PostCommentsController {
     }
 
     @PutMapping("/{id}/comments/{comment_id}/recover")
-    public ResponseEntity<?> recoverComment(
+    public CommonRsCommentRs recoverComment(
             @RequestParam String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
@@ -41,7 +43,7 @@ public class PostCommentsController {
     }
 
     @GetMapping("/{postId}/comments")
-    public ResponseEntity<?> getComments(
+    public CommonRsListCommentRs getComments(
             @RequestParam String authorization,
             @PathVariable Long postId,
             @RequestParam(defaultValue = "0") Integer offset,
@@ -51,7 +53,7 @@ public class PostCommentsController {
     }
 
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<?> createComment(
+    public CommonRsCommentRs createComment(
             @RequestParam String authorization,
             @PathVariable Long postId,
             @RequestBody CommentRq commentRq

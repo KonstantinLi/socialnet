@@ -41,15 +41,28 @@ public class PostComment {
 
   /** Автор  поста */
   @ManyToOne
-  @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_comment_person"))
+  @JoinColumn(
+          name = "author_id",
+          nullable = false,
+          referencedColumnName = "id",
+          foreignKey = @ForeignKey(name = "fk_comment_person")
+  )
   private Person author;
 
   @OneToMany
-  @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_comment_parent_id"))
+  @JoinColumn(
+          name = "parent_id",
+          foreignKey = @ForeignKey(name = "fk_comment_parent_id")
+  )
   private Set<PostComment> subComments = new HashSet<>();
 
   /** Пост */
   @ManyToOne
-  @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_comment_post"))
+  @JoinColumn(
+          name = "post_id",
+          nullable = false,
+          referencedColumnName = "id",
+          foreignKey = @ForeignKey(name = "fk_comment_post")
+  )
   private Post post;
 }

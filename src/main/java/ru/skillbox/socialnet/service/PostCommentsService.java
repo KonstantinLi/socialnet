@@ -2,26 +2,26 @@ package ru.skillbox.socialnet.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mapstruct.factory.Mappers;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.response.*;
+import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.post.Post;
 import ru.skillbox.socialnet.entity.post.PostComment;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.InternalServerErrorException;
+import ru.skillbox.socialnet.exception.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.PostMapper;
-import ru.skillbox.socialnet.repository.FriendshipsRepository;
-import ru.skillbox.socialnet.repository.PostCommentsRepository;
-import ru.skillbox.socialnet.repository.PostsRepository;
-import ru.skillbox.socialnet.repository.WeatherRepository;
-import ru.skillbox.socialnet.util.ResponseEntityException;
+import ru.skillbox.socialnet.repository.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,163 +30,169 @@ import java.util.Optional;
 public class PostCommentsService extends PostsAbstractService {
     private final PostCommentsRepository postCommentsRepository;
     private final PostsRepository postsRepository;
+    private final LikesRepository likesRepository;
     private final FriendshipsRepository friendshipsRepository;
     private final WeatherRepository weatherRepository;
 
-    private final TransactionTemplate transactionTemplate;
-
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
-    public ResponseEntity<?> createComment(String authorization, Long postId, CommentRq commentRq) {
-        Long myId;
-
-        try {
-            myId = getMyId(authorization);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
-        }
+    @Transactional
+    public CommonRsCommentRs createComment(String authorization, Long postId, CommentRq commentRq) {
+        Long myId = getMyId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("Comment text is absent"),
-                    HttpStatusCode.valueOf(400));
+            throw new BadRequestException("Comment text is absent");
         }
 
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Post post;
-                    PostComment parentComment = null;
+        Post post = fetchPost(postId, false);
 
-                    try {
-                        post = fetchPost(status, postId, false);
+        PostComment postComment = new PostComment();
 
-                        if (commentRq.getParentId() != null) {
-                            parentComment = fetchPostComment(status, commentRq.getParentId(), false);
-                        }
-                    } catch (ResponseEntityException e) {
-                        return e.getResponseEntity();
-                    }
+        postComment.setPost(post);
+        postComment.setAuthor(post.getAuthor());
+        postComment.setTime(LocalDateTime.now());
+        postComment.setIsBlocked(false);
+        postComment.setIsDeleted(false);
 
-                    PostComment postComment = new PostComment();
+        return updatePostComment(postComment, commentRq, myId);
+    }
 
-                    postComment.setPost(post);
-                    postComment.setAuthor(post.getAuthor());
-                    postComment.setTime(LocalDateTime.now());
-                    postComment.setIsBlocked(false);
-                    postComment.setIsDeleted(false);
+    @Transactional
+    public CommonRsCommentRs editComment(String authorization, Long id, Long commentId, CommentRq commentRq) {
+        Long myId = getMyId(authorization);
 
-                    if (parentComment != null) {
-                        postComment.setParentId(parentComment.getId());
-                    }
-
-                    return updatePostComment(status, postComment, commentRq, myId);
-                }
+        return updatePostComment(
+                fetchPostComment(
+                        commentId, id,
+                        commentRq.isDeleted == null ? false : !commentRq.isDeleted
+                ),
+                commentRq, myId
         );
     }
 
-    public ResponseEntity<?> editComment(String authorization, Long id, Long commentId, CommentRq commentRq) {
-        // TODO: editComment
-        return null;
+    @Transactional
+    public CommonRsCommentRs deleteComment(String authorization, Long id, Long commentId) {
+        CommentRq commentRq = new CommentRq();
+        commentRq.setIsDeleted(true);
+
+        return editComment(authorization, id, commentId, commentRq);
     }
 
-    public ResponseEntity<?> deleteComment(String authorization, Long id, Long commentId) {
-        // TODO: deleteComment
-        return null;
+    @Transactional
+    public CommonRsCommentRs recoverComment(String authorization, Long id, Long commentId) {
+        CommentRq commentRq = new CommentRq();
+        commentRq.setIsDeleted(false);
+
+        return editComment(authorization, id, commentId, commentRq);
     }
 
-    public ResponseEntity<?> recoverComment(String authorization, Long id, Long commentId) {
-        // TODO: recoverComment
-        return null;
+    @Transactional
+    public CommonRsListCommentRs getComments(String authorization, Long postId, Integer offset, Integer perPage) {
+        Long myId = getMyId(authorization);
+        Post post = fetchPost(postId, false);
+
+        List<PostComment> postComments;
+        long total;
+
+        try {
+            postComments = postCommentsRepository.findAllByPostIdAndIsDeleted(
+                    post.getId(),
+                    false,
+                    PageRequest.of(
+                            offset, perPage,
+                            Sort.by("time").descending()
+                    )
+            );
+            total = postCommentsRepository.countByPostIdAndIsDeleted(
+                    post.getId(), false
+            );
+        } catch (Exception e) {
+            throw new InternalServerErrorException("getComments", e);
+        }
+
+        return getListPostCommentResponse(postComments, total, myId, offset, perPage);
     }
 
-    public ResponseEntity<?> getComments(String authorization, Long postId, Integer offset, Integer perPage) {
-        // TODO: getComments
-        return null;
-    }
 
-
-    protected PostComment fetchPostComment(
-            TransactionStatus status, Long id, Boolean isDeleted
-    ) throws ResponseEntityException {
+    protected PostComment fetchPostComment(Long id, Long postId, Boolean isDeleted) {
         Optional<PostComment> optionalPostComment;
 
         try {
-            optionalPostComment = postCommentsRepository.findByIdAndIsDeleted(id, isDeleted);
+            optionalPostComment = postCommentsRepository.findByIdAndPostIdAndIsDeleted(id, postId, isDeleted);
         } catch (Exception e) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs("fetchPostComment: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                    HttpStatusCode.valueOf(500)
-            ));
+            throw new InternalServerErrorException("fetchPostComment", e);
         }
 
         if (optionalPostComment.isEmpty()) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs(ERROR_NO_RECORD_FOUND, "Post comment record " + id + " not found"),
-                    HttpStatusCode.valueOf(400)
-            ));
+            throw new NoRecordFoundException("Post comment record " + id + " not found in the post of " + postId);
         }
 
         return optionalPostComment.get();
     }
 
-    private ResponseEntity<?> updatePostComment(
-            TransactionStatus status, PostComment postComment, CommentRq commentRq, Long myId
-    ) {
-        try {
-            savePostComment(status, postComment, commentRq);
-        } catch (ResponseEntityException e) {
-            return e.getResponseEntity();
-        }
+    private CommonRsCommentRs updatePostComment(PostComment postComment, CommentRq commentRq, Long myId) {
+        savePostComment(postComment, commentRq);
 
-        return getPostCommentResponse(status, postComment, myId);
+        return getPostCommentResponse(postComment, myId);
     }
 
-    private void savePostComment(
-            TransactionStatus status, PostComment postComment, CommentRq commentRq
-    ) throws ResponseEntityException {
+    private void savePostComment(PostComment postComment, CommentRq commentRq) {
+        if (commentRq.getParentId() != null) {
+            fetchPostComment(commentRq.getParentId(), postComment.getPost().getId(), false);
+        }
+
+        postComment.setParentId(null);
+
         try {
             postMapper.commentRqToPostComment(commentRq, postComment);
             postCommentsRepository.save(postComment);
         } catch (Exception e) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs("savePostComment: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                    HttpStatusCode.valueOf(500)
-            ));
+            throw new InternalServerErrorException("savePostComment", e);
         }
     }
 
-    private ResponseEntity<?> getPostCommentResponse(TransactionStatus status, PostComment postComment, Long myId) {
+    private CommonRsListCommentRs getListPostCommentResponse(
+            List<PostComment> postComments, Long total, Long myId, Integer offset, Integer perPage
+    ) {
+        CommonRsListCommentRs commonRsListCommentRs = new CommonRsListCommentRs();
+        commonRsListCommentRs.setOffset(offset);
+        commonRsListCommentRs.setItemPerPage(perPage);
+        commonRsListCommentRs.setPerPage(perPage);
+        commonRsListCommentRs.setTimestamp(new Date().getTime());
+        commonRsListCommentRs.setTotal(total);
+
+        List<CommentRs> commentRsList = new ArrayList<>();
+
+        for (PostComment postComment : postComments) {
+            commentRsList.add(postCommentToCommentRs(postComment, myId));
+        }
+
+        commonRsListCommentRs.setData(commentRsList);
+
+        return commonRsListCommentRs;
+    }
+
+    private CommonRsCommentRs getPostCommentResponse(PostComment postComment, Long myId) {
         CommonRsCommentRs commonRsCommentRs = new CommonRsCommentRs();
 
-        try {
-            commonRsCommentRs.setData(postCommentToCommentRs(status, postComment, myId));
-        } catch (ResponseEntityException e) {
-            return e.getResponseEntity();
-        }
+        commonRsCommentRs.setData(postCommentToCommentRs(postComment, myId));
 
-        return new ResponseEntity<>(
-                commonRsCommentRs,
-                HttpStatusCode.valueOf(200)
-        );
+        return commonRsCommentRs;
     }
 
-    private CommentRs postCommentToCommentRs(
-            TransactionStatus status, PostComment postComment, Long myId
-    ) throws ResponseEntityException {
-        CommentRs commentRs = postMapper.postCommentToCommentRs(postComment);
+    private CommentRs postCommentToCommentRs(PostComment postComment, Long myId) {
+        CommentRs commentRs;
 
         try {
-            fillAuthor(commentRs.getAuthor(), myId);
+            commentRs = postMapper.postCommentToCommentRs(postComment);
+
+            commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
+            commentRs.setMyLike(likesRepository.existsByPersonId(myId));
         } catch (Exception e) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs("postCommentToCommentRs: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                    HttpStatusCode.valueOf(500)
-            ));
+            throw new InternalServerErrorException("postCommentToCommentRs", e);
         }
+
+        fillAuthor(commentRs.getAuthor(), myId);
 
         return commentRs;
     }

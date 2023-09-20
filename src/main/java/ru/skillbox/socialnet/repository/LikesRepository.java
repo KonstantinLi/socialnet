@@ -7,10 +7,13 @@ import ru.skillbox.socialnet.entity.Like;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface LikesRepository extends CrudRepository<Like, Long> {
-    Optional<Like> findByPersonIdAndTypeAndEntityId(Long personId, LikeType type, Long entityId);
-    int countByTypeAndEntityId(LikeType type, Long entityId);
-    boolean existsByPersonId(Long personId);
+    Set<Like> findAllByTypeAndEntityId(LikeType type, long entityId);
+    Optional<Like> findByPersonIdAndTypeAndEntityId(long personId, LikeType type, long entityId);
+    void deleteByPersonIdAndTypeAndEntityId(long personId, LikeType type, long entityId);
+    int countByTypeAndEntityId(LikeType type, long entityId);
+    boolean existsByPersonId(long personId);
 }

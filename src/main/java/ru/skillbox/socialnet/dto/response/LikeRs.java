@@ -2,10 +2,10 @@ package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class LikeRs {
     private Integer likes;
-    private List<Integer> users;
+    private Set<Long> users;
 }

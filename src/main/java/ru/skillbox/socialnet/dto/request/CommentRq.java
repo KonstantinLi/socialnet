@@ -9,4 +9,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 public class CommentRq {
     private String commentText;
     private Long parentId;
+
+    public Boolean isDeleted;
 }

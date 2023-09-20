@@ -4,16 +4,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.*;
 import ru.skillbox.socialnet.entity.Person;
@@ -21,10 +16,12 @@ import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.enums.PostType;
 import ru.skillbox.socialnet.entity.post.Post;
 import ru.skillbox.socialnet.entity.post.Tag;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.InternalServerErrorException;
+import ru.skillbox.socialnet.exception.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.repository.*;
-import ru.skillbox.socialnet.util.ResponseEntityException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -42,124 +39,77 @@ public class PostsService extends PostsAbstractService {
     private final FriendshipsRepository friendshipsRepository;
     private final WeatherRepository weatherRepository;
 
-    private final TransactionTemplate transactionTemplate;
     private final EntityManager entityManager;
 
     private final LocalDateTimeConverter localDateTimeConverter = new LocalDateTimeConverter();
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
-    public ResponseEntity<?> createPost(String authorization, Long publishDate, Long id, PostRq postRq) {
-        Long myId;
-
-        try {
-            myId = getMyId(authorization);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
-        }
+    @Transactional
+    public CommonRsPostRs createPost(String authorization, Long publishDate, Long id, PostRq postRq) {
+        Long myId = getMyId(authorization);
 
         if (postRq.getTitle() == null || postRq.getTitle().isBlank()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("Post title is absent"),
-                    HttpStatusCode.valueOf(400));
+            throw new BadRequestException("Post title is absent");
         }
-
         if (postRq.getPostText() == null || postRq.getPostText().isBlank()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("Post text is absent"),
-                    HttpStatusCode.valueOf(400));
+            throw new BadRequestException("Post text is absent");
         }
 
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Person person;
+        Post post = new Post();
 
-                    try {
-                        person = fetchPerson(status, id);
-                    } catch (ResponseEntityException e) {
-                        return e.getResponseEntity();
-                    }
+        post.setAuthor(fetchPerson(id));
+        post.setTime(
+                publishDate == null
+                        ? LocalDateTime.now()
+                        : localDateTimeConverter.convertToDatabaseColumn(new Timestamp(publishDate))
+        );
+        post.setIsBlocked(false);
+        post.setIsDeleted(false);
 
-                    LocalDateTime postTime;
+        return updatePost(post, postRq, myId);
+    }
 
-                    if (publishDate == null) {
-                        postTime = LocalDateTime.now();
-                    } else {
-                        postTime = localDateTimeConverter.convertToDatabaseColumn(new Timestamp(publishDate));
-                    }
+    @Transactional
+    public CommonRsPostRs updateById(String authorization, Long id, PostRq postRq) {
+        Long myId = getMyId(authorization);
 
-                    Post post = new Post();
-
-                    post.setAuthor(person);
-                    post.setTime(postTime);
-                    post.setIsBlocked(false);
-                    post.setIsDeleted(false);
-
-                    return updatePost(status, post, postRq, myId);
-                }
+        return updatePost(
+                fetchPost(
+                        id,
+                        postRq.isDeleted == null ? false : !postRq.isDeleted
+                ),
+                postRq, myId
         );
     }
 
-    public ResponseEntity<?> updateById(String authorization, Long id, PostRq postRq) {
-        Long myId;
-
-        try {
-            myId = getMyId(authorization);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
-        }
-
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Post post;
-
-                    try {
-                        post = fetchPost(status, id, postRq.isDeleted == null ? false : !postRq.isDeleted);
-                    } catch (ResponseEntityException e) {
-                        return e.getResponseEntity();
-                    }
-
-                    return updatePost(status, post, postRq, myId);
-                });
-    }
-
-    public ResponseEntity<?> deleteById(String authorization, Long id) {
+    @Transactional
+    public CommonRsPostRs deleteById(String authorization, Long id) {
         PostRq postRq = new PostRq();
         postRq.setIsDeleted(true);
 
         return updateById(authorization, id, postRq);
     }
 
-    public ResponseEntity<?> recoverPostById(String authorization, Long id) {
+    @Transactional
+    public CommonRsPostRs recoverPostById(String authorization, Long id) {
         PostRq postRq = new PostRq();
         postRq.setIsDeleted(false);
 
         return updateById(authorization, id, postRq);
     }
 
-    public ResponseEntity<?> getPostById(String authorization, Long id) {
-        Long myId;
+    @Transactional
+    public CommonRsPostRs getPostById(String authorization, Long id) {
+        Long myId = getMyId(authorization);
 
-        try {
-            myId = getMyId(authorization);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
-        }
-
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Post post;
-
-                    try {
-                        post = fetchPost(status, id, false);
-                    } catch (ResponseEntityException e) {
-                        return e.getResponseEntity();
-                    }
-
-                    return getPostResponse(status, post, myId);
-                });
+        return getPostResponse(
+                fetchPost(id, false),
+                myId
+        );
     }
 
-    public ResponseEntity<?> getPostsByQuery(
+    @Transactional
+    public CommonRsListPostRs getPostsByQuery(
             String authorization,
             String author,
             Long dateFrom,
@@ -169,250 +119,188 @@ public class PostsService extends PostsAbstractService {
             List<String> tags,
             String text
     ) {
-        Long myId;
+        Long myId = getMyId(authorization);
+
+        Set<Long> personIds = null;
 
         try {
-            myId = getMyId(authorization);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
-        }
+            if (author != null && !author.isBlank()) {
+                String[] name = author.trim().split("\\s+", 2);
 
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Set<Long> personIds = null;
-
-                    try {
-                        if (author != null && !author.isBlank()) {
-                            String[] name = author.trim().split("\\s+", 2);
-
-                            switch (name.length) {
-                                case 1 -> {
-                                    personIds = personsRepository.findAllByFirstName(name[0])
-                                            .stream()
-                                            .map(Person::getId)
-                                            .collect(Collectors.toSet());
-                                    personIds.addAll(personsRepository.findAllByLastName(name[0])
-                                            .stream()
-                                            .map(Person::getId)
-                                            .toList());
-                                }
-                                case 2 -> personIds = personsRepository.findAllByFirstNameAndLastName(name[0], name[1])
-                                        .stream()
-                                        .map(Person::getId)
-                                        .collect(Collectors.toSet());
-                            }
-                        }
-
-                        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-                        Boolean isDeleted = false;
-
-                        List<Predicate> predicatesPage = new ArrayList<>();
-                        CriteriaQuery<Post> pageQuery = builder.createQuery(Post.class);
-                        Root<Post> pageRoot = pageQuery.from(Post.class);
-                        pageQuery.select(pageRoot);
-
-                        List<Predicate> predicatesCount = new ArrayList<>();
-                        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
-                        Root<Post> countRoot = countQuery.from(Post.class);
-                        countQuery.select(builder.count(countRoot));
-
-                        predicatesPage.add(builder.equal(pageRoot.get("isDeleted"), isDeleted));
-                        predicatesCount.add(builder.equal(countRoot.get("isDeleted"), isDeleted));
-                        if (personIds != null) {
-                            predicatesPage.add(pageRoot.get("authorId").in(personIds));
-                            predicatesCount.add(countRoot.get("authorId").in(personIds));
-                        }
-                        if (dateFrom != null) {
-                            Timestamp timestampFrom = new Timestamp(dateFrom);
-                            LocalDateTime timeFrom = localDateTimeConverter.convertToDatabaseColumn(timestampFrom);
-                            predicatesPage.add(builder.greaterThanOrEqualTo(pageRoot.get("time"), timeFrom));
-                            predicatesCount.add(builder.greaterThanOrEqualTo(countRoot.get("time"), timeFrom));
-                        }
-                        if (dateTo != null) {
-                            Timestamp timestampTo = new Timestamp(dateTo);
-                            predicatesPage.add(builder.lessThanOrEqualTo(pageRoot.get("time"), timestampTo));
-                            predicatesCount.add(builder.lessThanOrEqualTo(countRoot.get("time"), timestampTo));
-                        }
-
-                        // TODO: getPostsByQuery tags & text
-
-                        pageQuery.where(builder.and(predicatesPage.toArray(new Predicate[0])));
-                        countQuery.where(builder.and(predicatesCount.toArray(new Predicate[0])));
-                        pageQuery.orderBy(builder.desc(pageRoot.get("time")));
-
-                        List<Post> posts = entityManager
-                                .createQuery(pageQuery)
-                                .setMaxResults(perPage)
-                                .setFirstResult(offset * perPage)
-                                .getResultList();
-
-                        Long total = entityManager.createQuery(countQuery).getSingleResult();
-
-                        return getListPostResponse(status,
-                                entityManager
-                                        .createQuery(pageQuery)
-                                        .setMaxResults(perPage)
-                                        .setFirstResult(offset * perPage)
-                                        .getResultList(),
-                                entityManager
-                                        .createQuery(countQuery)
-                                        .getSingleResult(),
-                                myId, offset, perPage);
-
-                    } catch (Exception e) {
-                        status.setRollbackOnly();
-                        return new ResponseEntity<>(
-                                new ErrorRs("getPostsByQuery: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                                HttpStatusCode.valueOf(500)
-                        );
+                switch (name.length) {
+                    case 1 -> {
+                        personIds = personsRepository.findAllByFirstNameAndIsDeleted(
+                                    name[0], false
+                                )
+                                .stream()
+                                .map(Person::getId)
+                                .collect(Collectors.toSet());
+                        personIds.addAll(personsRepository.findAllByLastNameAndIsDeleted(
+                                    name[0], false
+                                )
+                                .stream()
+                                .map(Person::getId)
+                                .toList());
                     }
+                    case 2 -> personIds = personsRepository.findAllByFirstNameAndLastNameAndIsDeleted(
+                                name[0], name[1], false
+                            )
+                            .stream()
+                            .map(Person::getId)
+                            .collect(Collectors.toSet());
                 }
-        );
+            }
+
+            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+            Boolean isDeleted = false;
+
+            List<Predicate> predicatesPage = new ArrayList<>();
+            CriteriaQuery<Post> pageQuery = builder.createQuery(Post.class);
+            Root<Post> pageRoot = pageQuery.from(Post.class);
+            pageQuery.select(pageRoot);
+
+            List<Predicate> predicatesCount = new ArrayList<>();
+            CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+            Root<Post> countRoot = countQuery.from(Post.class);
+            countQuery.select(builder.count(countRoot));
+
+            predicatesPage.add(builder.equal(pageRoot.get("isDeleted"), isDeleted));
+            predicatesCount.add(builder.equal(countRoot.get("isDeleted"), isDeleted));
+            if (personIds != null) {
+                predicatesPage.add(pageRoot.get("authorId").in(personIds));
+                predicatesCount.add(countRoot.get("authorId").in(personIds));
+            }
+            if (dateFrom != null) {
+                Timestamp timestampFrom = new Timestamp(dateFrom);
+                LocalDateTime timeFrom = localDateTimeConverter.convertToDatabaseColumn(timestampFrom);
+                predicatesPage.add(builder.greaterThanOrEqualTo(pageRoot.get("time"), timeFrom));
+                predicatesCount.add(builder.greaterThanOrEqualTo(countRoot.get("time"), timeFrom));
+            }
+            if (dateTo != null) {
+                Timestamp timestampTo = new Timestamp(dateTo);
+                predicatesPage.add(builder.lessThanOrEqualTo(pageRoot.get("time"), timestampTo));
+                predicatesCount.add(builder.lessThanOrEqualTo(countRoot.get("time"), timestampTo));
+            }
+
+            // TODO: getPostsByQuery tags & text
+
+            pageQuery.where(builder.and(predicatesPage.toArray(new Predicate[0])));
+            countQuery.where(builder.and(predicatesCount.toArray(new Predicate[0])));
+            pageQuery.orderBy(builder.desc(pageRoot.get("time")));
+
+            return getListPostResponse(
+                    entityManager
+                            .createQuery(pageQuery)
+                            .setMaxResults(perPage)
+                            .setFirstResult(offset * perPage)
+                            .getResultList(),
+                    entityManager
+                            .createQuery(countQuery)
+                            .getSingleResult(),
+                    myId, offset, perPage);
+
+        } catch (Exception e) {
+            throw new InternalServerErrorException("getPostsByQuery", e);
+        }
     }
 
-    public ResponseEntity<?> getWall(String authorization, Long id, Integer offset, Integer perPage) {
-        Long myId;
+    @Transactional
+    public CommonRsListPostRs getWall(String authorization, Long id, Integer offset, Integer perPage) {
+        Long myId = getMyId(authorization);
+        Person person = fetchPerson(id);
+
+        List<Post> posts;
+        long total;
 
         try {
-            myId = getMyId(authorization);
+            posts = postsRepository.findAllByAuthorIdAndIsDeleted(
+                    person.getId(),
+                    false,
+                    PageRequest.of(
+                            offset, perPage,
+                            Sort.by("time").descending()
+                    )
+            );
+            total = postsRepository.countByAuthorIdAndIsDeleted(
+                    person.getId(),
+                    false
+            );
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
+            throw new InternalServerErrorException("getWall", e);
         }
 
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Person person;
-
-                    try {
-                        person = fetchPerson(status, id);
-                    } catch (ResponseEntityException e) {
-                        return e.getResponseEntity();
-                    }
-
-                    try {
-                        return getListPostResponse(status,
-                                postsRepository.findAllByAuthorIdAndIsDeleted(
-                                        person.getId(),
-                                        false,
-                                        PageRequest.of(
-                                                offset, perPage,
-                                                Sort.by("time").descending()
-                                        )
-                                ),
-                                postsRepository.countByAuthorIdAndIsDeleted(
-                                        person.getId(),
-                                        false
-                                ),
-                                myId, offset, perPage
-                        );
-                    } catch (Exception e) {
-                        status.setRollbackOnly();
-                        return new ResponseEntity<>(
-                                new ErrorRs("getWall: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                                HttpStatusCode.valueOf(500)
-                        );
-                    }
-                }
-        );
+        return getListPostResponse(posts, total, myId, offset, perPage);
     }
 
-    public ResponseEntity<?> getFeeds(String authorization, Integer offset, Integer perPage) {
-        Long myId;
+    @Transactional
+    public CommonRsListPostRs getFeeds(String authorization, Integer offset, Integer perPage) {
+        Long myId = getMyId(authorization);
+        Person person = fetchPerson(myId);
+
+        List<Post> posts;
+        long total;
 
         try {
-            myId = getMyId(authorization);
+            posts = postsRepository.findAllByIsDeletedAndTimeGreaterThan(
+                    false,
+                    person.getLastOnlineTime(),
+                    PageRequest.of(
+                            offset, perPage,
+                            Sort.by("time").descending()
+                    )
+            );
+            total = postsRepository.countByIsDeletedAndTimeGreaterThan(
+                    false,
+                    person.getLastOnlineTime()
+            );
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
+            throw new InternalServerErrorException("getFeeds", e);
         }
 
-        return transactionTemplate.execute(
-                (TransactionCallback<ResponseEntity<?>>) status -> {
-                    Person person;
-
-                    try {
-                        person = fetchPerson(status, myId);
-                    } catch (ResponseEntityException e) {
-                        return e.getResponseEntity();
-                    }
-
-                    try {
-                        return getListPostResponse(status,
-                                postsRepository.findAllByIsDeletedAndTimeGreaterThan(
-                                        false,
-                                        person.getLastOnlineTime(),
-                                        PageRequest.of(
-                                                offset, perPage,
-                                                Sort.by("time").descending()
-                                        )
-                                ),
-                                postsRepository.countByIsDeletedAndTimeGreaterThan(
-                                        false,
-                                        person.getLastOnlineTime()
-                                ),
-                                myId, offset, perPage
-                        );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        status.setRollbackOnly();
-                        return new ResponseEntity<>(
-                                new ErrorRs("getFeeds: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                                HttpStatusCode.valueOf(500)
-                        );
-                    }
-                }
-        );
+        return getListPostResponse(posts, total, myId, offset, perPage);
     }
 
 
-    private Person fetchPerson(TransactionStatus status, Long id) throws ResponseEntityException {
+    private Person fetchPerson(Long id) {
         Optional<Person> optionalPerson;
 
         try {
             optionalPerson = personsRepository.findById(id);
         } catch (Exception e) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs("fetchPerson: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                    HttpStatusCode.valueOf(500)
-            ));
+            throw new InternalServerErrorException("fetchPerson", e);
         }
 
         if (optionalPerson.isEmpty()) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs(ERROR_NO_RECORD_FOUND, "Person record " + id + " not found"),
-                    HttpStatusCode.valueOf(400)
-            ));
+            throw new NoRecordFoundException("Person record " + id + " not found");
         }
 
         return optionalPerson.get();
     }
 
-    private ResponseEntity<?> updatePost(TransactionStatus status, Post post, PostRq postRq, Long myId) {
-        try {
-            savePost(status, post, postRq);
-        } catch (ResponseEntityException e) {
-            return e.getResponseEntity();
-        }
+    private CommonRsPostRs updatePost(Post post, PostRq postRq, Long myId) {
+        savePost(post, postRq);
 
-        return getPostResponse(status, post, myId);
+        return getPostResponse(post, myId);
     }
 
-    private void savePost(TransactionStatus status, Post post, PostRq postRq) throws ResponseEntityException {
+    private void savePost(Post post, PostRq postRq) {
         try {
-            fillTags(postMapper.postRqToPost(postRq, post));
+            post = postMapper.postRqToPost(postRq, post);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("savePost", e);
+        }
+
+        fillTags(post);
+
+        try {
             postsRepository.save(post);
         } catch (Exception e) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs("savePost: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                    HttpStatusCode.valueOf(500)
-            ));
+            throw new InternalServerErrorException("savePost", e);
         }
     }
 
-    private ResponseEntity<?> getListPostResponse(
-            TransactionStatus status, List<Post> posts, Long total, Long myId, Integer offset, Integer perPage
+    private CommonRsListPostRs getListPostResponse(
+            List<Post> posts, Long total, Long myId, Integer offset, Integer perPage
     ) {
         CommonRsListPostRs commonRsListPostRs = new CommonRsListPostRs();
         commonRsListPostRs.setOffset(offset);
@@ -423,54 +311,36 @@ public class PostsService extends PostsAbstractService {
 
         List<PostRs> postRsList = new ArrayList<>();
 
-        try {
-            for (Post post : posts) {
-                postRsList.add(postToPostRs(status, post, myId));
-            }
-        } catch (ResponseEntityException e) {
-            return e.getResponseEntity();
+        for (Post post : posts) {
+            postRsList.add(postToPostRs(post, myId));
         }
 
         commonRsListPostRs.setData(postRsList);
 
-        return new ResponseEntity<>(
-                commonRsListPostRs,
-                HttpStatusCode.valueOf(200)
-        );
+        return commonRsListPostRs;
     }
 
-    private ResponseEntity<?> getPostResponse(TransactionStatus status, Post post, Long myId) {
+    private CommonRsPostRs getPostResponse(Post post, Long myId) {
         CommonRsPostRs commonRsPostRs = new CommonRsPostRs();
 
-        try {
-            commonRsPostRs.setData(postToPostRs(status, post, myId));
-        } catch (ResponseEntityException e) {
-            return e.getResponseEntity();
-        }
+        commonRsPostRs.setData(postToPostRs(post, myId));
 
-        return new ResponseEntity<>(
-                commonRsPostRs,
-                HttpStatusCode.valueOf(200)
-        );
+        return commonRsPostRs;
     }
 
-    private PostRs postToPostRs(
-            TransactionStatus status, Post post, Long myId
-    ) throws ResponseEntityException {
-        PostRs postRs = postMapper.postToPostRs(post);
+    private PostRs postToPostRs(Post post, Long myId) {
+        PostRs postRs;
 
         try {
+            postRs = postMapper.postToPostRs(post);
+
             postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Post, post.getId()));
             postRs.setMyLike(likesRepository.existsByPersonId(myId));
-
-            fillAuthor(postRs.getAuthor(), myId);
         } catch (Exception e) {
-            status.setRollbackOnly();
-            throw new ResponseEntityException(new ResponseEntity<>(
-                    new ErrorRs("postToPostRs: " + e.getMessage(), ExceptionUtils.getStackTrace(e)),
-                    HttpStatusCode.valueOf(500)
-            ));
+            throw new InternalServerErrorException("postToPostRs", e);
         }
+
+        fillAuthor(postRs.getAuthor(), myId);
 
         postRs.setType(String.valueOf(post.getIsDeleted() ? PostType.DELETED : PostType.POSTED));
         postRs.setComments(postRs.getComments().stream()
@@ -487,18 +357,22 @@ public class PostsService extends PostsAbstractService {
      * @return The post entity given as parameter
      */
     private Post fillTags(Post post) {
-        post.setTags(
-                post.getTags().stream().map(tag -> {
-                    Optional<Tag> optionalTag = tagsRepository.findByTag(tag.getTag());
+        try {
+            post.setTags(
+                    post.getTags().stream().map(tag -> {
+                        Optional<Tag> optionalTag = tagsRepository.findByTag(tag.getTag());
 
-                    if (optionalTag.isPresent()) {
-                        return optionalTag.get();
-                    }
+                        if (optionalTag.isPresent()) {
+                            return optionalTag.get();
+                        }
 
-                    tag.setId(null);
-                    return tagsRepository.save(tag);
-                }).collect(Collectors.toSet())
-        );
+                        tag.setId(null);
+                        return tagsRepository.save(tag);
+                    }).collect(Collectors.toSet())
+            );
+        } catch (Exception e) {
+            throw new InternalServerErrorException("fillTags", e);
+        }
 
         return post;
     }

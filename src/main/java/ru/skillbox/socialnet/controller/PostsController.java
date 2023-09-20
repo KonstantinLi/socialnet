@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.PostRq;
+import ru.skillbox.socialnet.dto.response.CommonRsListPostRs;
+import ru.skillbox.socialnet.dto.response.CommonRsPostRs;
 import ru.skillbox.socialnet.service.PostsService;
 
 import java.util.List;
@@ -15,7 +17,7 @@ public class PostsController {
     private final PostsService postsService;
 
     @GetMapping("/post/{id}")
-    public ResponseEntity<?> getPostById(
+    public CommonRsPostRs getPostById(
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
@@ -23,7 +25,7 @@ public class PostsController {
     }
 
     @PutMapping("/post/{id}")
-    public ResponseEntity<?> updateById(
+    public CommonRsPostRs updateById(
             @RequestParam String authorization,
             @PathVariable Long id,
             @RequestBody PostRq postRq
@@ -32,7 +34,7 @@ public class PostsController {
     }
 
     @DeleteMapping("/post/{id}")
-    public ResponseEntity<?> deleteById(
+    public CommonRsPostRs deleteById(
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
@@ -40,7 +42,7 @@ public class PostsController {
     }
 
     @PutMapping("/post/{id}/recover")
-    public ResponseEntity<?> recoverPostById(
+    public CommonRsPostRs recoverPostById(
             @RequestParam String authorization,
             @PathVariable Long id
     ) {
@@ -48,7 +50,7 @@ public class PostsController {
     }
 
     @GetMapping("/users/{id}/wall")
-    public ResponseEntity<?> getWall(
+    public CommonRsListPostRs getWall(
             @RequestParam String authorization,
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") Integer offset,
@@ -58,7 +60,7 @@ public class PostsController {
     }
 
     @PostMapping("/users/{id}/wall")
-    public ResponseEntity<?> createPost(
+    public CommonRsPostRs createPost(
             @RequestParam String authorization,
             @RequestParam(value = "publish_date", required = false) Long publishDate,
             @PathVariable Long id,
@@ -68,7 +70,7 @@ public class PostsController {
     }
 
     @GetMapping("/post")
-    public ResponseEntity<?> getPostsByQuery(
+    public CommonRsListPostRs getPostsByQuery(
             @RequestParam String authorization,
             @RequestParam(required = false) String author,
             @RequestParam(value = "date_from", required = false) Long dateFrom,
@@ -84,7 +86,7 @@ public class PostsController {
     }
 
     @GetMapping("/feeds")
-    public ResponseEntity<?> getFeeds(
+    public CommonRsListPostRs getFeeds(
             @RequestParam String authorization,
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage

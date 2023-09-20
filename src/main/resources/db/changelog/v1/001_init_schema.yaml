@@ -263,7 +263,7 @@ databaseChangeLog:
               alter table if exists dialogs add constraint fk_dialog_second_person foreign key (second_person_id) references persons;
               alter table if exists friendships add constraint fk_friendship_person_dst foreign key (dst_person_id) references persons;
               alter table if exists friendships add constraint fk_friendship_person_src foreign key (src_person_id) references persons;
-              alter table if exists likes add constraint fk_like_person foreign key (person_id) references persons;
+              alter table if exists likes add constraint fk_like_person foreign key (person_id) references persons on delete cascade;
               alter table if exists messages add constraint fk_messages_author foreign key (author_id) references persons;
               alter table if exists messages add constraint fk_messages_dialog foreign key (dialog_id) references dialogs;
               alter table if exists messages add constraint fk_messages_recipient foreign key (recipient_id) references persons;

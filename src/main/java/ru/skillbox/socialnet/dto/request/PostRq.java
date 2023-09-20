@@ -8,8 +8,10 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class PostRq extends IsDeleted {
+public class PostRq {
     private Set<String> tags;
     private String title;
     private String postText;
+
+    public Boolean isDeleted;
 }
