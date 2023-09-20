@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.response.*;
+import ru.skillbox.socialnet.entity.Friendship;
+import ru.skillbox.socialnet.entity.enums.FriendshipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
+import ru.skillbox.socialnet.entity.other.Weather;
 import ru.skillbox.socialnet.entity.post.Post;
 import ru.skillbox.socialnet.entity.post.PostComment;
 import ru.skillbox.socialnet.exception.BadRequestException;
@@ -27,7 +30,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Getter
-public class PostCommentsService extends PostsAbstractService {
+public class PostCommentsService {
     private final PostCommentsRepository postCommentsRepository;
     private final PostsRepository postsRepository;
     private final LikesRepository likesRepository;
@@ -130,6 +133,26 @@ public class PostCommentsService extends PostsAbstractService {
         return optionalPostComment.get();
     }
 
+    private Post fetchPost(Long id, Boolean isDeleted) {
+        Optional<Post> optionalPost;
+
+        try {
+            if (isDeleted == null) {
+                optionalPost = postsRepository.findById(id);
+            } else {
+                optionalPost = postsRepository.findByIdAndIsDeleted(id, isDeleted);
+            }
+        } catch (Exception e) {
+            throw new InternalServerErrorException("fetchPost", e);
+        }
+
+        if (optionalPost.isEmpty()) {
+            throw new NoRecordFoundException("Post record " + id + " not found");
+        }
+
+        return optionalPost.get();
+    }
+
     private CommonRsCommentRs updatePostComment(PostComment postComment, CommentRq commentRq, Long myId) {
         savePostComment(postComment, commentRq);
 
@@ -195,5 +218,48 @@ public class PostCommentsService extends PostsAbstractService {
         fillAuthor(commentRs.getAuthor(), myId);
 
         return commentRs;
+    }
+
+    private FriendshipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
+        Optional<Friendship> optionalFriendship;
+
+        try {
+            optionalFriendship = friendshipsRepository
+                    .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("getFriendshipStatus", e);
+        }
+
+        if (optionalFriendship.isEmpty()) {
+            return FriendshipStatus.UNKNOWN;
+        }
+
+        return optionalFriendship.get().getStatus();
+    }
+
+    private PersonRs fillAuthor(PersonRs personRs, Long myId) {
+        FriendshipStatus friendshipStatus = getFriendshipStatus(personRs.getId(), myId);
+        personRs.setFriendStatus(friendshipStatus.toString());
+        personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendshipStatus.BLOCKED);
+
+        Optional<Weather> optionalWeather;
+
+        try {
+            optionalWeather = weatherRepository.findByCity(personRs.getCity());
+
+            if (optionalWeather.isPresent()) {
+                personRs.setWeather(postMapper.weatherToWeatherRs(optionalWeather.get()));
+            }
+        } catch (Exception e) {
+            throw new InternalServerErrorException("fillAuthor", e);
+        }
+
+        return personRs;
+    }
+
+    private long getMyId(String authorization) {
+        // TODO: getMyId
+        //throw new UnauthorizedException();
+        return 123l;
     }
 }
