@@ -1,6 +1,9 @@
 server:
   port: 8086
 
+client:
+  local: http://localhost:8080
+  remote: 217.107.219.242:8080
 
 spring:
 
@@ -23,6 +26,10 @@ spring:
     enabled: true
     drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
+
+jwt:
+  secret: 6E76BC89F358872832CC3DBEC8A95
+  lifetime: 1h
 
 logging:
   level:

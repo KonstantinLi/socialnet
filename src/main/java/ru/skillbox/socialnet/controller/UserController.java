@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.service.PersonService;
-import ru.skillbox.socialnet.util.JwtTokenUtils;
 
 
 @RestController
