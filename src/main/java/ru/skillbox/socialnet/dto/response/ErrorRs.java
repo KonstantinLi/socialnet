@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-
+@Data
 public class ErrorRs {
 
     private String error;
