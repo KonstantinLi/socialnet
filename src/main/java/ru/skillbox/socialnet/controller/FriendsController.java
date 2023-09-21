@@ -8,7 +8,7 @@ import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
 import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.services.FriendShipService;
+import ru.skillbox.socialnet.service.FriendShipService;
 
 @RestController
 @RequiredArgsConstructor

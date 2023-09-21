@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.services;
+package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.utils.PersonMapper;
+import ru.skillbox.socialnet.util.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
@@ -213,7 +213,7 @@ public class FriendShipService {
             while (iterator.hasNext()) {
                 Person person = iterator.next();
                 log.info(person.getId() + " " + person.getFirstName());
-                PersonRs personRs = PersonMapper.MAPPER.personToPersonRs(person, FriendShipStatus.FRIEND.name(), false);
+                PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.FRIEND.name(), false);
                 personsData.add(personRs);
             }
             personsList.setData(personsData);
@@ -238,7 +238,7 @@ public class FriendShipService {
             Iterator<Person> iterator = personsPage.iterator();
             while (iterator.hasNext()) {
                 Person person = iterator.next();
-                PersonRs personRs = PersonMapper.MAPPER.personToPersonRs(person, FriendShipStatus.RECEIVED_REQUEST.name(), false);
+                PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.RECEIVED_REQUEST.name(), false);
                 personsData.add(personRs);
             }
             personsList.setData(personsData);
@@ -278,7 +278,7 @@ public class FriendShipService {
 
             Optional<FriendShipStatus> optionalStatus = friendShipRepository.getFriendhipStatusBetweenPersons(currentPerson, person);
             FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
-            PersonRs personRs = PersonMapper.MAPPER.personToPersonRs(person, status.name(), status == FriendShipStatus.BLOCKED);
+            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, status.name(), status == FriendShipStatus.BLOCKED);
             personsData.add(personRs);
         }
         return personsData;
@@ -334,7 +334,7 @@ public class FriendShipService {
             Iterator<Person> iterator = personsPage.iterator();
             while (iterator.hasNext()) {
                 Person person = iterator.next();
-                PersonRs personRs = PersonMapper.MAPPER.personToPersonRs(person, FriendShipStatus.REQUEST.name(), false);
+                PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.REQUEST.name(), false);
                 personsData.add(personRs);
             }
             personsList.setData(personsData);
