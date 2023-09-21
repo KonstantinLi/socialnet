@@ -3,10 +3,12 @@ package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.data.entity.Person;
+import ru.skillbox.socialnet.data.entity.PersonSettings;
 import ru.skillbox.socialnet.dto.request.PersonRs;
 import ru.skillbox.socialnet.dto.request.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsComplexRs;
@@ -15,6 +17,7 @@ import ru.skillbox.socialnet.dto.request.response.ComplexRs;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.model.LoginRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
+import ru.skillbox.socialnet.repository.PersonSettingsRepository;
 import ru.skillbox.socialnet.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
@@ -27,18 +30,14 @@ public class AuthService {
     private final JwtTokenUtils jwtTokenUtils;
     private final UserDetailsService userService;
     private final PersonRepository personRepository;
+    private final PersonSettingsRepository personSettingsRepository;
+
 
     public CommonRsComplexRs<ComplexRs> logout(String authorization) throws CommonException {
-        Person person = null;
-        Long id = jwtTokenUtils.getId(authorization);
-        try {
-            person = personRepository.findById(id).orElseThrow();
-        } catch (BadCredentialsException ex) {
-            validationUtils.validationUser();
-        }
         CommonRsComplexRs<ComplexRs> commonRsComplexRs = new CommonRsComplexRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
+        SecurityContextHolder.clearContext();
         return commonRsComplexRs;
     }
 
