@@ -32,7 +32,7 @@ public class ValidationUtilsRq extends RuntimeException {
     }
 
     public <T> void validationPassword(String decodedPassword, String password) throws CommonException {
-        if (decodedPassword.equals(password)) {
+        if (!decodedPassword.equals(password)) {
             throw new CommonException("Не верный пароль");
         }
     }

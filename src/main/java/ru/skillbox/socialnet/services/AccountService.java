@@ -3,11 +3,13 @@ package ru.skillbox.socialnet.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.data.entity.Person;
+import ru.skillbox.socialnet.data.entity.PersonSettings;
 import ru.skillbox.socialnet.dto.request.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.response.RegisterRs;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.model.RegisterRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
+import ru.skillbox.socialnet.repository.PersonSettingsRepository;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
 import java.security.Timestamp;
@@ -19,6 +21,7 @@ import java.util.Date;
 public class AccountService {
     public final PersonRepository personRepository;
     public final ValidationUtilsRq validationUtils;
+    public final PersonSettingsRepository personSettingsRepository;
 
     public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws CommonException {
         validationUtils.validationRegPassword(registerRq.getPasswd1(), registerRq.getPasswd2());
@@ -40,6 +43,9 @@ public class AccountService {
         person.setPassword(getEncodedPassword(registrationInfo.getPasswd1()));
         person.setFirstName(registrationInfo.getFirstName());
         person.setLastName(registrationInfo.getLastName());
+        PersonSettings personSettings = new PersonSettings();
+        personSettingsRepository.save(personSettings);
+        person.setPersonSettings(personSettings);
         return person;
     }
 
