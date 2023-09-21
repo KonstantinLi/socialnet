@@ -20,7 +20,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/logout")
-    public CommonRsComplexRs<ComplexRs> logout(@RequestParam String authorization) throws CommonException {
+    public CommonRsComplexRs<ComplexRs> logout(@RequestHeader String authorization) throws CommonException {
         return authService.logout(authorization);
     }
 

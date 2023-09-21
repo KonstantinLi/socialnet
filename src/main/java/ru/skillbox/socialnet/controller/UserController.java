@@ -27,7 +27,7 @@ private final UserService userService;
     }
 
     @GetMapping("/me")
-    public CommonRsPersonRs<PersonRs> getUserMe (@RequestParam("authorization") String token) throws CommonException {
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws CommonException {
         return userService.userMe(token);
     }
 }
