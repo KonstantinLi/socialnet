@@ -70,4 +70,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "and f.status_name = :status_name)", nativeQuery = true)
     long findCountPersonsByFriendship(@Param("currentPersonId") long currentPersonId,
                                       @Param("status_name") String statusName);
+
+    Optional<Person> findByEmail(String email);
 }

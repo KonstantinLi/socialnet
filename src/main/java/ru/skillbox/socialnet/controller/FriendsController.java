@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.controllers;
+package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
