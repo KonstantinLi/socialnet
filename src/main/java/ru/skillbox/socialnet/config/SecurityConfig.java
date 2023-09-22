@@ -2,7 +2,6 @@ package ru.skillbox.socialnet.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ru.skillbox.socialnet.filter.JwtRequestFilter;
-import ru.skillbox.socialnet.service.impl.UserDetailsServiceImpl;
+import ru.skillbox.socialnet.security.filter.JwtRequestFilter;
+import ru.skillbox.socialnet.security.service.UserDetailsServiceImpl;
 
 import java.util.List;
 
@@ -28,11 +27,9 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserDetailsServiceImpl userService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
-
-    @Value("${client.port}")
-    private int clientPort;
+    private final ClientProperties clientProperties;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,9 +38,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(registry -> registry.requestMatchers("/api/v1/admin-console/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/auth/login").permitAll()
-                        .requestMatchers("/api/v1/auth/register").permitAll()
                         .requestMatchers("/api/v1/auth/captcha").permitAll()
-                        .requestMatchers("/api/v1/auth/password/recovery").permitAll()
                         .requestMatchers("/api/v1/account/register").permitAll()
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())
@@ -60,10 +55,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:" + clientPort));
-        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE"));
+        configuration.setAllowedOrigins(List.of(clientProperties.getLocal(), clientProperties.getRemote()));
+        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -76,7 +71,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userService);
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
 
         return daoAuthenticationProvider;
     }

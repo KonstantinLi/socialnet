@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.service.impl;
+package ru.skillbox.socialnet.security.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,7 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final PersonRepository personRepository;
 
     @Override
-//    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
             Person person = personRepository.findByEmail(email).orElseThrow(
