@@ -1,21 +1,22 @@
 package ru.skillbox.socialnet.dto.response;
 
-
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Data
-public class ErrorRs {
+public class CommonRsPersonRs<T> {
 
     private Long timeStamp;
-    private String error;
-    private String error_description;
+    private T data;
+    private Integer itemPerPage;
+    private Integer offset;
+    private Integer perPage;
+    private Long total;
 
-    public ErrorRs(String error, String error_description) {
+    public CommonRsPersonRs() {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        this.error = error;
-        this.error_description = error_description;
     }
+
 }
