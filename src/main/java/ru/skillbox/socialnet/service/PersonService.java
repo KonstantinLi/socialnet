@@ -17,14 +17,14 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
-    public CommonRsPersonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
+    public CommonRsPersonRs<ru.skillbox.socialnet.dto.request.PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
         Optional<Person> optional = personRepository.findById(otherUserId);
         if (optional.isEmpty()) {
             throw new BadRequestException("Пользователь с указанным id не найден");
         }
         Person person = optional.get();
-        PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
-        CommonRsPersonRs<PersonRs> result = new CommonRsPersonRs<>();
+        ru.skillbox.socialnet.dto.request.PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
+        CommonRsPersonRs<ru.skillbox.socialnet.dto.request.PersonRs> result = new CommonRsPersonRs<>();
         result.setData(personRs);
         return result;
     }

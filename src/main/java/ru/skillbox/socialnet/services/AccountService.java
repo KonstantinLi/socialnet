@@ -1,20 +1,21 @@
 package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.data.entity.Person;
-import ru.skillbox.socialnet.data.entity.PersonSettings;
 import ru.skillbox.socialnet.dto.request.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.response.RegisterRs;
+import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.PersonSettings;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.model.RegisterRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
-import java.security.Timestamp;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,15 +27,29 @@ public class AccountService {
     public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws CommonException {
         validationUtils.validationRegPassword(registerRq.getPasswd1(), registerRq.getPasswd2());
         validationUtils.validationCode(registerRq.getCode(), registerRq.getCodeSecret());
-
-        Person person = addPerson(registerRq);
-        personRepository.save(person);
+        Person person = null;
+        if (findPersonByEmail(registerRq.getEmail()) == null) {
+            person = addPerson(registerRq);
+            personRepository.save(person);
+        } else {
+            validationUtils.checkUserAvailability(registerRq.getEmail());
+        }
         RegisterRs<ComplexRs> response = new RegisterRs<>();
         ComplexRs complexRs = new ComplexRs();
         response.setData(complexRs);
         response.setEmail(person.getEmail());
-        response.setTimestamp(new Date().getTime()); //todo long or int?
+        response.setTimestamp(new Date().getTime());
         return response;
+    }
+
+    private Optional<Person> findPersonByEmail(String email) throws CommonException {
+        Optional<Person> personRes = null;
+        try {
+            personRes = personRepository.findByEmail(email);
+        } catch (BadCredentialsException ex) {
+            validationUtils.validationUser();
+        }
+        return personRes;
     }
 
     private Person addPerson(RegisterRq registrationInfo) {
@@ -53,6 +68,7 @@ public class AccountService {
         byte[] encodedBytes = Base64.getEncoder().encode(password.getBytes());
         return new String(encodedBytes);
     }
+
     public String getDecodedPassword(String password) {
         byte[] decodedBytes = Base64.getDecoder().decode(password);
         return new String(decodedBytes);

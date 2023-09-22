@@ -8,7 +8,8 @@ import ru.skillbox.socialnet.exception.ErrorHandler;
 @Service
 @RequiredArgsConstructor
 public class ValidationUtilsRq extends RuntimeException {
- private final ErrorHandler errorHandler;
+    private final ErrorHandler errorHandler;
+
     public <T> void validationRegPassword(String password1, String password2) throws CommonException {
         if (password1 == null || !password1.equals(password2)) { //добавить аннтотации в класс для проверок на null итп
             throw new CommonException("Пароли не совпадают");
@@ -28,12 +29,19 @@ public class ValidationUtilsRq extends RuntimeException {
     }
 
     public <T> void validationUser() throws CommonException {
-            throw new CommonException("Пользователь не найден");
+        throw new CommonException("Пользователь не найден");
     }
 
     public <T> void validationPassword(String decodedPassword, String password) throws CommonException {
         if (!decodedPassword.equals(password)) {
             throw new CommonException("Не верный пароль");
         }
+    }
+
+    public void checkUserAvailability(String email) throws CommonException {
+        StringBuilder sb = new StringBuilder("Пользователь с email: '");
+        sb.append(email);
+        sb.append("' уже зарегистрирован");
+        throw new CommonException(sb.toString());
     }
 }
