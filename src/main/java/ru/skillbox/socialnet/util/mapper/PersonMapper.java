@@ -3,8 +3,8 @@ package ru.skillbox.socialnet.util.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import ru.skillbox.socialnet.data.entity.Person;
 import ru.skillbox.socialnet.dto.request.PersonRs;
+import ru.skillbox.socialnet.entity.Person;
 
 @Mapper(componentModel = "spring")
 public interface PersonMapper {

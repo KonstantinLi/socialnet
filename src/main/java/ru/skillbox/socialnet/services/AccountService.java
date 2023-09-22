@@ -28,7 +28,7 @@ public class AccountService {
         validationUtils.validationRegPassword(registerRq.getPasswd1(), registerRq.getPasswd2());
         validationUtils.validationCode(registerRq.getCode(), registerRq.getCodeSecret());
         Person person = null;
-        if (findPersonByEmail(registerRq.getEmail()) == null) {
+        if (findPersonByEmail(registerRq.getEmail()).isEmpty()) {
             person = addPerson(registerRq);
             personRepository.save(person);
         } else {

@@ -8,7 +8,7 @@ import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.util.JwtTokenUtils;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
@@ -28,10 +28,11 @@ public class UserService {
         } catch (BadCredentialsException ex) {
             validationUtils.validationUser();
         }
-        CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
-        response.setTimeStamp(new Date().getTime());
         PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
         personRs.setToken(token);
+        CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
+        response.setTimeStamp(new Date().getTime());
+        response.setData(personRs);
         return response;
     }
 }

@@ -17,9 +17,11 @@ import ru.skillbox.socialnet.exception.CommonException;
 import ru.skillbox.socialnet.model.LoginRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
-import ru.skillbox.socialnet.util.JwtTokenUtils;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
+
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class AuthService {
         CommonRsComplexRs<ComplexRs> commonRsComplexRs = new CommonRsComplexRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
+        commonRsComplexRs.setTimestamp(new Date().getTime());
         SecurityContextHolder.clearContext();
         return commonRsComplexRs;
     }
@@ -54,6 +57,7 @@ public class AuthService {
         PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
         personRs.setToken(getToken(person));
         commonRsPersonRs.setData(personRs);
+        commonRsPersonRs.setTimestamp(new Date().getTime());
         return commonRsPersonRs;
     }
 
@@ -66,8 +70,7 @@ public class AuthService {
     }
 
     private String getToken(Person person) {
-        UserDetails userDetails = userService.loadUserByUsername(person.getEmail());
-        return jwtTokenUtils.generateToken(userDetails);
+        return jwtTokenUtils.generateToken(person);
     }
 
     private PersonRs getDataPersonRs(Person person, String token) {
