@@ -2,9 +2,7 @@
 package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.request.PersonRs;
@@ -13,7 +11,7 @@ import ru.skillbox.socialnet.dto.request.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.request.response.ComplexRs;
 import ru.skillbox.socialnet.entity.Person;
-import ru.skillbox.socialnet.exception.CommonException;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.model.LoginRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
@@ -34,7 +32,7 @@ public class AuthService {
     private final PersonSettingsRepository personSettingsRepository;
 
 
-    public CommonRsComplexRs<ComplexRs> logout(String authorization) throws CommonException {
+    public CommonRsComplexRs<ComplexRs> logout(String authorization) {
         CommonRsComplexRs<ComplexRs> commonRsComplexRs = new CommonRsComplexRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
@@ -43,14 +41,10 @@ public class AuthService {
         return commonRsComplexRs;
     }
 
-    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws CommonException {
-        Person person = null;
+    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws ExceptionBadRq {
         validationUtils.validationEmail(loginRq.getEmail());
-        try {
-            person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow();
-        } catch (BadCredentialsException ex) {
-            validationUtils.validationUser();
-        }
+        Person person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow(
+                () -> new ExceptionBadRq("Пользователь не найден"));
         String password = accountService.getDecodedPassword(person.getPassword());
         validationUtils.validationPassword(password, loginRq.getPassword());
         CommonRsPersonRs<PersonRs> commonRsPersonRs = new CommonRsPersonRs<>();
@@ -64,7 +58,7 @@ public class AuthService {
     public CaptchaRs captcha() {
 //        GCage gCage = new GCage();
 //        String token = gCage.getTokenGenerator().next();
-        CaptchaRs captchaRs = new CaptchaRs<>();
+        CaptchaRs captchaRs = new CaptchaRs();
 //        captchaRs.setCode();
         return captchaRs;
     }

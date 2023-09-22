@@ -9,7 +9,7 @@ import ru.skillbox.socialnet.dto.request.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.request.response.ComplexRs;
-import ru.skillbox.socialnet.exception.CommonException;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.model.LoginRq;
 import ru.skillbox.socialnet.services.AuthService;
 
@@ -20,12 +20,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/logout")
-    public CommonRsComplexRs<ComplexRs> logout(@RequestHeader String authorization) throws CommonException {
+    public CommonRsComplexRs<ComplexRs> logout(@RequestHeader String authorization) throws ExceptionBadRq {
         return authService.logout(authorization);
     }
 
     @PostMapping("/login")
-    public CommonRsPersonRs<PersonRs> login(@RequestBody LoginRq loginRq) throws CommonException {
+    public CommonRsPersonRs<PersonRs> login(@RequestBody LoginRq loginRq) throws ExceptionBadRq {
         return authService.login(loginRq);
     }
 

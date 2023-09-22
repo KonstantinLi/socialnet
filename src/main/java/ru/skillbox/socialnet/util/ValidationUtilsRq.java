@@ -2,7 +2,7 @@ package ru.skillbox.socialnet.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.exception.CommonException;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.exception.ErrorHandler;
 
 @Service
@@ -10,38 +10,38 @@ import ru.skillbox.socialnet.exception.ErrorHandler;
 public class ValidationUtilsRq extends RuntimeException {
     private final ErrorHandler errorHandler;
 
-    public <T> void validationRegPassword(String password1, String password2) throws CommonException {
+    public <T> void validationRegPassword(String password1, String password2) throws ExceptionBadRq {
         if (password1 == null || !password1.equals(password2)) { //добавить аннтотации в класс для проверок на null итп
-            throw new CommonException("Пароли не совпадают");
+            throw new ExceptionBadRq("Пароли не совпадают");
         }
     }
 
-    public <T> void validationCode(String code1, String code2) throws CommonException {
+    public <T> void validationCode(String code1, String code2) throws ExceptionBadRq {
         if (!code1.equals(code2)) {
-            throw new CommonException("Введенный код не совпадает с кодом картинки");
+            throw new ExceptionBadRq("Введенный код не совпадает с кодом картинки");
         }
     }
 
-    public <T> void validationEmail(String email) throws CommonException {
+    public <T> void validationEmail(String email) throws ExceptionBadRq {
         if (email.isEmpty()) {
-            throw new CommonException("Поле 'email' не заполнено");
+            throw new ExceptionBadRq("Поле 'email' не заполнено");
         }
     }
 
-    public <T> void validationUser() throws CommonException {
-        throw new CommonException("Пользователь не найден");
+    public <T> void validationUser() throws ExceptionBadRq {
+        throw new ExceptionBadRq("Пользователь не найден");
     }
 
-    public <T> void validationPassword(String decodedPassword, String password) throws CommonException {
+    public <T> void validationPassword(String decodedPassword, String password) throws ExceptionBadRq {
         if (!decodedPassword.equals(password)) {
-            throw new CommonException("Не верный пароль");
+            throw new ExceptionBadRq("Не верный пароль");
         }
     }
 
-    public void checkUserAvailability(String email) throws CommonException {
+    public void checkUserAvailability(String email) throws ExceptionBadRq {
         StringBuilder sb = new StringBuilder("Пользователь с email: '");
         sb.append(email);
         sb.append("' уже зарегистрирован");
-        throw new CommonException(sb.toString());
+        throw new ExceptionBadRq(sb.toString());
     }
 }

@@ -18,7 +18,7 @@ public class ErrorHandler {
 //        return new ResponseEntity<>(errorResponse);
 //    }
 
-    @ExceptionHandler(CommonException.class)
+    @ExceptionHandler(ExceptionBadRq.class)
     public ResponseEntity<ErrorRs> handle(Exception exception) {
         ErrorRs errorRs = new ErrorRs();
         errorRs.setError("");

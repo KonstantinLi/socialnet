@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.socialnet.dto.request.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.response.RegisterRs;
-import ru.skillbox.socialnet.exception.CommonException;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.model.RegisterRq;
 import ru.skillbox.socialnet.services.AccountService;
 
@@ -18,7 +18,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/register")
-    public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) throws CommonException {
+    public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) throws ExceptionBadRq {
         return accountService.registration(registerRq);
     }
 }

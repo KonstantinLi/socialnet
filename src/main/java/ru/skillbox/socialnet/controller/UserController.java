@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.PersonRs;
 import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.exception.CommonException;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.services.UserService;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
@@ -27,7 +27,7 @@ private final UserService userService;
     }
 
     @GetMapping("/me")
-    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws CommonException {
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws ExceptionBadRq {
         return userService.userMe(token);
     }
 }

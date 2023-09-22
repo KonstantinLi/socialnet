@@ -5,9 +5,8 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Collection;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class CommonRsPersonRs<T> extends ApiFatherRs {
+public class CommonRsPersonRs<T>{
     private T data;
     private Integer itemPerPage;
     private Integer offset;

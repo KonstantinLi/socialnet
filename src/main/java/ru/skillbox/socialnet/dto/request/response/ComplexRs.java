@@ -4,9 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class ComplexRs extends ApiFatherRs {
+public class ComplexRs {
 
     private Integer count;
     private Integer id;
