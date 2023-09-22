@@ -42,31 +42,27 @@ public class FriendsController {
     }
 
     @PostMapping("/block_unblock/{id}")
-    public ResponseEntity<?> blockOrUnblockUserByUser(@RequestHeader(name = "authorization", required = true) String authorization,
+    public void blockOrUnblockUserByUser(@RequestHeader(name = "authorization", required = true) String authorization,
                                                       @PathVariable(name = "id") int id)  throws BadRequestException {
         friendShipService.blockOrUnblockUserByUser(id, authorization);
-        return ResponseEntity.ok(null);
     }
 
     @GetMapping("")
     public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(@RequestHeader(name = "authorization", required = true) String authorization,
                                                                   @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-                                                                  @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage)
-            throws BadRequestException {
+                                                                  @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
         return  friendShipService.getFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
     @GetMapping("/request")
     public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization", required = true) String authorization,
                                                      @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-                                                     @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage)
-            throws BadRequestException {
+                                                     @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
         return friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
     @GetMapping("/recommendations")
-    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(@RequestHeader(name = "authorization", required = true) String authorization)
-            throws BadRequestException{
+    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(@RequestHeader(name = "authorization", required = true) String authorization) {
         return friendShipService.getRecommendationFriends(authorization);
     }
 

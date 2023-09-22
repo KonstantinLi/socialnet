@@ -26,9 +26,9 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
                    "f.src_person_id = :src_person_id " +
                    "and f.dst_person_id = :dst_person_id " +
                    "and (f.status_name = :shipStatus or :shipStatus = '')", nativeQuery = true)
-    Iterable<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
-                                                 @Param("dst_person_id") long dst_person_id,
-                                                 @Param("shipStatus") String shipStatus);
+    Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
+                                                     @Param("dst_person_id") long dst_person_id,
+                                                     @Param("shipStatus") String shipStatus);
 
     /**
      *  удаляем все связи в таблице friendships между персонами, переданными в параметрах
