@@ -18,25 +18,25 @@ public class FriendsController {
     private final FriendShipService friendShipService;
 
     @PostMapping("/{id}")
-    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(@RequestHeader(name = "authorization") String authorization,
                                                    @PathVariable(name = "id") int id) throws BadRequestException{
         return friendShipService.sendFriendshipRequest(id, authorization);
     }
 
     @DeleteMapping("/{id}")
-    public CommonRsComplexRs<ComplexRs>  deleteFriendById(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsComplexRs<ComplexRs>  deleteFriendById(@RequestHeader(name = "authorization") String authorization,
                                                @PathVariable(name = "id") int id) throws BadRequestException {
         return friendShipService.deleteFriendById(id, authorization);
     }
 
     @PostMapping("/request/{id}")
-    public CommonRsComplexRs<ComplexRs> addFriendById(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsComplexRs<ComplexRs> addFriendById(@RequestHeader(name = "authorization") String authorization,
                                            @PathVariable(name = "id") int id)  throws BadRequestException {
         return friendShipService.addFriendById(id, authorization);
     }
 
     @DeleteMapping("/request/{id}")
-    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(@RequestHeader(name = "authorization") String authorization,
                                                           @PathVariable(name = "id") int id)  throws BadRequestException {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
@@ -48,26 +48,26 @@ public class FriendsController {
     }
 
     @GetMapping("")
-    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
                                                                   @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
                                                                   @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
         return  friendShipService.getFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
     @GetMapping("/request")
-    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
                                                      @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
                                                      @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
         return friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
     @GetMapping("/recommendations")
-    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(@RequestHeader(name = "authorization", required = true) String authorization) {
+    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(@RequestHeader(name = "authorization") String authorization) {
         return friendShipService.getRecommendationFriends(authorization);
     }
 
     @GetMapping("/outgoing_requests")
-    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(@RequestHeader(name = "authorization", required = true) String authorization,
+    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(@RequestHeader(name = "authorization") String authorization,
                                                        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
                                                        @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage)
             throws BadRequestException {
