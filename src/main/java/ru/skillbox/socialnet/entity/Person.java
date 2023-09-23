@@ -79,15 +79,15 @@ public class Person {
 
   /** подтверждена ли регистрация */
   @Column(name = "is_approved")
-  private boolean isApproved;
+  private Boolean isApproved;
 
   /** блокировка пользователя модератором / администратором */
   @Column(name = "is_blocked")
-  private boolean isBlocked;
+  private Boolean isBlocked;
 
   /** Удален */
   @Column(name = "is_deleted")
-  private boolean isDeleted;
+  private Boolean isDeleted;
 
   /** Статус */
   @Column(name = "online_status")
