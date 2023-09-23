@@ -1,13 +1,14 @@
 package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.ComplexRs;
 import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
 import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
 import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
+import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
 import ru.skillbox.socialnet.service.FriendShipService;
 
 @RestController
@@ -19,31 +20,35 @@ public class FriendsController {
 
     @PostMapping("/{id}")
     public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(@RequestHeader(name = "authorization") String authorization,
-                                                   @PathVariable(name = "id") int id) throws BadRequestException{
+                                                   @PathVariable(name = "id") Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.sendFriendshipRequest(id, authorization);
     }
 
     @DeleteMapping("/{id}")
     public CommonRsComplexRs<ComplexRs>  deleteFriendById(@RequestHeader(name = "authorization") String authorization,
-                                               @PathVariable(name = "id") int id) throws BadRequestException {
+                                               @PathVariable(name = "id")  Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.deleteFriendById(id, authorization);
     }
 
     @PostMapping("/request/{id}")
     public CommonRsComplexRs<ComplexRs> addFriendById(@RequestHeader(name = "authorization") String authorization,
-                                           @PathVariable(name = "id") int id)  throws BadRequestException {
+                                           @PathVariable(name = "id") Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.addFriendById(id, authorization);
     }
 
     @DeleteMapping("/request/{id}")
     public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(@RequestHeader(name = "authorization") String authorization,
-                                                          @PathVariable(name = "id") int id)  throws BadRequestException {
+                                                          @PathVariable(name = "id") Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
     @PostMapping("/block_unblock/{id}")
     public void blockOrUnblockUserByUser(@RequestHeader(name = "authorization", required = true) String authorization,
-                                                      @PathVariable(name = "id") int id)  throws BadRequestException {
+                                                      @PathVariable(name = "id") Long id)  throws PersonNotFoundExeption {
         friendShipService.blockOrUnblockUserByUser(id, authorization);
     }
 

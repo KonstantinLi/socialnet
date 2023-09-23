@@ -14,7 +14,9 @@ public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> handleBadRequestException(BadRequestException ex) throws JsonProcessingException {
-        ErrorRs rs = new ErrorRs("Error", ex.getLocalizedMessage());
-        return new ResponseEntity(new ObjectMapper().writeValueAsString(rs), HttpStatus.BAD_REQUEST);
+        ErrorRs rs = new ErrorRs(ex.getClass().getName(), ex.getLocalizedMessage());
+        return new ResponseEntity(new ObjectMapper()
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(rs), HttpStatus.BAD_REQUEST);
     }
 }

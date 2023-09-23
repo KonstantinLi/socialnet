@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,17 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "  fetch first :cnt rows only", nativeQuery = true)
     Iterable<Person> randomGenerateFriendsForPerson(@Param("personIds") List<Long> personIds,
                                                     @Param("cnt") long cnt);
+
+    /**
+     *
+     * @param id - ID персоны
+     * @return - дефолтный метод-обертка вернет персону или сгенерирует исключение
+     * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если запись в таблице не найденв
+     */
+    public default  Person findByIdImpl(Long id) throws PersonNotFoundExeption {
+        Person person = findById(id).orElseThrow(() -> new PersonNotFoundExeption());
+        return person;
+    }
 
     /**
      *

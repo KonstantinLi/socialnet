@@ -12,7 +12,8 @@ import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
 import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
+import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
@@ -86,14 +87,13 @@ public class FriendShipService {
      * @param destinationPersonId - персона, которой отправляется запрос на дружбу
      * @param authorization - токен авторизации, по нему будет вычислен текущий пользователь
      * @return  - метод сервиса вернет объект на POST запрос  "/api/v1/friends/{id}"
-     * @throws BadRequestException - может быть сгенерировано исключение, если персона,
+     * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если персона,
      * с которой хотят дружить не найдена
      */
-    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(int destinationPersonId, String authorization)
-            throws BadRequestException {
+    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(Long destinationPersonId, String authorization)
+            throws PersonNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
-        Person destinationPerson = personRepository.findById((long) destinationPersonId)
-                .orElseThrow(() -> new BadRequestException("не найдена запись о пользователе."));
+        Person destinationPerson = personRepository.findByIdImpl( destinationPersonId);
         FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatus(
                         currentPerson.getId(), destinationPersonId, FriendShipStatus.REQUEST.name())
                 .orElse(new FriendShip());
@@ -114,21 +114,20 @@ public class FriendShipService {
      * @param destinationPersonId - персона, которую хотят удалить из друзей
      * @param authorization - токен авторизации, по нему будет вычислен текущий пользователь
      * @return  - метод сервиса вернет объект на DELETE запрос "/api/v1/friends/{id}"
-     * @throws BadRequestException - может быть сгенерировано исключение, если не найдена персона, с которой
+     * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если не найдена персона, с которой
      * хотят удалить дружбу, или не найдены записи о дружбе
+     * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не в таблице friendships
+     * не найдены запиаи со статусом FRIEND для обеих персон
      */
-    public CommonRsComplexRs<ComplexRs> deleteFriendById(int destinationPersonId, String authorization)
-            throws BadRequestException {
+    public CommonRsComplexRs<ComplexRs> deleteFriendById(Long destinationPersonId, String authorization)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
-        Person destinationPerson = personRepository.findById((long) destinationPersonId)
-                .orElseThrow(() -> new BadRequestException("не найдена запись о пользователе."));
+        Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
         //убеждаемся, что у каждой из персон есть записи о том, что они друзья, и удаляем эти записи
-        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatus(
-                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.FRIEND.name())
-                .orElseThrow(() -> new BadRequestException("не найдена запись о дружбе"));
-        FriendShip friendShip2 = friendShipRepository.getFriendShipByIdsAndStatus(
-                destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.FRIEND.name())
-                .orElseThrow(() ->  new BadRequestException("не найдена запись о дружбе"));
+        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.FRIEND);
+        FriendShip friendShip2 = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.FRIEND);
         friendShipRepository.delete(friendShip);
         friendShipRepository.delete(friendShip2);
         return generateCommonRsComplexRs();
@@ -136,24 +135,23 @@ public class FriendShipService {
 
     /**
      *
-     * @param destinationPersonId - персона, которую хотят добавить в друзья
-     * @param authorization - токен авторизации, по нему будет вычислен текущий пользователь
+     * @param destinationPersonId  - персона, которую хотят добавить в друзья
+     * @param authorization  - токен авторизации, по нему будет вычислен текущий пользователь
      * @return  - метод сервиса вернет объект на POST запрос "/api/v1/friends/request/{id}"
-     * @throws BadRequestException- может быть сгенерировано исключение, если не найдена персона, которую
-     *      * хотят добавить в друзья
+     * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если не найдена персона, которую
+     * хотят добавить в друзья
+     * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
+     * у принимающей стороны или REQUEST у передающей стороны
      */
-    public CommonRsComplexRs<ComplexRs> addFriendById(int destinationPersonId, String authorization)
-            throws BadRequestException {
+    public CommonRsComplexRs<ComplexRs> addFriendById(Long destinationPersonId, String authorization)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
-        Person destinationPerson = personRepository.findById((long) destinationPersonId)
-                .orElseThrow(() -> new BadRequestException("запись о пользователе не найдена"));
-        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatus(
-                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name())
-                .orElseThrow(() -> new BadRequestException("не найдена запись запросе на добавление в друзья"));
+        Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
+        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.RECEIVED_REQUEST);
         saveFriendhipChanges(friendShip, currentPerson, destinationPerson, LocalDateTime.now(), FriendShipStatus.FRIEND);
-        friendShip = friendShipRepository.getFriendShipByIdsAndStatus(
-                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.REQUEST.name())
-                .orElseThrow(()-> new BadRequestException("не найдена запись запроса на дружбу"));
+        friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.REQUEST);
         saveFriendhipChanges(friendShip,destinationPerson,currentPerson,LocalDateTime.now(),FriendShipStatus.FRIEND);
         return generateCommonRsComplexRs();
     }
@@ -163,23 +161,22 @@ public class FriendShipService {
      * @param destinationPersonId - персона, с которой хотят отклонить дружбу
      * @param authorization - токен авторизации, по нему будет вычислен текущий пользователь
      * @return  - метод сервиса вернет объект на DELETE запрос "/api/v1/friends/request/{id}"
-     * @throws BadRequestException- может быть сгенерировано исключение, если не найдена персона, c которой
-     * хотят отклонить дружбу или записи о запросах на дружбу
+     * @throws PersonNotFoundExeption- может быть сгенерировано исключение, если не найдена персона, c которой
+     * хотят отклонить дружбу
+     * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
+     * c одной стороны или REQUEST с другой стороны
      */
-    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(int destinationPersonId, String authorization)
-            throws BadRequestException {
+    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
-        Person destinationPerson = personRepository.findById((long) destinationPersonId)
-                .orElseThrow(() -> new BadRequestException("не найдена запись о пользователе."));
+        Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
         //ищем приходящий запрос на добавление в друзья у одной стороны и запрос дружбы с другой стороны
-        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatus(
-                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name())
-                .orElseThrow(()-> new BadRequestException("не найдена запись о запросе на добавление в друзья"));
+        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.RECEIVED_REQUEST);
         //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
         friendShipRepository.delete(friendShip);
-        FriendShip friendShip2 = friendShipRepository.getFriendShipByIdsAndStatus(
-                destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.REQUEST.name())
-                .orElseThrow(()-> new BadRequestException("не найдена запись о запросе на дружбу"));
+        FriendShip friendShip2 = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.REQUEST);
         //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
         friendShipRepository.delete(friendShip);
         return generateCommonRsComplexRs();
@@ -187,18 +184,17 @@ public class FriendShipService {
 
     /**
      *
-     * @param destinationPersonId - персона,  которую хотят блокировать/разблокировать
+     * @param destinationPersonId - персона, которую хотят блокировать/разблокировать
      * @param authorization - токен авторизации, по нему будет вычислен текущий пользователь
-     * @throws BadRequestException- может быть сгенерировано исключение, если не найдена персона, которую
+     * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если не найдена персона, которую
      * хотят блокировать/разблокировать
      * return void - мeтод ничего не возвращает
      * метод вызывается, когда на контроллер поступает POST запрос  "/api/v1/friends/block_unblock/{id}"
      */
-    public void blockOrUnblockUserByUser(int destinationPersonId, String authorization)
-            throws BadRequestException {
+    public void blockOrUnblockUserByUser(Long destinationPersonId, String authorization)
+            throws PersonNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
-        Person destinationPerson = personRepository.findById((long) destinationPersonId)
-                .orElseThrow(() -> new BadRequestException("не найдена запись о пользователе."));
+        Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
         FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatus(
                 currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.BLOCKED.name())
                 .orElse(null);
@@ -225,21 +221,25 @@ public class FriendShipService {
         long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
         Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.FRIEND.name(), PageRequest.of(offset, perPage));
-        CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
-        ArrayList<PersonRs> personsData = new ArrayList<>();
-        Iterator<Person> iterator = personsPage.iterator();
-        while (iterator.hasNext()) {
-            Person person = iterator.next();
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.FRIEND.name(),
-                    false);
-            personsData.add(personRs);
-        }
-        personsList.setData(personsData);
-        personsList.setItemPerPage(perPage);
-        personsList.setOffset(offset);
-        personsList.setPerPage(perPage);
-        personsList.setTotal(total);
+        ArrayList<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.FRIEND.name(), false);
+        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, offset, perPage, total);
         return personsList;
+    }
+
+    /**
+     *
+     * @param personsPage  - выборка персон из запроса (в репозитории)
+     * @param friendShipStatus - статус дружбы (строка)
+     * @param isBlocked  - параметр блокрована ли запись
+     * @return - вспомогательный метод (возвращает список персон в новом формате)
+     */
+    private ArrayList<PersonRs> generatePersonsData(Page<Person> personsPage, String friendShipStatus, Boolean isBlocked) {
+        ArrayList<PersonRs> personsData = new ArrayList<>();
+        personsPage.forEach(person -> {
+            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, friendShipStatus, isBlocked);
+            personsData.add(personRs);
+        });
+        return personsData;
     }
 
     /**
@@ -255,20 +255,8 @@ public class FriendShipService {
                 FriendShipStatus.RECEIVED_REQUEST.name());
         Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name(), PageRequest.of(offset, perPage));
-        CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
-        ArrayList<PersonRs> personsData = new ArrayList<>();
-        Iterator<Person> iterator = personsPage.iterator();
-        while (iterator.hasNext()) {
-            Person person = iterator.next();
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.RECEIVED_REQUEST.name(),
-                    false);
-            personsData.add(personRs);
-        }
-        personsList.setData(personsData);
-        personsList.setItemPerPage(perPage);
-        personsList.setOffset(offset);
-        personsList.setPerPage(perPage);
-        personsList.setTotal(total);
+        ArrayList<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.RECEIVED_REQUEST.name(), false);
+        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, offset, perPage, total);
         return personsList;
     }
 
@@ -280,11 +268,8 @@ public class FriendShipService {
      */
     private ArrayList<Person> getRandomPersonsList(List<Long> personIds, int cnt) {
         Iterable<Person> personsIterable = personRepository.randomGenerateFriendsForPerson(personIds, cnt);
-        Iterator<Person> personIterator = personsIterable.iterator();
         ArrayList<Person> persons = new ArrayList<>();
-        while (personIterator.hasNext()) {
-            persons.add(personIterator.next());
-        }
+        personsIterable.forEach(person -> persons.add(person));
         return persons;
     }
 
@@ -295,11 +280,8 @@ public class FriendShipService {
      */
     private ArrayList<Person> getFriendsOfFriendsByPerson(long personId) {
         Iterable<Person> personsIterable = personRepository.getFriendsOfFriendsByPersonId(personId);
-        Iterator<Person> personIterator = personsIterable.iterator();
         ArrayList<Person> persons = new ArrayList<>();
-        while (personIterator.hasNext()) {
-            persons.add(personIterator.next());
-        }
+        personsIterable.forEach(person -> persons.add(person));
         return persons;
     }
 
@@ -355,7 +337,7 @@ public class FriendShipService {
             }
             personsData = updatePersonsData(persons, currentPerson);
         }
-        CommonRsListPersonRs<PersonRs> personsList = getpersonsList(personsData, 0,
+        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, 0,
                 personsData.size(), personsData.size());
         return personsList;
     }
@@ -368,12 +350,12 @@ public class FriendShipService {
      * @param total       - "всего"
      * @return   - вспомогательный метод. Вернёт отформатированный список персон
      */
-    private CommonRsListPersonRs<PersonRs>  getpersonsList(ArrayList<PersonRs> personsData,
+    private CommonRsListPersonRs<PersonRs>  generatePersonsList(ArrayList<PersonRs> personsData,
                                                            int offSet, int perPage, long total) {
         CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
         personsList.setData(personsData);
         personsList.setItemPerPage(perPage);
-        personsList.setOffset(0);
+        personsList.setOffset(offSet);
         personsList.setPerPage(perPage);
         personsList.setTotal(total);
         return personsList;
@@ -391,15 +373,8 @@ public class FriendShipService {
         long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.REQUEST.name());
         Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.REQUEST.name(), PageRequest.of(offset, perPage));
-        ArrayList<PersonRs> personsData = new ArrayList<>();
-        Iterator<Person> iterator = personsPage.iterator();
-        while (iterator.hasNext()) {
-            Person person = iterator.next();
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.REQUEST.name(),
-                    false);
-            personsData.add(personRs);
-        }
-        CommonRsListPersonRs<PersonRs> personsList = getpersonsList(personsData, offset, perPage, total);
+        ArrayList<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.REQUEST.name(), false) ;
+        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, offset, perPage, total);
         return personsList;
     }
 }

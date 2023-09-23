@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
+import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
 
 import java.util.Optional;
 
@@ -27,8 +28,24 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
                    "and f.dst_person_id = :dst_person_id " +
                    "and (f.status_name = :shipStatus or :shipStatus = '')", nativeQuery = true)
     Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
-                                                     @Param("dst_person_id") long dst_person_id,
-                                                     @Param("shipStatus") String shipStatus);
+                                                      @Param("dst_person_id") long dst_person_id,
+                                                      @Param("shipStatus") String shipStatus);
+
+    /**
+     *
+     * @param src_person_id - ID 1-ой персоны
+     * @param dst_person_id - ID 2-ой персоны
+     * @param status - статус дружбы
+     * @return - дефолтный метод-обертка. Вернет объект класса FriendShip или сгенерирует исключение
+     * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если запись в таблице friendships
+     * по входным параметрам не найдена
+     */
+    default FriendShip getFriendShipByIdsAndStatusImpl(long src_person_id, long dst_person_id, FriendShipStatus status)
+    throws FriendShipNotFoundExeption {
+        FriendShip friendShip = getFriendShipByIdsAndStatus(src_person_id, dst_person_id, status.name())
+                .orElseThrow(() ->new FriendShipNotFoundExeption(status));
+        return friendShip;
+    }
 
     /**
      *  удаляем все связи в таблице friendships между персонами, переданными в параметрах
