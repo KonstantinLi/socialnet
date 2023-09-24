@@ -3,18 +3,16 @@ package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.request.PersonRs;
-import ru.skillbox.socialnet.dto.request.response.CaptchaRs;
-import ru.skillbox.socialnet.dto.request.response.CommonRsComplexRs;
-import ru.skillbox.socialnet.dto.request.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.dto.request.response.ComplexRs;
+import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.CaptchaRs;
+import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.model.LoginRq;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.repository.PersonSettingsRepository;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
@@ -27,16 +25,14 @@ public class AuthService {
     public final ValidationUtilsRq validationUtils;
     private final AccountService accountService;
     private final JwtTokenUtils jwtTokenUtils;
-    private final UserDetailsService userService;
     private final PersonRepository personRepository;
-    private final PersonSettingsRepository personSettingsRepository;
 
 
     public CommonRsComplexRs<ComplexRs> logout(String authorization) {
         CommonRsComplexRs<ComplexRs> commonRsComplexRs = new CommonRsComplexRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
-        commonRsComplexRs.setTimestamp(new Date().getTime());
+        commonRsComplexRs.setTimeStamp(new Date().getTime());
         SecurityContextHolder.clearContext();
         return commonRsComplexRs;
     }
@@ -48,10 +44,10 @@ public class AuthService {
         String password = accountService.getDecodedPassword(person.getPassword());
         validationUtils.validationPassword(password, loginRq.getPassword());
         CommonRsPersonRs<PersonRs> commonRsPersonRs = new CommonRsPersonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
+        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, "", false);
         personRs.setToken(getToken(person));
         commonRsPersonRs.setData(personRs);
-        commonRsPersonRs.setTimestamp(new Date().getTime());
+        commonRsPersonRs.setTimeStamp(new Date().getTime());
         return commonRsPersonRs;
     }
 

@@ -26,7 +26,7 @@ public interface PersonMapper {
     @Mapping(source = "person.onlineStatus", target = "online")
     @Mapping(source ="person.messagePermission", target = "messages_permission")
     @Mapping(source = "person.isBlocked", target = "is_blocked")
-    @Mapping(source = "person.isDeleted", target = "user_deleted")
+    @Mapping(source = "person.isDeleted", target = "is_deleted")
     @Mapping(source = "person.lastOnlineTime", target = "last_online_time", dateFormat = "dd.MM.yyyy hh:mm:ss")
     @Mapping(source = "person.city", target = "city")
     @Mapping(source = "friendStatus", target = "friend_status")

@@ -1,7 +1,6 @@
-package ru.skillbox.socialnet.dto.request.response;
+package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 public class RegisterRs<T>{

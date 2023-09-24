@@ -7,9 +7,9 @@ import java.time.ZoneOffset;
 import java.util.Collection;
 
 @Data
-public class CommonRsComplexRs<ComplexRs> {
+public class CommonRsComplexRs<T>{
 
-    private Collection<ComplexRs> data;
+    private T data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;

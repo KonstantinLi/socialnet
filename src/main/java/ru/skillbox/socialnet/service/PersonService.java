@@ -28,7 +28,7 @@ public class PersonService {
 
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.UNKNOWN.name(), false);
         CommonRsPersonRs<PersonRs> result = new CommonRsPersonRs<>();
-        result.setData((Collection<PersonRs>) personRs);
+        result.setData(personRs);
         return result;
     }
 }

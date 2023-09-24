@@ -2,8 +2,8 @@ package ru.skillbox.socialnet.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.request.response.ComplexRs;
-import ru.skillbox.socialnet.dto.request.response.RegisterRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.PersonSettings;
 import ru.skillbox.socialnet.exception.ExceptionBadRq;
