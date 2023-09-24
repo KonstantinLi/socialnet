@@ -6,8 +6,11 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.PersonSettings;
+import ru.skillbox.socialnet.entity.other.Captcha;
+import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.model.RegisterRq;
+import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
@@ -21,10 +24,13 @@ public class AccountService {
     public final PersonRepository personRepository;
     public final ValidationUtilsRq validationUtils;
     public final PersonSettingsRepository personSettingsRepository;
+    public final CaptchaRepository captchaRepository;
 
-    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws ExceptionBadRq {
+    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws ExceptionBadRq, BadRequestException {
         validationUtils.validationRegPassword(registerRq.getPasswd1(), registerRq.getPasswd2());
-        validationUtils.validationCode(registerRq.getCode(), registerRq.getCodeSecret());
+        Captcha captcha = captchaRepository.findBySecretСode(registerRq.getCodeSecret()).orElseThrow(
+                () -> new BadRequestException(""));
+        validationUtils.validationCode(registerRq.getCode(), captcha.getCode());
         if (personRepository.findByEmail(registerRq.getEmail()).isEmpty()) {
             Person person = addPerson(registerRq);
             personRepository.save(person);

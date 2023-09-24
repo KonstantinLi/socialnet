@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
+import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.exception.ExceptionBadRq;
 import ru.skillbox.socialnet.model.RegisterRq;
 import ru.skillbox.socialnet.services.AccountService;
@@ -18,7 +19,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/register")
-    public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) throws ExceptionBadRq {
+    public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) throws ExceptionBadRq, BadRequestException {
         return accountService.registration(registerRq);
     }
 }
