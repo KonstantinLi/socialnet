@@ -2,7 +2,6 @@ package ru.skillbox.socialnet.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +24,7 @@ import ru.skillbox.socialnet.exception.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.repository.*;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Getter
 public class PostsService {
     private final PostsRepository postsRepository;
     private final TagsRepository tagsRepository;
@@ -42,6 +41,7 @@ public class PostsService {
     private final FriendshipsRepository friendshipsRepository;
     private final WeatherRepository weatherRepository;
 
+    private final JwtTokenUtils jwtTokenUtils;
     private final EntityManager entityManager;
 
     private final LocalDateTimeConverter localDateTimeConverter = new LocalDateTimeConverter();
@@ -49,7 +49,7 @@ public class PostsService {
 
     @Transactional
     public CommonRsPostRs createPost(String authorization, Long publishDate, Long id, PostRq postRq) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         if (postRq.getTitle() == null || postRq.getTitle().isBlank()) {
             throw new BadRequestException("Post title is absent");
@@ -74,7 +74,7 @@ public class PostsService {
 
     @Transactional
     public CommonRsPostRs updateById(String authorization, Long id, PostRq postRq) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         return updatePost(
                 fetchPost(
@@ -103,7 +103,7 @@ public class PostsService {
 
     @Transactional
     public CommonRsPostRs getPostById(String authorization, Long id) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         return getPostResponse(
                 fetchPost(id, null),
@@ -122,7 +122,7 @@ public class PostsService {
             List<String> tags,
             String text
     ) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         Set<Long> personIds = null;
 
@@ -209,7 +209,7 @@ public class PostsService {
 
     @Transactional
     public CommonRsListPostRs getWall(String authorization, Long id, Integer offset, Integer perPage) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
         Person person = fetchPerson(id);
 
         List<Post> posts;
@@ -237,7 +237,7 @@ public class PostsService {
 
     @Transactional
     public CommonRsListPostRs getFeeds(String authorization, Integer offset, Integer perPage) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
         Person person = fetchPerson(myId);
 
         List<Post> posts;
@@ -442,11 +442,5 @@ public class PostsService {
         }
 
         return personRs;
-    }
-
-    private long getMyId(String authorization) {
-        // TODO: getMyId
-        //throw new UnauthorizedException();
-        return 123l;
     }
 }

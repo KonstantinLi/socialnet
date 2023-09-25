@@ -18,7 +18,7 @@ public class PostsController {
 
     @GetMapping("/post/{id}")
     public CommonRsPostRs getPostById(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id
     ) {
         return postsService.getPostById(authorization, id);
@@ -26,7 +26,7 @@ public class PostsController {
 
     @PutMapping("/post/{id}")
     public CommonRsPostRs updateById(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id,
             @RequestBody PostRq postRq
     ) {
@@ -35,7 +35,7 @@ public class PostsController {
 
     @DeleteMapping("/post/{id}")
     public CommonRsPostRs deleteById(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id
     ) {
         return postsService.deleteById(authorization, id);
@@ -43,7 +43,7 @@ public class PostsController {
 
     @PutMapping("/post/{id}/recover")
     public CommonRsPostRs recoverPostById(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id
     ) {
         return postsService.recoverPostById(authorization, id);
@@ -51,7 +51,7 @@ public class PostsController {
 
     @GetMapping("/users/{id}/wall")
     public CommonRsListPostRs getWall(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
@@ -61,7 +61,7 @@ public class PostsController {
 
     @PostMapping("/users/{id}/wall")
     public CommonRsPostRs createPost(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @RequestParam(value = "publish_date", required = false) Long publishDate,
             @PathVariable Long id,
             @RequestBody PostRq postRq
@@ -71,7 +71,7 @@ public class PostsController {
 
     @GetMapping("/post")
     public CommonRsListPostRs getPostsByQuery(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @RequestParam(required = false) String author,
             @RequestParam(value = "date_from", required = false) Long dateFrom,
             @RequestParam(value = "date_to", required = false) Long dateTo,
@@ -87,7 +87,7 @@ public class PostsController {
 
     @GetMapping("/feeds")
     public CommonRsListPostRs getFeeds(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
     ) {

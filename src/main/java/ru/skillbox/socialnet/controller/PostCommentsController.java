@@ -16,7 +16,7 @@ public class PostCommentsController {
 
     @PutMapping("/{id}/comments/{comment_id}")
     public CommonRsCommentRs editComment(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId,
             @RequestBody CommentRq commentRq
@@ -26,7 +26,7 @@ public class PostCommentsController {
 
     @DeleteMapping("/{id}/comments/{comment_id}")
     public CommonRsCommentRs deleteComment(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
     ) {
@@ -35,7 +35,7 @@ public class PostCommentsController {
 
     @PutMapping("/{id}/comments/{comment_id}/recover")
     public CommonRsCommentRs recoverComment(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
     ) {
@@ -44,7 +44,7 @@ public class PostCommentsController {
 
     @GetMapping("/{postId}/comments")
     public CommonRsListCommentRs getComments(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long postId,
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = "20") Integer perPage
@@ -54,7 +54,7 @@ public class PostCommentsController {
 
     @PostMapping("/{postId}/comments")
     public CommonRsCommentRs createComment(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @PathVariable Long postId,
             @RequestBody CommentRq commentRq
     ) {

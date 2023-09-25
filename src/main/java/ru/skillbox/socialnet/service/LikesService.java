@@ -15,6 +15,7 @@ import ru.skillbox.socialnet.repository.LikesRepository;
 import ru.skillbox.socialnet.dto.request.LikeRq;
 import ru.skillbox.socialnet.repository.PostCommentsRepository;
 import ru.skillbox.socialnet.repository.PostsRepository;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,9 +27,11 @@ public class LikesService {
     private final PostsRepository postsRepository;
     private final PostCommentsRepository postCommentsRepository;
 
+    private final JwtTokenUtils jwtTokenUtils;
+
     @Transactional
     public CommonRsLikeRs getLikes(String authorization, Long itemId, LikeType type) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         Like like = new Like();
         like.setType(type);
@@ -39,7 +42,7 @@ public class LikesService {
 
     @Transactional
     public CommonRsLikeRs putLike(String authorization, LikeRq likeRq) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         if (likeRq.getType() == null || likeRq.getItemId() == null) {
             throw new BadRequestException("No like type or item id provided");
@@ -111,7 +114,7 @@ public class LikesService {
 
     @Transactional
     public CommonRsLikeRs deleteLike(String authorization, Long itemId, LikeType type) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         Optional<Like> optionalLike;
 
@@ -158,10 +161,5 @@ public class LikesService {
         commonRsLikeRs.setData(likeRs);
 
         return commonRsLikeRs;
-    }
-
-    private long getMyId(String authorization) {
-        // TODO: LikesService getMyId
-        return 123l;
     }
 }

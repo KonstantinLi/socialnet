@@ -20,6 +20,7 @@ import ru.skillbox.socialnet.exception.InternalServerErrorException;
 import ru.skillbox.socialnet.exception.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.repository.*;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Getter
 public class PostCommentsService {
     private final PostCommentsRepository postCommentsRepository;
     private final PostsRepository postsRepository;
@@ -37,11 +37,13 @@ public class PostCommentsService {
     private final FriendshipsRepository friendshipsRepository;
     private final WeatherRepository weatherRepository;
 
+    private final JwtTokenUtils jwtTokenUtils;
+
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
     @Transactional
     public CommonRsCommentRs createComment(String authorization, Long postId, CommentRq commentRq) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
             throw new BadRequestException("Comment text is absent");
@@ -62,7 +64,7 @@ public class PostCommentsService {
 
     @Transactional
     public CommonRsCommentRs editComment(String authorization, Long id, Long commentId, CommentRq commentRq) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
 
         return updatePostComment(
                 fetchPostComment(
@@ -91,7 +93,7 @@ public class PostCommentsService {
 
     @Transactional
     public CommonRsListCommentRs getComments(String authorization, Long postId, Integer offset, Integer perPage) {
-        Long myId = getMyId(authorization);
+        Long myId = jwtTokenUtils.getId(authorization);
         Post post = fetchPost(postId, false);
 
         List<PostComment> postComments;
@@ -255,11 +257,5 @@ public class PostCommentsService {
         }
 
         return personRs;
-    }
-
-    private long getMyId(String authorization) {
-        // TODO: getMyId
-        //throw new UnauthorizedException();
-        return 123l;
     }
 }

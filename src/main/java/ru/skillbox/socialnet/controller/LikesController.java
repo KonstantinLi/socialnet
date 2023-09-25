@@ -15,7 +15,7 @@ public class LikesController {
 
     @GetMapping
     public CommonRsLikeRs getLikes(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @RequestParam("item_id") Long itemId,
             @RequestParam LikeType type
     ) {
@@ -24,7 +24,7 @@ public class LikesController {
 
     @PutMapping
     public CommonRsLikeRs putLike(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @RequestBody LikeRq likeRq
     ) {
         return likesService.putLike(authorization, likeRq);
@@ -32,7 +32,7 @@ public class LikesController {
 
     @DeleteMapping
     public CommonRsLikeRs deleteLike(
-            @RequestParam String authorization,
+            @RequestHeader String authorization,
             @RequestParam("item_id") Long itemId,
             @RequestParam LikeType type
     ) {
