@@ -1,5 +1,9 @@
 package ru.skillbox.socialnet.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,13 +18,10 @@ import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
 import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.util.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
-
-import java.time.LocalDateTime;
-import java.util.*;
+import ru.skillbox.socialnet.security.util.JwtTokenUtils;
+import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 @Slf4j
 @Service
@@ -53,7 +54,7 @@ public class FriendShipService {
         ComplexRs complexRs = new ComplexRs(null, null, null, null);
         ArrayList<ComplexRs> complexRsList = new ArrayList<>();
         complexRsList.add(complexRs);
-        response.setData(complexRsList);
+       // response.setData(complexRsList);
         response.setItemPerPage(1);
         response.setPerPage(0);
         response.setOffset(0);
