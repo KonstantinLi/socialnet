@@ -27,6 +27,11 @@ spring:
     drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
+  servlet:
+    multipart:
+      max-file-size=5MB
+      max-request-size=5MB
+
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
   lifetime: 1h
@@ -38,6 +43,9 @@ logging:
 
 aws:
   bucket-name: socialnet-bucket
-  accessKeyId: AKIAV3IS4ZIFYKNKL4MX
-  secretAccessKey: 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
+  access-key-id: AKIAV3IS4ZIFYKNKL4MX
+  secret-access-key: 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
   region: eu-north-1
+  max-file-size: 5242880
+  photo-url-prefix: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/
+  default-photo-url: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/profile_photo_default.jpg

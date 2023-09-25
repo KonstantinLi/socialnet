@@ -1,6 +1,7 @@
 package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.ComplexRs;
 import ru.skillbox.socialnet.dto.PersonRs;
@@ -23,13 +24,23 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
+    @Value("${aws.default-photo-url}")
+    private String defaultPhotoUrl;
+
     public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
+
         Optional<Person> optional = personRepository.findById(otherUserId);
         if (optional.isEmpty()) {
             throw new BadRequestException("Пользователь с указанным id не найден");
         }
         Person person = optional.get();
+
+        if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
+            person.setPhoto(defaultPhotoUrl);
+        }
+
         PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
+        personRs.setToken("token");
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
         return result;
@@ -73,8 +84,8 @@ public class PersonService {
      * Method checks if user is present and not blocked or deleted
      *
      * @param person - user to check
-     *
-     * throws exceptions if user is not presented, blocked or deleted
+     *               <p>
+     *               throws exceptions if user is not presented, blocked or deleted
      */
     //TODO finish method
     private void getAvailabilityError(
@@ -94,7 +105,7 @@ public class PersonService {
         throw new BadRequestException(errorResponse);
     }
 
-    public void updatePersonInfo(Person person, UserRq userData) {
+    private void updatePersonInfo(Person person, UserRq userData) {
         if (userData.getAbout() != null) {
             person.setAbout(userData.getAbout());
         }
@@ -108,7 +119,11 @@ public class PersonService {
             person.setPhone(userData.getPhone());
         }
         if (userData.getBirth_date() != null) {
-            person.setBirthDate(LocalDateTime.parse(userData.getBirth_date()));
+            String birthDate = userData.getBirth_date();
+            if (birthDate.contains("+")) {
+                birthDate = birthDate.substring(0, birthDate.indexOf("+"));
+            }
+            person.setBirthDate(LocalDateTime.parse(birthDate));
         }
         if (userData.getFirst_name() != null) {
             person.setFirstName(userData.getFirst_name());

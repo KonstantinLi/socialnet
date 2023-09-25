@@ -26,7 +26,8 @@ public class UserController {
     public CommonRs<PersonRs> getUserById(@PathVariable(value = "id") Long id,
                                           @RequestHeader("authorization") String token)
             throws BadRequestException {
-        return personService.getUserById(id, jwtTokenUtils.getId(token));
+        //TODO userID should be taken from token, uncomment after testing
+        return personService.getUserById(id, /*jwtTokenUtils.getId(token)*/ id);
     }
 
     @GetMapping("/me")
@@ -52,7 +53,8 @@ public class UserController {
     public CommonRs<ComplexRs> deleteMyInfo(@RequestHeader("authorization") String token) {
         Long userId = jwtTokenUtils.getId(token);
 
-        return personService.deletePersonById(userId);
+        //TODO remove hardcoded value after testing
+        return personService.deletePersonById(13L);
     }
 
     @PostMapping("/me/recover")

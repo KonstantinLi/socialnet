@@ -36,6 +36,7 @@ public class JwtTokenUtils {
     }
 
     public boolean validateAccessToken(String token) {
+
         try {
             Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);
             return true;
@@ -44,7 +45,8 @@ public class JwtTokenUtils {
         } catch (IllegalArgumentException ex) {
             log.error("Token is null, empty or only whitespace", ex);
         } catch (MalformedJwtException ex) {
-            log.error("JWT is invalid", ex);
+            //TODO uncomment after testing
+            //log.error("JWT is invalid", ex);
         } catch (UnsupportedJwtException ex) {
             log.error("JWT is not supported", ex);
         } catch (SignatureException ex) {
