@@ -48,6 +48,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+    <!-- https://mavenlibs.com/maven/dependency/org.springframework/spring-context -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>6.0.11</version>
+    </dependency>
 
     <!-- DB -->
     <dependency>
@@ -96,7 +102,13 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.GitHub.cage</groupId>
+      <artifactId>cage</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
+
 
   <build>
     <plugins>

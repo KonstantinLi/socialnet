@@ -1,12 +1,13 @@
 package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.service.PersonService;
+import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.services.UserService;
+import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
 
 @RestController
@@ -14,12 +15,19 @@ import ru.skillbox.socialnet.service.PersonService;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final PersonService personService;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final ValidationUtilsRq validationUtils;
+private final UserService userService;
 
     @GetMapping("/{id}")
-    public CommonRsPersonRs<PersonRs> getUserById(@PathVariable(value = "id") Long id,
-                                                  @RequestHeader("authorization") String token) throws BadRequestException {
-        return personService.getUserById(id, jwtTokenUtils.getId(token));
+    public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById (@PathVariable(value = "id") Integer id,
+                                                                   @RequestHeader("authorization") String token) {
+        CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
+        response.setData(new PersonRs());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws ExceptionBadRq {
+        return userService.userMe(token);
     }
 }

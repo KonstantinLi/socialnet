@@ -1,17 +1,12 @@
 package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
-public class CommonRsPersonRs<T>{
-
-    private T data;
+public class CommonRsPostRs {
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
+    private Long timestamp;
     private Long total;
-    private Long timeStamp;
-
 }
