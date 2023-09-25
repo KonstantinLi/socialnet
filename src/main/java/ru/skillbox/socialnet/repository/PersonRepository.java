@@ -1,16 +1,19 @@
 package ru.skillbox.socialnet.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import ru.skillbox.socialnet.data.entity.Person;
+import ru.skillbox.socialnet.entity.Person;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
-public interface PersonRepository extends CrudRepository<Person, Long> {
+public interface PersonRepository extends JpaRepository<Person, Long> {
 
     @Query("SELECT p.id FROM Person p")
     List<Long> findAllId();
+
+    Optional<Person> findByEmail(String email);
 }

@@ -2,15 +2,16 @@ package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.data.dto.ComplexRs;
-import ru.skillbox.socialnet.data.dto.PersonRs;
-import ru.skillbox.socialnet.data.dto.UserRq;
-import ru.skillbox.socialnet.data.dto.response.ApiResponse;
-import ru.skillbox.socialnet.data.dto.response.CorrectResponse;
-import ru.skillbox.socialnet.data.dto.response.ErrorResponse;
-import ru.skillbox.socialnet.data.entity.Person;
-import ru.skillbox.socialnet.data.enums.MessagePermission;
+import ru.skillbox.socialnet.dto.ComplexRs;
+import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.UserRq;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.ErrorRs;
+import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.enums.MessagePermission;
+import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.repository.PersonRepository;
+import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,30 +23,21 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
-    public ApiResponse getPersonRsById(Long userId) {
-        Optional<Person> person = personRepository.findById(userId);
-
-        ErrorResponse availabilityError = getAvailabilityError(person);
-        if (availabilityError.getError() != null) {
-            return availabilityError;
+    public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
+        Optional<Person> optional = personRepository.findById(otherUserId);
+        if (optional.isEmpty()) {
+            throw new BadRequestException("Пользователь с указанным id не найден");
         }
-
-        //noinspection OptionalGetWithoutIsPresent
-        PersonRs personRs = new PersonRs(person.get());
-        CorrectResponse<PersonRs> correctResponse = new CorrectResponse<>();
-        correctResponse.setData(List.of(personRs));
-
-        return correctResponse;
+        Person person = optional.get();
+        PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
+        CommonRs<PersonRs> result = new CommonRs<>();
+        result.setData(personRs);
+        return result;
     }
 
-    public ApiResponse updateUserInfo(Long userId, UserRq userData) {
+    public CommonRs<PersonRs> updateUserInfo(Long userId, UserRq userData) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-
-        ErrorResponse availabilityError = getAvailabilityError(personOptional);
-        if (availabilityError.getError() != null) {
-            return availabilityError;
-        }
 
         //noinspection OptionalGetWithoutIsPresent
         Person person = personOptional.get();
@@ -54,21 +46,16 @@ public class PersonService {
         System.out.println(userData);
         Person savedPerson = personRepository.save(person);
 
-        CorrectResponse<PersonRs> response = new CorrectResponse<>();
-        PersonRs personRs = new PersonRs(savedPerson);
-        response.setData(List.of(personRs));
+        CommonRs<PersonRs> response = new CommonRs<>();
+        PersonRs personRs = PersonMapper.INSTANCE.toRs(savedPerson);
+        response.setData(personRs);
 
         return response;
     }
 
-    public ApiResponse deletePersonById(Long userId) {
+    public CommonRs<ComplexRs> deletePersonById(Long userId) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-
-        ErrorResponse availabilityError = getAvailabilityError(personOptional);
-        if (availabilityError.getError() != null) {
-            return availabilityError;
-        }
 
         //noinspection OptionalGetWithoutIsPresent
         personRepository.delete(personOptional.get());
@@ -76,28 +63,27 @@ public class PersonService {
         ComplexRs successMessage = new ComplexRs();
         successMessage.setMessage("Ваша страница удалена :(");
 
-        CorrectResponse<Object> response = new CorrectResponse<>();
-        response.setData(List.of(successMessage));
+        CommonRs<ComplexRs> result = new CommonRs<>();
+        result.setData(successMessage);
 
-        return response;
+        return result;
     }
 
     /**
      * Method checks if user is present and not blocked or deleted
      *
      * @param person - user to check
-     * @return ErrorResponse with error if user is not present or blocked or deleted,
-     * empty ErrorResponse if everything is ok
+     *
+     * throws exceptions if user is not presented, blocked or deleted
      */
-    private static ErrorResponse getAvailabilityError(
-            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> person) {
-        ErrorResponse errorResponse = new ErrorResponse();
-
+    //TODO finish method
+    private void getAvailabilityError(
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> person) throws BadRequestException {
+        ErrorRs errorResponse = new ErrorRs();
         if (person.isEmpty()) {
             errorResponse.setError("AccountFindException");
             errorResponse.setError_description("Cannot find user by token");
         } else if (person.get().isBlocked()) {
-
             errorResponse.setError("AccountBlockedException");
             errorResponse.setError_description("User account has been BLOCKED");
         } else if (person.get().isDeleted()) {
@@ -105,10 +91,9 @@ public class PersonService {
             errorResponse.setError_description("User account has been DELETED");
         }
 
-        return errorResponse;
+        throw new BadRequestException(errorResponse);
     }
 
-    //TODO remove this method when id retrieval will be implemented
     public void updatePersonInfo(Person person, UserRq userData) {
         if (userData.getAbout() != null) {
             person.setAbout(userData.getAbout());
@@ -140,6 +125,8 @@ public class PersonService {
         }
     }
 
+
+    //TODO remove this method when id retrieval will be implemented
     public long getRandomIdFromDB() {
         List<Long> allId = personRepository.findAllId();
         return allId.get(0);
