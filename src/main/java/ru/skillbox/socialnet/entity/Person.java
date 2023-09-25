@@ -103,7 +103,7 @@ public class Person {
   /** разрешение на получение сообщений: ALL - от всех пользователей (кроме заблокированных), FRIENDS - только от друзей */
   @Enumerated(EnumType.STRING)
   @Column(name = "message_permissions")
-  private MessagePermission messagePermissions;
+  private MessagePermission messagePermission;
 
   @OneToOne
   @JoinColumn(name = "person_settings_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person_settings"))
