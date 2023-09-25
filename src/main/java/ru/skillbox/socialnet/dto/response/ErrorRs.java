@@ -1,21 +1,25 @@
 package ru.skillbox.socialnet.dto.response;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorRs {
 
     private Long timeStamp;
     private String error;
-    private String error_description;
+    @JsonProperty("error_description")
+    private String errorDescription;
 
-    public ErrorRs(String error, String error_description) {
+    public ErrorRs(String error, String errorDescription) {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
         this.error = error;
-        this.error_description = error_description;
+        this.errorDescription = errorDescription;
     }
 }

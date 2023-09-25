@@ -1,12 +1,14 @@
 package ru.skillbox.socialnet.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Data
-public class CommonRsPersonRs<T> {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CommonRs<T> {
 
     private Long timeStamp;
     private T data;
@@ -15,7 +17,7 @@ public class CommonRsPersonRs<T> {
     private Integer perPage;
     private Long total;
 
-    public CommonRsPersonRs() {
+    public CommonRs() {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 

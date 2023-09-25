@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/socialnet
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:54321}/socialnet
     username: root
     password: root
 
@@ -29,7 +29,7 @@ spring:
 
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
-  lifetime: 1h
+  lifetime: 12h
 
 logging:
   level:
