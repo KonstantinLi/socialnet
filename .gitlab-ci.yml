@@ -32,7 +32,8 @@ build-job:       # This job runs in the build stage, which runs first.
   tags:
     - socialnet_runner
   script:
-    - 'mvn compile'
+    - mvn clean
+    - mvn compile
   cache:
     paths:
       - ./target
@@ -47,7 +48,7 @@ test:
   except:
     - tags
   script:
-    - 'mvn test'
+    - mvn test
   cache:
     paths:
       - ./target
@@ -62,7 +63,7 @@ package:
   except:
     - tags
   script:
-    - 'mvn package -Dmaven.test.skip=true'
+    - mvn package -Dmaven.test.skip=true
   artifacts:
     paths:
       - target/*.jar
