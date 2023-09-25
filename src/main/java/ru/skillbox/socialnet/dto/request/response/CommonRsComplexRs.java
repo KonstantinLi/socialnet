@@ -1,9 +1,8 @@
-package ru.skillbox.socialnet.dto.response;
+package ru.skillbox.socialnet.dto.request.response;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collection;
 
 @Data
@@ -13,11 +12,12 @@ public class CommonRsComplexRs<T>{
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private Long total;
-    private Long timeStamp;
+    private Integer total;
+    private Long timestamp;
 
 
     public CommonRsComplexRs() {
-        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        super();
     }
+
 }

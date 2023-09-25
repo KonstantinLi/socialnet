@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.dto;
+package ru.skillbox.socialnet.dto.request;
 
 import lombok.Data;
 
@@ -8,14 +8,14 @@ public class PersonRs {
     private String about;
     private String city;
     private String country;
-    //    private ru.skillbox.socialnet.data.dto.CurrencyRs currency;
+//    private ru.skillbox.socialnet.data.dto.CurrencyRs currency;
     private String email;
     private Long id;
     private Boolean online;
     private String phone;
     private String photo;
     private String token;
-    //    private ru.skillbox.socialnet.data.dto.WeatherRs weather;
+//    private ru.skillbox.socialnet.data.dto.WeatherRs weather;
     private String birth_date;
     private String first_name;
     private String friend_status;
