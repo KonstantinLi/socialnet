@@ -70,4 +70,6 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
             " where f.sourcePerson = :sourcePerson and f.destinationPerson = :destinationPerson ")
     Optional<FriendShipStatus> getFriendhipStatusBetweenPersons(@Param("sourcePerson") Person sourcePerson,
                                                                 @Param("destinationPerson") Person destinationPerson);
+
+    Optional<FriendShip> findBySrcPersonIdAndDstPersonId(Long srcPersonId, Long dstPersonId);
 }

@@ -1,6 +1,5 @@
 package ru.skillbox.socialnet.service;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
@@ -9,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.response.*;
-import ru.skillbox.socialnet.entity.Friendship;
-import ru.skillbox.socialnet.entity.enums.FriendshipStatus;
+import ru.skillbox.socialnet.entity.FriendShip;
+import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.other.Weather;
 import ru.skillbox.socialnet.entity.post.Post;
@@ -34,7 +33,7 @@ public class PostCommentsService {
     private final PostCommentsRepository postCommentsRepository;
     private final PostsRepository postsRepository;
     private final LikesRepository likesRepository;
-    private final FriendshipsRepository friendshipsRepository;
+    private final FriendShipRepository friendShipRepository;
     private final WeatherRepository weatherRepository;
 
     private final JwtTokenUtils jwtTokenUtils;
@@ -222,27 +221,27 @@ public class PostCommentsService {
         return commentRs;
     }
 
-    private FriendshipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
-        Optional<Friendship> optionalFriendship;
+    private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
+        Optional<FriendShip> optionalFriendship;
 
         try {
-            optionalFriendship = friendshipsRepository
+            optionalFriendship = friendShipRepository
                     .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
         } catch (Exception e) {
             throw new InternalServerErrorException("getFriendshipStatus", e);
         }
 
         if (optionalFriendship.isEmpty()) {
-            return FriendshipStatus.UNKNOWN;
+            return FriendShipStatus.UNKNOWN;
         }
 
         return optionalFriendship.get().getStatus();
     }
 
     private PersonRs fillAuthor(PersonRs personRs, Long myId) {
-        FriendshipStatus friendshipStatus = getFriendshipStatus(personRs.getId(), myId);
+        FriendShipStatus friendshipStatus = getFriendshipStatus(personRs.getId(), myId);
         personRs.setFriendStatus(friendshipStatus.toString());
-        personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendshipStatus.BLOCKED);
+        personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendShipStatus.BLOCKED);
 
         Optional<Weather> optionalWeather;
 

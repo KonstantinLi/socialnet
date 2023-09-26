@@ -1,6 +1,6 @@
 package ru.skillbox.socialnet.entity.enums;
 
-public enum FriendshipStatus {
+public enum FriendShipStatus {
   BLOCKED,
   FRIEND,
   RECEIVED_REQUEST,

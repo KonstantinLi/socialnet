@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.*;
-import ru.skillbox.socialnet.entity.Friendship;
+import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
-import ru.skillbox.socialnet.entity.enums.FriendshipStatus;
+import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.enums.PostType;
 import ru.skillbox.socialnet.entity.other.Weather;
@@ -38,7 +38,7 @@ public class PostsService {
     private final TagsRepository tagsRepository;
     private final PersonsRepository personsRepository;
     private final LikesRepository likesRepository;
-    private final FriendshipsRepository friendshipsRepository;
+    private final FriendShipRepository friendShipRepository;
     private final WeatherRepository weatherRepository;
 
     private final JwtTokenUtils jwtTokenUtils;
@@ -407,27 +407,27 @@ public class PostsService {
         return post;
     }
 
-    private FriendshipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
-        Optional<Friendship> optionalFriendship;
+    private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
+        Optional<FriendShip> optionalFriendship;
 
         try {
-            optionalFriendship = friendshipsRepository
+            optionalFriendship = friendShipRepository
                     .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
         } catch (Exception e) {
             throw new InternalServerErrorException("getFriendshipStatus", e);
         }
 
         if (optionalFriendship.isEmpty()) {
-            return FriendshipStatus.UNKNOWN;
+            return FriendShipStatus.UNKNOWN;
         }
 
         return optionalFriendship.get().getStatus();
     }
 
     private PersonRs fillAuthor(PersonRs personRs, Long myId) {
-        FriendshipStatus friendshipStatus = getFriendshipStatus(personRs.getId(), myId);
+        FriendShipStatus friendshipStatus = getFriendshipStatus(personRs.getId(), myId);
         personRs.setFriendStatus(friendshipStatus.toString());
-        personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendshipStatus.BLOCKED);
+        personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendShipStatus.BLOCKED);
 
         Optional<Weather> optionalWeather;
 

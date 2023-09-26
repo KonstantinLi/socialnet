@@ -1,7 +1,9 @@
 package ru.skillbox.socialnet.util.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.entity.Person;

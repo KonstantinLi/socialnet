@@ -53,7 +53,7 @@ public class FriendShipService {
         ComplexRs complexRs = new ComplexRs(null, null, null, null);
         ArrayList<ComplexRs> complexRsList = new ArrayList<>();
         complexRsList.add(complexRs);
-        response.setData(complexRsList);
+        // response.setData(complexRsList); // Type mismatch
         response.setItemPerPage(1);
         response.setPerPage(0);
         response.setOffset(0);

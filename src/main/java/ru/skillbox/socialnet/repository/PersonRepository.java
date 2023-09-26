@@ -73,8 +73,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     /**
      *
      * @param currentPersonId - id текущей персоны
-     * @param statusName      - статус в таблице Friendship где текущая персона = src_person_id
-     * @return - запрос вернет количество персон, которые имеют определенный статус в таблице Friendship с текущей персоной
+     * @param statusName      - статус в таблице FriendShip где текущая персона = src_person_id
+     * @return - запрос вернет количество персон, которые имеют определенный статус в таблице FriendShip с текущей персоной
      */
     @Query(value = "select count(p) from persons p where p.id in " +
             "(select f.dst_person_id from friendships f " +

@@ -14,13 +14,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.entity.enums.FriendshipStatus;
+import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "friendships")
-public class Friendship {
+public class FriendShip {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class Friendship {
   /** статус */
   @Column(name = "status_name")
   @Enumerated(EnumType.STRING)
-  private FriendshipStatus status;
+  private FriendShipStatus status;
 
 
   @ManyToOne

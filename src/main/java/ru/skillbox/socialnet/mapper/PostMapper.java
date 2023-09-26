@@ -32,7 +32,6 @@ public interface PostMapper {
     @Mapping(target = "tag", source = ".")
     Tag StringToTag(String string);
 
-    @Mapping(target = "messagesPermission", source = "messagePermissions")
     @Mapping(target = "online", source = "onlineStatus")
     @Mapping(target = "userDeleted", source = "isDeleted")
     PersonRs personToPersonRs(Person person);

@@ -20,7 +20,6 @@ import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
