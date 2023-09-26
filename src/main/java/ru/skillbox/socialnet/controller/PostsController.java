@@ -11,19 +11,19 @@ import ru.skillbox.socialnet.service.PostsService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/post")
+@RequestMapping("/api/v1/")
 @RequiredArgsConstructor
 public class PostsController {
 
     private final JwtTokenUtils jwtTokenUtils;
     private final PostsService postsService;
 
-    @GetMapping("")
+    @GetMapping("post")
     public CommonRs<List<PostRs>> getPostsByQuery(@RequestHeader(value = "authorization") String token,
                                                   @RequestParam(value = "author", required = false) String author,
-                                                  @RequestParam(value = "dateFrom",
+                                                  @RequestParam(value = "date_from",
                                                           required = false, defaultValue = "0") long dateFrom,
-                                                  @RequestParam(value = "dateTo",
+                                                  @RequestParam(value = "date_to",
                                                           required = false, defaultValue = "0") long dateTo,
                                                   @RequestParam(value = "offset",
                                                           required = false, defaultValue = "0") int offset,

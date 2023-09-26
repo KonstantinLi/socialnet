@@ -1,13 +1,12 @@
 package ru.skillbox.socialnet.entity.post;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,4 +22,13 @@ public class Tag {
   @Column(name = "tag")
   private String tag;
 
+  @ManyToMany
+  @JoinTable(name = "post2tag", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
+  @JsonIgnore
+  private List<Post> posts = new ArrayList<>();
+
+  @Override
+  public String toString() {
+    return tag;
+  }
 }
