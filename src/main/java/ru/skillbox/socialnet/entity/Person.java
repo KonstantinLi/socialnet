@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.entity;
+package ru.skillbox.socialnet.data.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.entity.enums.MessagePermission;
+import ru.skillbox.socialnet.data.enums.MessagePermission;
 
 @Getter
 @Setter
@@ -88,15 +88,15 @@ public class Person {
 
   /** подтверждена ли регистрация */
   @Column(name = "is_approved")
-  private boolean isApproved;
+  private Boolean isApproved;
 
   /** блокировка пользователя модератором / администратором */
   @Column(name = "is_blocked")
-  private boolean isBlocked;
+  private Boolean isBlocked;
 
   /** Удален */
   @Column(name = "is_deleted")
-  private boolean isDeleted;
+  private Boolean isDeleted;
 
   /** Статус */
   @Column(name = "online_status")

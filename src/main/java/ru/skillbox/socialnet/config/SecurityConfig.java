@@ -40,8 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/captcha").permitAll()
                         .requestMatchers("/api/v1/account/register").permitAll()
-                        //TODO change to authenticated
-                        .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler.authenticationEntryPoint((request, response, ex) -> response.sendError(

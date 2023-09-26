@@ -1,30 +1,34 @@
 package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.service.PersonService;
+import ru.skillbox.socialnet.dto.response.CaptchaRs;
+import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.model.LoginRq;
+import ru.skillbox.socialnet.services.AuthService;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class AuthController {
+    private final AuthService authService;
 
-    @Autowired
-    private PersonService personService;
-    private JwtTokenUtils jwtTokenUtils;
+    @PostMapping("/logout")
+    public CommonRsComplexRs<ComplexRs> logout(@RequestHeader String authorization) {
+        return authService.logout(authorization);
+    }
 
-    @CrossOrigin(origins = "http://localhost:8080")
     @PostMapping("/login")
-    public CommonRs<PersonRs> login() throws BadRequestException {
-        //TODO remove plug and implement login
-        return personService.getUserById(13L, 13L);
+    public CommonRsPersonRs<PersonRs> login(@RequestBody LoginRq loginRq) throws ExceptionBadRq {
+        return authService.login(loginRq);
+    }
+
+    @GetMapping("/captcha")
+    public CaptchaRs captcha() {
+        return authService.captcha();
     }
 }

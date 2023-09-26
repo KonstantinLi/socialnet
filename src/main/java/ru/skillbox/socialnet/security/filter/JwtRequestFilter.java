@@ -1,6 +1,5 @@
 package ru.skillbox.socialnet.security.filter;
 
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +22,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String authJwt = request.getHeader("Authorization");
 
         if (authJwt == null || !jwtTokenUtils.validateAccessToken(authJwt)) {

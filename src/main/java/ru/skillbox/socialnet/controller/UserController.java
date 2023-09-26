@@ -1,6 +1,7 @@
 package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.ComplexRs;
 import ru.skillbox.socialnet.dto.UserRq;
@@ -12,6 +13,15 @@ import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.ArrayList;
 import java.util.List;
+=======
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.services.UserService;
+import ru.skillbox.socialnet.util.ValidationUtilsRq;
+>>>>>>> origin/dev
 
 
 @RestController
@@ -84,4 +94,19 @@ public class UserController {
         return response;
     }
 
+    private final ValidationUtilsRq validationUtils;
+private final UserService userService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById (@PathVariable(value = "id") Integer id,
+                                                                   @RequestHeader("authorization") String token) {
+        CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
+        response.setData(new PersonRs());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws ExceptionBadRq {
+        return userService.userMe(token);
+    }
 }

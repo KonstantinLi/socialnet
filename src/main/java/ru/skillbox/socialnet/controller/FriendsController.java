@@ -1,65 +1,81 @@
 package ru.skillbox.socialnet.controller;
 
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.dto.ComplexRs;
+import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
+import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
+import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
+import ru.skillbox.socialnet.service.FriendShipService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/friends")
 public class FriendsController {
 
+    private final FriendShipService friendShipService;
+
     @PostMapping("/{id}")
-    public ResponseEntity<?> sendFriendshipRequest(@RequestHeader(name = "authorization") String authorization,
-                                                   @PathVariable(name = "id") int id) {
-        return ResponseEntity. ok().build();
+    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(@RequestHeader(name = "authorization") String authorization,
+                                                   @PathVariable(name = "id") Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
+        return friendShipService.sendFriendshipRequest(id, authorization);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>  deleteFriendById(@RequestHeader(name = "authorization") String authorization,
-                                               @PathVariable(name = "id") int id) {
-        return ResponseEntity.ok().build();
+    public CommonRsComplexRs<ComplexRs>  deleteFriendById(@RequestHeader(name = "authorization") String authorization,
+                                               @PathVariable(name = "id")  Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
+        return friendShipService.deleteFriendById(id, authorization);
     }
 
     @PostMapping("/request/{id}")
-    public ResponseEntity<?> addFriendById(@RequestHeader(name = "authorization") String authorization,
-                                           @PathVariable(name = "id") int id) {
-        return ResponseEntity.ok().build();
+    public CommonRsComplexRs<ComplexRs> addFriendById(@RequestHeader(name = "authorization") String authorization,
+                                           @PathVariable(name = "id") Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
+        return friendShipService.addFriendById(id, authorization);
     }
 
     @DeleteMapping("/request/{id}")
-    public ResponseEntity<?> declineFriendshipRequestById(@RequestHeader(name = "authorization") String authorization,
-                                                          @PathVariable(name = "id") int id) {
-        return ResponseEntity.ok().build();
+    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(@RequestHeader(name = "authorization") String authorization,
+                                                          @PathVariable(name = "id") Long id)
+            throws PersonNotFoundExeption, FriendShipNotFoundExeption {
+        return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
     @PostMapping("/block_unblock/{id}")
-    public ResponseEntity<?> blockOrUnblockUserByUser(@RequestHeader(name = "authorization") String authorization,
-                                                      @PathVariable(name = "id") int id) {
-        return ResponseEntity.ok().build();
+    public void blockOrUnblockUserByUser(@RequestHeader(name = "authorization", required = true) String authorization,
+                                                      @PathVariable(name = "id") Long id)  throws PersonNotFoundExeption {
+        friendShipService.blockOrUnblockUserByUser(id, authorization);
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
-                                        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-                                        @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
-        return ResponseEntity.ok().build();
+    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
+                                                                  @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
+                                                                  @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
+        return  friendShipService.getFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
     @GetMapping("/request")
-    public ResponseEntity<?> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
+    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
                                                      @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
                                                      @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
-        return ResponseEntity.ok().build();
+        return friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
     @GetMapping("/recommendations")
-    public ResponseEntity<?> getRecommendationFriends(@RequestHeader(name = "authorization") String authorization) {
-        return ResponseEntity.ok().build();
+    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(@RequestHeader(name = "authorization") String authorization) {
+        return friendShipService.getRecommendationFriends(authorization);
     }
 
     @GetMapping("/outgoing_requests")
-    public ResponseEntity<?> getOutgoingRequestsByUser(@RequestHeader(name = "authorization") String authorization,
+    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(@RequestHeader(name = "authorization") String authorization,
                                                        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-                                                       @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
-        return ResponseEntity.ok().build();
+                                                       @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage)
+            throws BadRequestException {
+        return friendShipService.getOutgoingRequestsByUser(authorization, offset, perPage);
     }
 }
