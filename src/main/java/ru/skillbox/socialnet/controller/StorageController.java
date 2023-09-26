@@ -16,13 +16,11 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class StorageController {
 
-    //TODO WHY DOESN'T WORK WITHOUT @Autowired
-    @Autowired
-    private StorageService storageService;
+    private final StorageService storageService;
 
     @PostMapping()
     public CommonRs<Storage> uploadProfileImage(@RequestParam("type") String type,
-                                                @RequestBody MultipartFile file) throws BadRequestException, InterruptedException {
+                                                @RequestBody MultipartFile file) throws BadRequestException, IOException {
         return storageService.uploadProfileImage(type, file);
     }
 }

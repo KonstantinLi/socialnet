@@ -42,10 +42,13 @@ logging:
       SQL: info
 
 aws:
-  bucket-name: socialnet-bucket
+  image-bucket-name: socialnet-bucket
   access-key-id: AKIAV3IS4ZIFYKNKL4MX
   secret-access-key: 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
   region: eu-north-1
-  max-file-size: 5242880
+  max-image-file-size: 5242880
   photo-url-prefix: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/
   default-photo-url: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/profile_photo_default.jpg
+  log-bucket-name: socialnet-logs
+  max-log-file-size: 5242880
+  log-url-prefix: https://socialnet-logs.s3.eu-north-1.amazonaws.com/

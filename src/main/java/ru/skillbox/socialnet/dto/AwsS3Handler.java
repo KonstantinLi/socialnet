@@ -8,13 +8,17 @@ import ru.skillbox.socialnet.errs.BadRequestException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
-import software.amazon.awssdk.services.s3.waiters.S3Waiter;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,8 +27,8 @@ import java.util.Objects;
 @Component
 public class AwsS3Handler {
 
-    @Value("${aws.bucket-name}")
-    private String awsBucketName;
+    @Value("${aws.image-bucket-name}")
+    private String imageBucketName;
 
     @Value("${aws.access-key-id}")
     private String accessKeyId;
@@ -35,46 +39,131 @@ public class AwsS3Handler {
     @Value("${aws.region}")
     private String regionName;
 
-    @Value("${aws.max-file-size}")
-    private String maxFileSize;
+    @Value("${aws.max-image-file-size}")
+    private String maxImageSize;
+
+    @Value("${aws.log-bucket-name}")
+    private String logBucketName;
+
+    @Value("${aws.max-log-file-size}")
+    private String maxLogFileSize;
+
+    @Value("${aws.log-url-prefix}")
+    private String logUrlPrefix;
 
     private S3Client client;
 
-    //TODO change RuntimeExceptions to custom exceptions
-    public void uploadFile(String type, MultipartFile file, String generatedFileName) throws BadRequestException, InterruptedException {
+    public void uploadImage(String type, MultipartFile image, String generatedFileName) throws BadRequestException, IOException {
+        checkImageForUpload(image);
+        clearDuplicateImages(generatedFileName);
 
-        checkFileForUpload(file);
+        byte[] imageContent = image.getBytes();
+
+        uploadFile(type, imageContent, generatedFileName, imageBucketName);
+    }
+
+    public void uploadLogFile(String type, File file, String logFileName) throws BadRequestException {
+        checkLogForUpload(file);
+        logFileName = checkForSameFileName(logFileName);
+
+        byte[] fileContent;
+
+        try {
+            fileContent = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            throw new BadRequestException("File cannot be read");
+        }
+
+        uploadFile(type, fileContent, logFileName, logBucketName);
+    }
+
+    private void uploadFile(String type,
+                            byte[] fileContent,
+                            String generatedFileName,
+                            String destinationBucketName) {
 
         initializeS3Client();
 
-        clearDuplicates(generatedFileName);
-
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(awsBucketName)
+                .bucket(destinationBucketName)
                 .key(generatedFileName)
                 .contentType(type)
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
-        byte[] bufferedFile;
         try {
-            bufferedFile = file.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException("File could not be read");
-        }
-
-        try {
-            client.putObject(putObjectRequest, RequestBody.fromBytes(bufferedFile));
+            client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
         } finally {
             client.close();
         }
-
     }
 
-    private void checkFileForUpload(MultipartFile file) throws BadRequestException {
+    public List<String> getLogFilesUrls() {
+        List<String> logFilesList = getBucketContentNames(logBucketName);
+        List<String> logFilesUrls = new ArrayList<>();
+
+        logFilesList.forEach(logFileName -> {
+            logFileName = logUrlPrefix + logFileName;
+            logFilesUrls.add(logFileName);
+        });
+
+        return logFilesUrls;
+    }
+
+    private void checkLogForUpload(File file) {
+        if (file == null) {
+            log.error("File is null");
+        } else if (!file.exists()) {
+            log.error("File does not exist");
+        } else if (!file.canRead()) {
+            log.error("File cannot be read");
+        } else if (file.length() > getMaxLogFileSize()) {
+            log.error("File is too large");
+        } else if (!file.getName().endsWith("log") && !file.getName().endsWith("txt")) {
+            log.error("File type is not supported. Supported fileTypes: .log, .txt");
+        }
+    }
+
+    public List<String> getBucketContentNames(String bucketName) {
+        ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+
+        initializeS3Client();
+
+        ArrayList<String> fileNames = new ArrayList<>();
+
+        client.listObjectsV2(listObjectsV2Request).contents()
+                .forEach(s3Object -> {
+                    fileNames.add(s3Object.key());
+                });
+
+        client.close();
+
+        return fileNames;
+    }
+
+    private String checkForSameFileName(String generatedFileName) {
+        String fileIdentifier = generatedFileName.split("_", 2)[0];
+
+        List<String> fileNames = getBucketContentNames(logBucketName);
+
+        for (String name : fileNames) {
+            if (name.contains(fileIdentifier)) {
+                generatedFileName = "%s_%s".formatted(generatedFileName, generateSalt());
+                log.warn("File with the same name already exists." +
+                        " New file will be uploaded with name: " +
+                        generatedFileName);
+            }
+        }
+
+        return generatedFileName;
+    }
+
+    private void checkImageForUpload(MultipartFile file) throws BadRequestException {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("File is empty");
-        } else if (file.getSize() > getMaxFileSize()) {
+        } else if (file.getSize() > getMaxImageSize()) {
             throw new BadRequestException("File is too large");
         } else if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith("jpg") &&
                 !file.getOriginalFilename().endsWith("png")) {
@@ -82,52 +171,38 @@ public class AwsS3Handler {
         }
     }
 
-    private List<String> listObjects() {
-        ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
-                .bucket(awsBucketName)
-                .build();
-
-        ArrayList<String> fileNames = new ArrayList<>();
-
-        client.listObjectsV2(listObjectsV2Request).contents()
-                .forEach(s3Object -> {
-            fileNames.add(s3Object.key());
-        });
-
-        return fileNames;
-    }
     /**
      * Method deletes all files with the same identifier as the uploaded file
      *
      * @param fileName - name of the uploaded file
-     * @return true if duplicates were found and deleted, false if no duplicates were found
      */
-    private boolean clearDuplicates(String fileName) {
+    private void clearDuplicateImages(String fileName) {
         String userId = fileName.split("_", 2)[0];
 
-        List<String> fileNames = listObjects();
-        boolean duplicatesFound = false;
+        List<String> fileNames = getBucketContentNames(imageBucketName);
 
         for (String name : fileNames) {
             if (name.contains(userId)) {
-                deleteFile(name);
-                duplicatesFound = true;
+                deleteFile(name, imageBucketName);
             }
         }
 
-        return duplicatesFound;
     }
 
-    private void deleteFile(String fileName) {
+    private void deleteFile(String fileName, String bucketName) {
 
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(awsBucketName)
+                .bucket(bucketName)
                 .key(fileName)
                 .build();
         client.deleteObject(deleteObjectRequest);
     }
 
     private void initializeS3Client() {
+        if (this.client != null) {
+            return;
+        }
+
         Region region = getRegion();
         AwsCredentialsProvider credentialsProvider = getCredentialsProvider();
 
@@ -137,16 +212,29 @@ public class AwsS3Handler {
                 .build();
     }
 
-    private Long getMaxFileSize() {
-        return Long.parseLong(maxFileSize);
-    }
-
     private Region getRegion() {
         return Region.of(regionName);
     }
+
+    private Long getMaxLogFileSize() {
+        return Long.parseLong(maxLogFileSize);
+    }
+
+    private Long getMaxImageSize() {
+        return Long.parseLong(maxImageSize);
+    }
+
     private AwsCredentialsProvider getCredentialsProvider() {
         return () -> AwsBasicCredentials.create(
                 accessKeyId,
                 secretAccessKey);
+    }
+
+    private String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] generatedBytes = new byte[20];
+        random.nextBytes(generatedBytes);
+
+        return new String(generatedBytes);
     }
 }
