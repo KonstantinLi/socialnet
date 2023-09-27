@@ -30,7 +30,7 @@ public class LikesService {
     private final JwtTokenUtils jwtTokenUtils;
 
     @Transactional
-    public CommonRsLikeRs getLikes(String authorization, Long itemId, LikeType type) {
+    public CommonRs<LikeRs> getLikes(String authorization, Long itemId, LikeType type) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         Like like = new Like();
@@ -41,7 +41,7 @@ public class LikesService {
     }
 
     @Transactional
-    public CommonRsLikeRs putLike(String authorization, LikeRq likeRq) {
+    public CommonRs<LikeRs> putLike(String authorization, LikeRq likeRq) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (likeRq.getType() == null || likeRq.getItemId() == null) {
@@ -113,7 +113,7 @@ public class LikesService {
     }
 
     @Transactional
-    public CommonRsLikeRs deleteLike(String authorization, Long itemId, LikeType type) {
+    public CommonRs<LikeRs> deleteLike(String authorization, Long itemId, LikeType type) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         Optional<Like> optionalLike;
@@ -144,8 +144,8 @@ public class LikesService {
     }
 
 
-    private CommonRsLikeRs getLikeResponse(Like like) {
-        CommonRsLikeRs commonRsLikeRs = new CommonRsLikeRs();
+    private CommonRs<LikeRs> getLikeResponse(Like like) {
+        CommonRs<LikeRs> commonRsLikeRs = new CommonRs<>();
         LikeRs likeRs = new LikeRs();
 
         try {

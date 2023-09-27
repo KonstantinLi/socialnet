@@ -7,8 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CaptchaRs;
-import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
-import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
@@ -35,26 +34,24 @@ public class AuthService {
     private final CaptchaRepository captchaRepository;
 
 
-    public CommonRsComplexRs<ComplexRs> logout(String authorization) {
-        CommonRsComplexRs<ComplexRs> commonRsComplexRs = new CommonRsComplexRs<>();
+    public CommonRs<ComplexRs> logout(String authorization) {
+        CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
-        commonRsComplexRs.setTimeStamp(new Date().getTime());
         SecurityContextHolder.clearContext();
         return commonRsComplexRs;
     }
 
-    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws ExceptionBadRq {
+    public CommonRs<PersonRs> login(LoginRq loginRq) throws ExceptionBadRq {
         validationUtils.validationEmail(loginRq.getEmail());
         Person person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow(
                 () -> new ExceptionBadRq("Пользователь не найден"));
         String password = accountService.getDecodedPassword(person.getPassword());
         validationUtils.validationPassword(password, loginRq.getPassword());
-        CommonRsPersonRs<PersonRs> commonRsPersonRs = new CommonRsPersonRs<>();
+        CommonRs<PersonRs> commonRsPersonRs = new CommonRs<>();
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, "", false);
         personRs.setToken(getToken(person));
         commonRsPersonRs.setData(personRs);
-        commonRsPersonRs.setTimeStamp(new Date().getTime());
         return commonRsPersonRs;
     }
 

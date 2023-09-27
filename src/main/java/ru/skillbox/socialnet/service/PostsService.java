@@ -48,7 +48,7 @@ public class PostsService {
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
     @Transactional
-    public CommonRsPostRs createPost(String authorization, Long publishDate, Long id, PostRq postRq) {
+    public CommonRs<PostRs> createPost(String authorization, Long publishDate, Long id, PostRq postRq) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (postRq.getTitle() == null || postRq.getTitle().isBlank()) {
@@ -73,7 +73,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsPostRs updateById(String authorization, Long id, PostRq postRq) {
+    public CommonRs<PostRs> updateById(String authorization, Long id, PostRq postRq) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         return updatePost(
@@ -86,7 +86,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsPostRs deleteById(String authorization, Long id) {
+    public CommonRs<PostRs> deleteById(String authorization, Long id) {
         PostRq postRq = new PostRq();
         postRq.setIsDeleted(true);
 
@@ -94,7 +94,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsPostRs recoverPostById(String authorization, Long id) {
+    public CommonRs<PostRs> recoverPostById(String authorization, Long id) {
         PostRq postRq = new PostRq();
         postRq.setIsDeleted(false);
 
@@ -102,7 +102,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsPostRs getPostById(String authorization, Long id) {
+    public CommonRs<PostRs> getPostById(String authorization, Long id) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         return getPostResponse(
@@ -112,7 +112,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsListPostRs getPostsByQuery(
+    public CommonRs<List<PostRs>> getPostsByQuery(
             String authorization,
             String author,
             Long dateFrom,
@@ -208,7 +208,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsListPostRs getWall(String authorization, Long id, Integer offset, Integer perPage) {
+    public CommonRs<List<PostRs>> getWall(String authorization, Long id, Integer offset, Integer perPage) {
         Long myId = jwtTokenUtils.getId(authorization);
         Person person = fetchPerson(id);
 
@@ -236,7 +236,7 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRsListPostRs getFeeds(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PostRs>> getFeeds(String authorization, Integer offset, Integer perPage) {
         Long myId = jwtTokenUtils.getId(authorization);
         Person person = fetchPerson(myId);
 
@@ -300,7 +300,7 @@ public class PostsService {
         return optionalPost.get();
     }
 
-    private CommonRsPostRs updatePost(Post post, PostRq postRq, Long myId) {
+    private CommonRs<PostRs> updatePost(Post post, PostRq postRq, Long myId) {
         savePost(post, postRq);
 
         return getPostResponse(post, myId);
@@ -322,14 +322,13 @@ public class PostsService {
         }
     }
 
-    private CommonRsListPostRs getListPostResponse(
+    private CommonRs<List<PostRs>> getListPostResponse(
             List<Post> posts, Long total, Long myId, Integer offset, Integer perPage
     ) {
-        CommonRsListPostRs commonRsListPostRs = new CommonRsListPostRs();
+        CommonRs<List<PostRs>> commonRsListPostRs = new CommonRs<>();
         commonRsListPostRs.setOffset(offset);
         commonRsListPostRs.setItemPerPage(perPage);
         commonRsListPostRs.setPerPage(perPage);
-        commonRsListPostRs.setTimestamp(new Date().getTime());
         commonRsListPostRs.setTotal(total);
 
         List<PostRs> postRsList = new ArrayList<>();
@@ -343,8 +342,8 @@ public class PostsService {
         return commonRsListPostRs;
     }
 
-    private CommonRsPostRs getPostResponse(Post post, Long myId) {
-        CommonRsPostRs commonRsPostRs = new CommonRsPostRs();
+    private CommonRs<PostRs> getPostResponse(Post post, Long myId) {
+        CommonRs<PostRs> commonRsPostRs = new CommonRs<>();
 
         commonRsPostRs.setData(postToPostRs(post, myId));
 

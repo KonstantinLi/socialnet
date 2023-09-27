@@ -41,7 +41,7 @@ public class PostCommentsService {
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
     @Transactional
-    public CommonRsCommentRs createComment(String authorization, Long postId, CommentRq commentRq) {
+    public CommonRs<CommentRs> createComment(String authorization, Long postId, CommentRq commentRq) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
@@ -62,7 +62,7 @@ public class PostCommentsService {
     }
 
     @Transactional
-    public CommonRsCommentRs editComment(String authorization, Long id, Long commentId, CommentRq commentRq) {
+    public CommonRs<CommentRs> editComment(String authorization, Long id, Long commentId, CommentRq commentRq) {
         Long myId = jwtTokenUtils.getId(authorization);
 
         return updatePostComment(
@@ -75,7 +75,7 @@ public class PostCommentsService {
     }
 
     @Transactional
-    public CommonRsCommentRs deleteComment(String authorization, Long id, Long commentId) {
+    public CommonRs<CommentRs> deleteComment(String authorization, Long id, Long commentId) {
         CommentRq commentRq = new CommentRq();
         commentRq.setIsDeleted(true);
 
@@ -83,7 +83,7 @@ public class PostCommentsService {
     }
 
     @Transactional
-    public CommonRsCommentRs recoverComment(String authorization, Long id, Long commentId) {
+    public CommonRs<CommentRs> recoverComment(String authorization, Long id, Long commentId) {
         CommentRq commentRq = new CommentRq();
         commentRq.setIsDeleted(false);
 
@@ -91,7 +91,7 @@ public class PostCommentsService {
     }
 
     @Transactional
-    public CommonRsListCommentRs getComments(String authorization, Long postId, Integer offset, Integer perPage) {
+    public CommonRs<List<CommentRs>> getComments(String authorization, Long postId, Integer offset, Integer perPage) {
         Long myId = jwtTokenUtils.getId(authorization);
         Post post = fetchPost(postId, false);
 
@@ -154,7 +154,7 @@ public class PostCommentsService {
         return optionalPost.get();
     }
 
-    private CommonRsCommentRs updatePostComment(PostComment postComment, CommentRq commentRq, Long myId) {
+    private CommonRs<CommentRs> updatePostComment(PostComment postComment, CommentRq commentRq, Long myId) {
         savePostComment(postComment, commentRq);
 
         return getPostCommentResponse(postComment, myId);
@@ -175,14 +175,13 @@ public class PostCommentsService {
         }
     }
 
-    private CommonRsListCommentRs getListPostCommentResponse(
+    private CommonRs<List<CommentRs>> getListPostCommentResponse(
             List<PostComment> postComments, Long total, Long myId, Integer offset, Integer perPage
     ) {
-        CommonRsListCommentRs commonRsListCommentRs = new CommonRsListCommentRs();
+        CommonRs<List<CommentRs>> commonRsListCommentRs = new CommonRs<>();
         commonRsListCommentRs.setOffset(offset);
         commonRsListCommentRs.setItemPerPage(perPage);
         commonRsListCommentRs.setPerPage(perPage);
-        commonRsListCommentRs.setTimestamp(new Date().getTime());
         commonRsListCommentRs.setTotal(total);
 
         List<CommentRs> commentRsList = new ArrayList<>();
@@ -196,8 +195,8 @@ public class PostCommentsService {
         return commonRsListCommentRs;
     }
 
-    private CommonRsCommentRs getPostCommentResponse(PostComment postComment, Long myId) {
-        CommonRsCommentRs commonRsCommentRs = new CommonRsCommentRs();
+    private CommonRs<CommentRs> getPostCommentResponse(PostComment postComment, Long myId) {
+        CommonRs<CommentRs> commonRsCommentRs = new CommonRs<>();
 
         commonRsCommentRs.setData(postCommentToCommentRs(postComment, myId));
 

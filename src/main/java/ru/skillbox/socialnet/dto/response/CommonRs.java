@@ -2,14 +2,14 @@ package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Date;
 
 @Data
-public class CommonRsListCommentRs {
-    private List<CommentRs> data;
+public class CommonRs<T> {
+    private T data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private Long timestamp;
     private Long total;
+    private Long timestamp = new Date().getTime();
 }

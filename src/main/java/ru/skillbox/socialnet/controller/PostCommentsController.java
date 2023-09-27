@@ -1,12 +1,13 @@
 package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.CommentRq;
-import ru.skillbox.socialnet.dto.response.CommonRsCommentRs;
-import ru.skillbox.socialnet.dto.response.CommonRsListCommentRs;
+import ru.skillbox.socialnet.dto.response.CommentRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.service.PostCommentsService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/post")
@@ -15,7 +16,7 @@ public class PostCommentsController {
     private final PostCommentsService postCommentsService;
 
     @PutMapping("/{id}/comments/{comment_id}")
-    public CommonRsCommentRs editComment(
+    public CommonRs<CommentRs> editComment(
             @RequestHeader String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId,
@@ -25,7 +26,7 @@ public class PostCommentsController {
     }
 
     @DeleteMapping("/{id}/comments/{comment_id}")
-    public CommonRsCommentRs deleteComment(
+    public CommonRs<CommentRs> deleteComment(
             @RequestHeader String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
@@ -34,7 +35,7 @@ public class PostCommentsController {
     }
 
     @PutMapping("/{id}/comments/{comment_id}/recover")
-    public CommonRsCommentRs recoverComment(
+    public CommonRs<CommentRs> recoverComment(
             @RequestHeader String authorization,
             @PathVariable Long id,
             @PathVariable("comment_id") Long commentId
@@ -43,7 +44,7 @@ public class PostCommentsController {
     }
 
     @GetMapping("/{postId}/comments")
-    public CommonRsListCommentRs getComments(
+    public CommonRs<List<CommentRs>> getComments(
             @RequestHeader String authorization,
             @PathVariable Long postId,
             @RequestParam(defaultValue = "0") Integer offset,
@@ -53,7 +54,7 @@ public class PostCommentsController {
     }
 
     @PostMapping("/{postId}/comments")
-    public CommonRsCommentRs createComment(
+    public CommonRs<CommentRs> createComment(
             @RequestHeader String authorization,
             @PathVariable Long postId,
             @RequestBody CommentRq commentRq

@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.entity.Person;
@@ -19,7 +19,7 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
-    public CommonRsPersonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
+    public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
         Optional<Person> optional = personRepository.findById(otherUserId);
         if (optional.isEmpty()) {
             throw new BadRequestException("Пользователь с указанным id не найден");
@@ -27,7 +27,7 @@ public class PersonService {
         Person person = optional.get();
 
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, FriendShipStatus.UNKNOWN.name(), false);
-        CommonRsPersonRs<PersonRs> result = new CommonRsPersonRs<>();
+        CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
         return result;
     }

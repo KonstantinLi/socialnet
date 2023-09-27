@@ -11,8 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.ComplexRs;
 import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
-import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
@@ -48,8 +47,8 @@ public class FriendShipService {
      *     пока заполняется пустыми значениями
      *
      */
-    private CommonRsComplexRs<ComplexRs> generateCommonRsComplexRs() {
-        CommonRsComplexRs<ComplexRs> response = new CommonRsComplexRs<>();
+    private CommonRs<ComplexRs> generateCommonRsComplexRs() {
+        CommonRs<ComplexRs> response = new CommonRs<>();
         //TODO выяснить откуда брать значение полей для класса ComplexRs и переписать создание класса
         ComplexRs complexRs = new ComplexRs(null, null, null, null);
         ArrayList<ComplexRs> complexRsList = new ArrayList<>();
@@ -91,7 +90,7 @@ public class FriendShipService {
      * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если персона,
      * с которой хотят дружить не найдена
      */
-    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> sendFriendshipRequest(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl( destinationPersonId);
@@ -120,7 +119,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не в таблице friendships
      * не найдены запиаи со статусом FRIEND для обеих персон
      */
-    public CommonRsComplexRs<ComplexRs> deleteFriendById(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> deleteFriendById(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
@@ -144,7 +143,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
      * у принимающей стороны или REQUEST у передающей стороны
      */
-    public CommonRsComplexRs<ComplexRs> addFriendById(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> addFriendById(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
@@ -167,7 +166,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
      * c одной стороны или REQUEST с другой стороны
      */
-    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
@@ -217,13 +216,13 @@ public class FriendShipService {
      * @param perPage - количество записей на странице
      * @return - метод возвращает объект в ответ на приходящий на контроллер GET запрос "/api/v1/friends/"
      */
-    public CommonRsListPersonRs<PersonRs> getFriendsOfCurrentUser(String authorization, int offset, int perPage) {
+    public CommonRs<List<PersonRs>> getFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.FRIEND.name());
         Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.FRIEND.name(), PageRequest.of(offset, perPage));
-        ArrayList<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.FRIEND.name(), false);
-        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, offset, perPage, total);
+        List<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.FRIEND.name(), false);
+        CommonRs<List<PersonRs>> personsList = generatePersonsList(personsData, offset, perPage, total);
         return personsList;
     }
 
@@ -234,7 +233,7 @@ public class FriendShipService {
      * @param isBlocked  - параметр блокрована ли запись
      * @return - вспомогательный метод (возвращает список персон в новом формате)
      */
-    private ArrayList<PersonRs> generatePersonsData(Page<Person> personsPage, String friendShipStatus, Boolean isBlocked) {
+    private List<PersonRs> generatePersonsData(Page<Person> personsPage, String friendShipStatus, Boolean isBlocked) {
         ArrayList<PersonRs> personsData = new ArrayList<>();
         personsPage.forEach(person -> {
             PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, friendShipStatus, isBlocked);
@@ -250,14 +249,14 @@ public class FriendShipService {
      * @param perPage - количество записей на странице
      * @return - метод возвращает объект в ответ на приходящий на контроллер GET запрос "/api/v1/friends/request"
      */
-    public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
+    public CommonRs<List<PersonRs>> getPotentialFriendsOfCurrentUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(),
                 FriendShipStatus.RECEIVED_REQUEST.name());
         Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST.name(), PageRequest.of(offset, perPage));
-        ArrayList<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.RECEIVED_REQUEST.name(), false);
-        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, offset, perPage, total);
+        List<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.RECEIVED_REQUEST.name(), false);
+        CommonRs<List<PersonRs>> personsList = generatePersonsList(personsData, offset, perPage, total);
         return personsList;
     }
 
@@ -279,7 +278,7 @@ public class FriendShipService {
      * @param personId - ID персоны
      * @return - вспомогательный метод (вернет список персон, которые в друзьях у друзей персоны)
      */
-    private ArrayList<Person> getFriendsOfFriendsByPerson(long personId) {
+    private List<Person> getFriendsOfFriendsByPerson(long personId) {
         Iterable<Person> personsIterable = personRepository.getFriendsOfFriendsByPersonId(personId);
         ArrayList<Person> persons = new ArrayList<>();
         personsIterable.forEach(person -> persons.add(person));
@@ -293,7 +292,7 @@ public class FriendShipService {
      * @return - вспомогательный метод (вычисляет "статус дружбы" между персонами из списка и текущей персоной и
      * возвращает объект списка в формате ArrayList<PersonRs>
      */
-    private ArrayList<PersonRs> updatePersonsData(ArrayList<Person> persons, Person currentPerson) {
+    private ArrayList<PersonRs> updatePersonsData(List<Person> persons, Person currentPerson) {
         ArrayList<PersonRs> personsData = new ArrayList<>();
         for (Person person : persons) {
             Optional<FriendShipStatus> optionalStatus = friendShipRepository.getFriendhipStatusBetweenPersons(
@@ -311,7 +310,7 @@ public class FriendShipService {
      * @param authorization - токен авторизации, по нему будет вычислен текущий пользователь
      * @return - метод возвращает объект в ответ на приходящий на контроллер GET запрос "/api/v1/friends/recommendations"
      */
-    public CommonRsListPersonRs<PersonRs> getRecommendationFriends(String authorization)  {
+    public CommonRs<List<PersonRs>> getRecommendationFriends(String authorization)  {
         Person currentPerson = getAuthorizedUser(authorization);
         ArrayList<Long> personsIds = new ArrayList<>();
         ArrayList<PersonRs> personsData;
@@ -326,7 +325,7 @@ public class FriendShipService {
             personsData = updatePersonsData(persons, currentPerson);
         } else {
 //    если друзья есть, то предлагать друзей друзей, и если их кол-во < 10, то дополнять рандомом до 10
-            ArrayList<Person> persons = getFriendsOfFriendsByPerson(currentPerson.getId());
+            List<Person> persons = getFriendsOfFriendsByPerson(currentPerson.getId());
             int size = persons.size();
             if (size < 10) {
                 personsIds.add(currentPerson.getId());
@@ -338,7 +337,7 @@ public class FriendShipService {
             }
             personsData = updatePersonsData(persons, currentPerson);
         }
-        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, 0,
+        CommonRs<List<PersonRs>> personsList = generatePersonsList(personsData, 0,
                 personsData.size(), personsData.size());
         return personsList;
     }
@@ -351,9 +350,9 @@ public class FriendShipService {
      * @param total       - "всего"
      * @return   - вспомогательный метод. Вернёт отформатированный список персон
      */
-    private CommonRsListPersonRs<PersonRs>  generatePersonsList(ArrayList<PersonRs> personsData,
+    private CommonRs<List<PersonRs>> generatePersonsList(List<PersonRs> personsData,
                                                            int offSet, int perPage, long total) {
-        CommonRsListPersonRs<PersonRs> personsList = new CommonRsListPersonRs<>();
+        CommonRs<List<PersonRs>> personsList = new CommonRs<>();
         personsList.setData(personsData);
         personsList.setItemPerPage(perPage);
         personsList.setOffset(offSet);
@@ -369,13 +368,13 @@ public class FriendShipService {
      * @param perPage - количество записей на странице
      * @return - метод возвращает объект в ответ на приходящий на контроллер GET запрос "/api/v1/friends/outgoing_requests"
      */
-    public CommonRsListPersonRs<PersonRs> getOutgoingRequestsByUser(String authorization, int offset, int perPage) {
+    public CommonRs<List<PersonRs>> getOutgoingRequestsByUser(String authorization, int offset, int perPage) {
         Person currentPerson = getAuthorizedUser(authorization);
         long total = personRepository.findCountPersonsByFriendship(currentPerson.getId(), FriendShipStatus.REQUEST.name());
         Page<Person> personsPage = personRepository.findPersonsByFriendship(
                     currentPerson.getId(), FriendShipStatus.REQUEST.name(), PageRequest.of(offset, perPage));
-        ArrayList<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.REQUEST.name(), false) ;
-        CommonRsListPersonRs<PersonRs> personsList = generatePersonsList(personsData, offset, perPage, total);
+        List<PersonRs> personsData = generatePersonsData(personsPage, FriendShipStatus.REQUEST.name(), false) ;
+        CommonRs<List<PersonRs>> personsList = generatePersonsList(personsData, offset, perPage, total);
         return personsList;
     }
 }

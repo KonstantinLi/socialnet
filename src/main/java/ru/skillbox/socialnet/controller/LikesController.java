@@ -3,7 +3,8 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.LikeRq;
-import ru.skillbox.socialnet.dto.response.CommonRsLikeRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.LikeRs;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.service.LikesService;
 
@@ -14,7 +15,7 @@ public class LikesController {
     private final LikesService likesService;
 
     @GetMapping
-    public CommonRsLikeRs getLikes(
+    public CommonRs<LikeRs> getLikes(
             @RequestHeader String authorization,
             @RequestParam("item_id") Long itemId,
             @RequestParam LikeType type
@@ -23,7 +24,7 @@ public class LikesController {
     }
 
     @PutMapping
-    public CommonRsLikeRs putLike(
+    public CommonRs<LikeRs> putLike(
             @RequestHeader String authorization,
             @RequestBody LikeRq likeRq
     ) {
@@ -31,7 +32,7 @@ public class LikesController {
     }
 
     @DeleteMapping
-    public CommonRsLikeRs deleteLike(
+    public CommonRs<LikeRs> deleteLike(
             @RequestHeader String authorization,
             @RequestParam("item_id") Long itemId,
             @RequestParam LikeType type
