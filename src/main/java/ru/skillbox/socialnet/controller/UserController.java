@@ -5,16 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.services.UserService;
-import ru.skillbox.socialnet.exception.AuthException;
-
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final AuthException validationUtils;
 private final UserService userService;
 
     @GetMapping("/{id}")
@@ -26,7 +24,7 @@ private final UserService userService;
     }
 
     @GetMapping("/me")
-    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws AuthException {
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws BadRequestException {
         return userService.userMe(token);
     }
 }

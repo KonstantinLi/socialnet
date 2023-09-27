@@ -2,7 +2,6 @@ package ru.skillbox.socialnet.dto.response;
 
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -11,11 +10,11 @@ public class ErrorRs {
 
     private String error;
     private String error_description;
-    private Long timeStamp;
+    private Long timestamp;
 
     public ErrorRs(String error, String error_description) {
         this.error = error;
         this.error_description = error_description;
-        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        this.timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 }

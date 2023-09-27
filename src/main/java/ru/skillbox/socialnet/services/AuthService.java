@@ -9,10 +9,10 @@ import ru.skillbox.socialnet.dto.response.*;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.dto.request.LoginRq;
+import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
@@ -23,12 +23,10 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    public final AuthException validationUtils;
     private final AccountService accountService;
     private final JwtTokenUtils jwtTokenUtils;
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
-
 
     public CommonRs<ComplexRs> logout(String authorization) {
         CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
@@ -39,12 +37,12 @@ public class AuthService {
         return commonRsComplexRs;
     }
 
-    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws AuthException {
+    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws BadRequestException {
         Person person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow(
-                () -> new AuthException("Пользователь не найден"));
+                () -> new BadRequestException("Пользователь не найден"));
         String password = accountService.getDecodedPassword(person.getPassword());
         if (!loginRq.getPassword().equals(password)) {
-            AuthException.builder().message("Пароли не совпадают");
+            throw new BadRequestException("Пароли не совпадают");
         }
         CommonRsPersonRs<PersonRs> commonRsPersonRs = new CommonRsPersonRs<>();
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, "", false);
