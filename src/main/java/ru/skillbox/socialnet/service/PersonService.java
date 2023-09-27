@@ -7,6 +7,7 @@ import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
@@ -37,7 +38,7 @@ public class PersonService {
     public CommonRsPersonRs<PersonRs> userMe(String token) throws BadRequestException {
         Long id = jwtTokenUtils.getId(token);
         Person person = personRepository.findById(id).orElseThrow(
-                () -> new BadRequestException("Пользователь не найден"));
+                () -> new AuthException("Пользователь не найден"));
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, "", false);
         personRs.setToken(token);
         CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();

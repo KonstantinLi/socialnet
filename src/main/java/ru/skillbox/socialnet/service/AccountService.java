@@ -9,6 +9,7 @@ import ru.skillbox.socialnet.entity.PersonSettings;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.dto.request.RegisterRq;
+import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
@@ -25,18 +26,18 @@ public class AccountService {
 
     public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws BadRequestException {
         if (!registerRq.getPasswd1().equals(registerRq.getPasswd2())) {
-           throw new BadRequestException("Пароли не совпадают");
+           throw new AuthException("Пароли не совпадают");
         }
         Captcha captcha = captchaRepository.findBySecretСode(registerRq.getCodeSecret()).orElseThrow(
                 () -> new BadRequestException("Картинка устарела"));
         if (!registerRq.getCode().equals(captcha.getCode())) {
-            throw new BadRequestException("Введенный код не совпадает с кодом картинки");
+            throw new AuthException("Введенный код не совпадает с кодом картинки");
         }
         if (personRepository.findByEmail(registerRq.getEmail()).isEmpty()) {
             Person person = addPerson(registerRq);
             personRepository.save(person);
         } else {
-            throw new BadRequestException("Пользователь с email: '" + registerRq.getEmail() +
+            throw new AuthException("Пользователь с email: '" + registerRq.getEmail() +
                     "' уже зарегистрирован");
         }
         RegisterRs<ComplexRs> response = new RegisterRs<>();
