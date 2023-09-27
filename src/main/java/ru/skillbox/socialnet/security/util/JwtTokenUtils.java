@@ -2,7 +2,6 @@ package ru.skillbox.socialnet.security.util;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.skillbox.socialnet.config.JwtProperties;
 import ru.skillbox.socialnet.entity.Person;
@@ -14,7 +13,6 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtTokenUtils {
     private final JwtProperties jwtProperties;
 
@@ -39,19 +37,11 @@ public class JwtTokenUtils {
         try {
             Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException ex) {
-            log.error("JWT expired", ex);
-        } catch (IllegalArgumentException ex) {
-            log.error("Token is null, empty or only whitespace", ex);
-        } catch (MalformedJwtException ex) {
-            log.error("JWT is invalid", ex);
-        } catch (UnsupportedJwtException ex) {
-            log.error("JWT is not supported", ex);
-        } catch (SignatureException ex) {
-            log.error("Signature validation failed");
+        } catch (ExpiredJwtException | IllegalArgumentException |
+                MalformedJwtException | UnsupportedJwtException |
+                SignatureException ex ) {
+            return false;
         }
-
-        return false;
     }
 
     private Claims getClaims(String token) {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="ConsoleAppender">
+            <PatternLayout disableAnsi="false" pattern="%highlight{%d %-5p [%t] %c{10} - %m%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=snow, DEBUG=cyan, TRACE=blue}"/>
+        </Console>
+        <RollingFile name="RollingFileAppender"
+                     fileName="./logs/log4j2.log"
+                     filePattern="./logs/$${date:yyyy-MM}/log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
+            <PatternLayout disableAnsi="false" pattern="%d %-5p [%t] %c{10} - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "3" />
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="ru.skillbox.socialnet" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="RollingFileAppender"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="RollingFileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
