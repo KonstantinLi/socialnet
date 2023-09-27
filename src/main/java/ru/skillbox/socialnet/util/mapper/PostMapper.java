@@ -1,12 +1,12 @@
 package ru.skillbox.socialnet.util.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.skillbox.socialnet.dto.response.PostRs;
 import ru.skillbox.socialnet.entity.post.Post;
+import ru.skillbox.socialnet.entity.post.Tag;
 
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -14,21 +14,11 @@ public interface PostMapper {
 
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
-    default PostRs toRs (Post post) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-        PostRs postRs = new PostRs();
-        postRs.setAuthor(PersonMapper.INSTANCE.toRs(post.getAuthor()));
-//        postRs.setComment();
-        postRs.setId(post.getId());
-        postRs.setBlocked(post.getIsBlocked());
-//        postRs.setLikes(post.getLikes());
-//        postRs.setMyLike();
-        postRs.setPostText(post.getPostText());
-        postRs.setTags(Collections.singleton(post.getTags().toString()));
-        postRs.setTime(post.getTime().format(formatter));
-        postRs.setTitle(post.getTitle());
-//        postRs.setType(post.getT);
-        return postRs;
+    @Mapping(source = "time", target = "time", dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSS")
+    PostRs toRs (Post post);
+
+    default String toRs(Tag tag) {
+        return tag.getTag();
     }
 
     List<PostRs> toRsList (List<Post> postList);
