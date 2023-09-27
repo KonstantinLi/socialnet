@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.repository.PersonRepository;

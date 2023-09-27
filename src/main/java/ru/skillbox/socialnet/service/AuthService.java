@@ -9,12 +9,11 @@ import ru.skillbox.socialnet.dto.response.*;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.dto.request.LoginRq;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.service.AccountService;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;

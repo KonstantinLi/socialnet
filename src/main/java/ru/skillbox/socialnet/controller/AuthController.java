@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.*;
 import ru.skillbox.socialnet.dto.request.LoginRq;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.service.AuthService;
 
 @RestController

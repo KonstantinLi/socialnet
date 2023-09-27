@@ -7,7 +7,7 @@ import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.PersonSettings;
 import ru.skillbox.socialnet.entity.other.Captcha;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
