@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/dialogs")
 public class DialogsController {
 
+
     @GetMapping("/unreaded")
     public void getUnreadedDialogs() {
-
+        //TODO убрать заглушку
+        //реализация отсутствует на период разработки
     }
 }

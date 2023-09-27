@@ -3,19 +3,19 @@ package ru.skillbox.socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.ComplexRs;
-import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.UserRq;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.dto.response.ErrorRs;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.PersonIsBlockedException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,42 +23,41 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonRepository personRepository;
-
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
+    //TODO currentUserdId не используется?
     public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
 
-        Optional<Person> optional = personRepository.findById(otherUserId);
-        if (optional.isEmpty()) {
-            throw new BadRequestException("Пользователь с указанным id не найден");
-        }
-        Person person = optional.get();
+        Optional<Person> personOptional = personRepository.findById(otherUserId);
+        checkAvailability(personOptional);
+        //noinspection OptionalGetWithoutIsPresent
+        Person person = personOptional.get();
 
+        //TODO перенести на стадию регистрации
         if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
             person.setPhoto(defaultPhotoUrl);
         }
 
-        PersonRs personRs = PersonMapper.INSTANCE.toRs(person);
-        personRs.setToken("token");
+        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person);
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
+
         return result;
     }
 
     public CommonRs<PersonRs> updateUserInfo(Long userId, UserRq userData) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-
+        checkAvailability(personOptional);
         //noinspection OptionalGetWithoutIsPresent
         Person person = personOptional.get();
 
         updatePersonInfo(person, userData);
-        System.out.println(userData);
         Person savedPerson = personRepository.save(person);
 
         CommonRs<PersonRs> response = new CommonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.toRs(savedPerson);
+        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(savedPerson);
         response.setData(personRs);
 
         return response;
@@ -67,7 +66,7 @@ public class PersonService {
     public CommonRs<ComplexRs> deletePersonById(Long userId) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-
+        checkAvailability(personOptional);
         //noinspection OptionalGetWithoutIsPresent
         personRepository.delete(personOptional.get());
 
@@ -87,25 +86,20 @@ public class PersonService {
      *               <p>
      *               throws exceptions if user is not presented, blocked or deleted
      */
-    //TODO finish method
-    private void getAvailabilityError(
-            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> person) throws BadRequestException {
-        ErrorRs errorResponse = new ErrorRs();
+    private void checkAvailability(
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> person)
+            throws PersonNotFoundException, PersonIsBlockedException {
         if (person.isEmpty()) {
-            errorResponse.setError("AccountFindException");
-            errorResponse.setError_description("Cannot find user by token");
-        } else if (person.get().isBlocked()) {
-            errorResponse.setError("AccountBlockedException");
-            errorResponse.setError_description("User account has been BLOCKED");
-        } else if (person.get().isDeleted()) {
-            errorResponse.setError("AccountDeletedException");
-            errorResponse.setError_description("User account has been DELETED");
+            throw new PersonNotFoundException("Пользователь с указанным id не найден");
+        } else if (Boolean.TRUE.equals(person.get().getIsBlocked())) {
+            throw new PersonIsBlockedException("Пользователь заблокирован");
+        } else if (Boolean.TRUE.equals(person.get().getIsDeleted())) {
+            throw new PersonNotFoundException("Пользователь удален");
         }
-
-        throw new BadRequestException(errorResponse);
     }
 
     private void updatePersonInfo(Person person, UserRq userData) {
+
         if (userData.getAbout() != null) {
             person.setAbout(userData.getAbout());
         }
@@ -118,32 +112,25 @@ public class PersonService {
         if (userData.getPhone() != null) {
             person.setPhone(userData.getPhone());
         }
-        if (userData.getBirth_date() != null) {
-            String birthDate = userData.getBirth_date();
+        if (userData.getBirthDate() != null) {
+            String birthDate = userData.getBirthDate();
             if (birthDate.contains("+")) {
                 birthDate = birthDate.substring(0, birthDate.indexOf("+"));
             }
             person.setBirthDate(LocalDateTime.parse(birthDate));
         }
-        if (userData.getFirst_name() != null) {
-            person.setFirstName(userData.getFirst_name());
+        if (userData.getFirstName() != null) {
+            person.setFirstName(userData.getFirstName());
         }
-        if (userData.getLast_name() != null) {
-            person.setLastName(userData.getLast_name());
+        if (userData.getLastName() != null) {
+            person.setLastName(userData.getLastName());
         }
-        if (userData.getMessages_permission() != null) {
+        if (userData.getMessagesPermission() != null) {
             person.setMessagePermission(
-                    MessagePermission.valueOf(userData.getMessages_permission()));
+                    MessagePermission.valueOf(userData.getMessagesPermission()));
         }
-        if (userData.getPhoto_id() != null) {
-            person.setPhoto(userData.getPhoto_id());
+        if (userData.getPhotoId() != null) {
+            person.setPhoto(userData.getPhotoId());
         }
-    }
-
-
-    //TODO remove this method when id retrieval will be implemented
-    public long getRandomIdFromDB() {
-        List<Long> allId = personRepository.findAllId();
-        return allId.get(0);
     }
 }

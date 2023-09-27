@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.socialnet.dto.AwsS3Handler;
-import ru.skillbox.socialnet.dto.UserRq;
+import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.entity.other.Storage;
-import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.repository.StorageRepository;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
+import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -52,7 +51,7 @@ public class StorageService {
         return factory.createMultipartConfig();
     }
 
-    public CommonRs<Storage> uploadProfileImage(String type, MultipartFile file) throws BadRequestException, IOException {
+    public CommonRs<Storage> uploadProfileImage(String type, MultipartFile file) throws IOException {
         //TODO userID should be taken from token
         //Long userId = jwtTokenUtils.getId(token);
         long userId = 13L;
@@ -84,7 +83,7 @@ public class StorageService {
 
     private void updateUsersPhotoId(String generateFileName, long userId) {
         UserRq userRq = new UserRq();
-        userRq.setPhoto_id(photoURLPrefix + generateFileName);
+        userRq.setPhotoId(photoURLPrefix + generateFileName);
         personService.updateUserInfo(userId, userRq);
     }
 

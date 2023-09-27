@@ -7,5 +7,4 @@ public class CurrencyRs {
 
     private String euro;
     private String usd;
-
 }

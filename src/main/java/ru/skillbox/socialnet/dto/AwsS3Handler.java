@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.EmptyFileException;
+import ru.skillbox.socialnet.exception.FileSizeException;
+import ru.skillbox.socialnet.exception.UnsupportedFileTypeException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -21,8 +24,8 @@ import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+//TODO remove log-files-handle methods
 @Slf4j
 @Component
 public class AwsS3Handler {
@@ -53,7 +56,8 @@ public class AwsS3Handler {
 
     private S3Client client;
 
-    public void uploadImage(String type, MultipartFile image, String generatedFileName) throws BadRequestException, IOException {
+    public void uploadImage(String type, MultipartFile image, String generatedFileName) throws IOException {
+        initializeS3Client();
         checkImageForUpload(image);
         clearDuplicateImages(generatedFileName);
 
@@ -62,7 +66,8 @@ public class AwsS3Handler {
         uploadFile(type, imageContent, generatedFileName, imageBucketName);
     }
 
-    public void uploadLogFile(String type, File file, String logFileName) throws BadRequestException {
+    public void uploadLogFile(String type, File file, String logFileName) {
+        initializeS3Client();
         checkLogForUpload(file);
         logFileName = checkForSameFileName(logFileName);
 
@@ -82,7 +87,6 @@ public class AwsS3Handler {
                             String generatedFileName,
                             String destinationBucketName) {
 
-        initializeS3Client();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(destinationBucketName)
@@ -91,14 +95,11 @@ public class AwsS3Handler {
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
-        try {
-            client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
-        } finally {
-            client.close();
-        }
+        client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
     }
 
     public List<String> getLogFilesUrls() {
+        initializeS3Client();
         List<String> logFilesList = getBucketContentNames(logBucketName);
         List<String> logFilesUrls = new ArrayList<>();
 
@@ -133,12 +134,9 @@ public class AwsS3Handler {
 
         ArrayList<String> fileNames = new ArrayList<>();
 
-        client.listObjectsV2(listObjectsV2Request).contents()
-                .forEach(s3Object -> {
-                    fileNames.add(s3Object.key());
-                });
-
-        client.close();
+        client.listObjectsV2(listObjectsV2Request)
+                .contents()
+                .forEach(s3Object -> fileNames.add(s3Object.key()));
 
         return fileNames;
     }
@@ -160,14 +158,19 @@ public class AwsS3Handler {
         return generatedFileName;
     }
 
-    private void checkImageForUpload(MultipartFile file) throws BadRequestException {
+    private void checkImageForUpload(MultipartFile file) {
+
         if (file == null || file.isEmpty()) {
-            throw new BadRequestException("File is empty");
+            throw new EmptyFileException("File is empty");
         } else if (file.getSize() > getMaxImageSize()) {
-            throw new BadRequestException("File is too large");
-        } else if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith("jpg") &&
+            throw new FileSizeException("File is too large");
+        } else if (file.getOriginalFilename() == null) {
+            throw new UnsupportedFileTypeException("File name cannot be null");
+        } else if (!file.getOriginalFilename().endsWith("jpg") &&
                 !file.getOriginalFilename().endsWith("png")) {
-            throw new BadRequestException("File type is not supported");
+            String[] fileNameSplit = file.getOriginalFilename().split("\\.");
+            String fileType = fileNameSplit[fileNameSplit.length - 1].toLowerCase();
+            throw new UnsupportedFileTypeException("File type ." + fileType + " is not supported");
         }
     }
 
@@ -177,6 +180,7 @@ public class AwsS3Handler {
      * @param fileName - name of the uploaded file
      */
     private void clearDuplicateImages(String fileName) {
+
         String userId = fileName.split("_", 2)[0];
 
         List<String> fileNames = getBucketContentNames(imageBucketName);
@@ -195,13 +199,11 @@ public class AwsS3Handler {
                 .bucket(bucketName)
                 .key(fileName)
                 .build();
+
         client.deleteObject(deleteObjectRequest);
     }
 
     private void initializeS3Client() {
-        if (this.client != null) {
-            return;
-        }
 
         Region region = getRegion();
         AwsCredentialsProvider credentialsProvider = getCredentialsProvider();

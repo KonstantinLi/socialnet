@@ -5,9 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.socialnet.dto.AwsS3Handler;
-import ru.skillbox.socialnet.errs.BadRequestException;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/test")

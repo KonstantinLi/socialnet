@@ -9,5 +9,4 @@ public class WeatherRs {
     private String clouds;
     private String date;
     private String temp;
-
 }

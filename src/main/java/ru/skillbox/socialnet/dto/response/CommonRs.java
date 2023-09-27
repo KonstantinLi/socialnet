@@ -18,5 +18,4 @@ public class CommonRs<T> {
     public CommonRs() {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
-
 }

@@ -1,27 +1,17 @@
 package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-<<<<<<< HEAD
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.ComplexRs;
-import ru.skillbox.socialnet.dto.UserRq;
-import ru.skillbox.socialnet.errs.BadRequestException;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
+import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.ArrayList;
 import java.util.List;
-=======
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
-import ru.skillbox.socialnet.services.UserService;
-import ru.skillbox.socialnet.util.ValidationUtilsRq;
->>>>>>> origin/dev
 
 
 @RestController
@@ -36,35 +26,29 @@ public class UserController {
     public CommonRs<PersonRs> getUserById(@PathVariable(value = "id") Long id,
                                           @RequestHeader("authorization") String token)
             throws BadRequestException {
-        //TODO userID should be taken from token, uncomment after testing
-        return personService.getUserById(id, /*jwtTokenUtils.getId(token)*/ id);
+
+        return personService.getUserById(id, jwtTokenUtils.getId(token));
     }
 
     @GetMapping("/me")
     public CommonRs<PersonRs> getMyInfo(@RequestHeader(value = "authorization") String token)
             throws BadRequestException {
-        //TODO userID should be taken from token
-        Long userId = 13L;
 
-        return getUserById(userId, token);
+        return getUserById(jwtTokenUtils.getId(token), token);
     }
 
     @PutMapping("/me")
     public CommonRs<PersonRs> updateMyInfo(@RequestHeader("authorization") String token,
-                                                    @RequestBody UserRq userData) {
+                                           @RequestBody UserRq userData) {
 
-        //TODO userID should be taken from token
-        long userId = 13L;
 
-        return personService.updateUserInfo(userId, userData);
+        return personService.updateUserInfo(jwtTokenUtils.getId(token), userData);
     }
 
     @DeleteMapping("/me")
     public CommonRs<ComplexRs> deleteMyInfo(@RequestHeader("authorization") String token) {
-        Long userId = jwtTokenUtils.getId(token);
 
-        //TODO remove hardcoded value after testing
-        return personService.deletePersonById(13L);
+        return personService.deletePersonById(jwtTokenUtils.getId(token));
     }
 
     @PostMapping("/me/recover")
@@ -72,41 +56,31 @@ public class UserController {
         //TODO later
         CommonRs<PersonRs> response = new CommonRs<>();
         response.setData(new PersonRs());
+
         return response;
     }
 
     @GetMapping("/search")
     public CommonRs<List<PersonRs>> findUsers(@PathVariable(value = "id") Integer id,
-                                                               @RequestHeader("authorization") String token,
-                                                               @RequestParam(value = "age_from", required = false, defaultValue = "0") int ageFrom,
-                                                               @RequestParam(value = "age_to", required = false, defaultValue = "0") int ageTo,
-                                                               @RequestParam(value = "city", required = false) String city,
-                                                               @RequestParam(value = "country", required = false) String country,
-                                                               @RequestParam(value = "first_name", required = false) String firstName,
-                                                               @RequestParam(value = "last_name", required = false) String lastName,
-                                                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset,
-                                                               @RequestParam(value = "perPage", required = false, defaultValue = "20") int perPage
+                                              @RequestHeader("authorization") String token,
+                                              @RequestParam(value = "age_from", required = false,
+                                                      defaultValue = "0") int ageFrom,
+                                              @RequestParam(value = "age_to", required = false,
+                                                      defaultValue = "0") int ageTo,
+                                              @RequestParam(value = "city", required = false) String city,
+                                              @RequestParam(value = "country", required = false) String country,
+                                              @RequestParam(value = "first_name", required = false) String firstName,
+                                              @RequestParam(value = "last_name", required = false) String lastName,
+                                              @RequestParam(value = "offset", required = false,
+                                                      defaultValue = "0") int offset,
+                                              @RequestParam(value = "perPage", required = false,
+                                                      defaultValue = "20") int perPage
     ) {
 
         CommonRs<List<PersonRs>> response = new CommonRs<>();
         ArrayList<PersonRs> persons = new ArrayList<>();
         response.setData(persons);
+
         return response;
-    }
-
-    private final ValidationUtilsRq validationUtils;
-private final UserService userService;
-
-    @GetMapping("/{id}")
-    public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById (@PathVariable(value = "id") Integer id,
-                                                                   @RequestHeader("authorization") String token) {
-        CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
-        response.setData(new PersonRs());
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/me")
-    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws ExceptionBadRq {
-        return userService.userMe(token);
     }
 }
