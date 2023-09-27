@@ -3,7 +3,6 @@ package ru.skillbox.socialnet.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import ru.skillbox.socialnet.exception.InternalServerErrorException;
 import ru.skillbox.socialnet.exception.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
 import ru.skillbox.socialnet.mapper.PostMapper;
+import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 
@@ -42,10 +42,11 @@ public class PostsService {
     private final WeatherRepository weatherRepository;
 
     private final JwtTokenUtils jwtTokenUtils;
+    private final PostMapper postMapper;
+    private final WeatherMapper weatherMapper;
     private final EntityManager entityManager;
 
     private final LocalDateTimeConverter localDateTimeConverter = new LocalDateTimeConverter();
-    private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
 
     @Transactional
     public CommonRs<PostRs> createPost(String authorization, Long publishDate, Long id, PostRq postRq) {
@@ -434,7 +435,7 @@ public class PostsService {
             optionalWeather = weatherRepository.findByCity(personRs.getCity());
 
             if (optionalWeather.isPresent()) {
-                personRs.setWeather(postMapper.weatherToWeatherRs(optionalWeather.get()));
+                personRs.setWeather(weatherMapper.weatherToWeatherRs(optionalWeather.get()));
             }
         } catch (Exception e) {
             throw new InternalServerErrorException("fillAuthor", e);

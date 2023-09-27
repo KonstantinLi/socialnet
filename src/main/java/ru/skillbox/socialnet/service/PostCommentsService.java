@@ -1,7 +1,6 @@
 package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,13 +16,14 @@ import ru.skillbox.socialnet.entity.post.PostComment;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.InternalServerErrorException;
 import ru.skillbox.socialnet.exception.NoRecordFoundException;
+import ru.skillbox.socialnet.mapper.CommentMapper;
 import ru.skillbox.socialnet.mapper.PostMapper;
+import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,8 +37,8 @@ public class PostCommentsService {
     private final WeatherRepository weatherRepository;
 
     private final JwtTokenUtils jwtTokenUtils;
-
-    private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
+    private final CommentMapper commentMapper;
+    private final WeatherMapper weatherMapper;
 
     @Transactional
     public CommonRs<CommentRs> createComment(String authorization, Long postId, CommentRq commentRq) {
@@ -162,13 +162,19 @@ public class PostCommentsService {
 
     private void savePostComment(PostComment postComment, CommentRq commentRq) {
         if (commentRq.getParentId() != null) {
-            fetchPostComment(commentRq.getParentId(), postComment.getPost().getId(), false);
+            PostComment parentPostComment = fetchPostComment(
+                    commentRq.getParentId(), postComment.getPost().getId(), false
+            );
+
+            if (parentPostComment.getParentId() != null) {
+                throw new BadRequestException("Subcomment of subcomment is not allowed");
+            }
         }
 
         postComment.setParentId(null);
 
         try {
-            postMapper.commentRqToPostComment(commentRq, postComment);
+            commentMapper.commentRqToPostComment(commentRq, postComment);
             postCommentsRepository.save(postComment);
         } catch (Exception e) {
             throw new InternalServerErrorException("savePostComment", e);
@@ -207,7 +213,7 @@ public class PostCommentsService {
         CommentRs commentRs;
 
         try {
-            commentRs = postMapper.postCommentToCommentRs(postComment);
+            commentRs = commentMapper.postCommentToCommentRs(postComment);
 
             commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
             commentRs.setMyLike(likesRepository.existsByPersonId(myId));
@@ -248,7 +254,7 @@ public class PostCommentsService {
             optionalWeather = weatherRepository.findByCity(personRs.getCity());
 
             if (optionalWeather.isPresent()) {
-                personRs.setWeather(postMapper.weatherToWeatherRs(optionalWeather.get()));
+                personRs.setWeather(weatherMapper.weatherToWeatherRs(optionalWeather.get()));
             }
         } catch (Exception e) {
             throw new InternalServerErrorException("fillAuthor", e);
