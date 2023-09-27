@@ -2,10 +2,11 @@ package ru.skillbox.socialnet.util.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import ru.skillbox.socialnet.dto.PostRs;
+import ru.skillbox.socialnet.dto.response.PostRs;
 import ru.skillbox.socialnet.entity.post.Post;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -19,11 +20,11 @@ public interface PostMapper {
         postRs.setAuthor(PersonMapper.INSTANCE.toRs(post.getAuthor()));
 //        postRs.setComment();
         postRs.setId(post.getId());
-        postRs.setIsBlocked(post.isBlocked());
+        postRs.setBlocked(post.getIsBlocked());
 //        postRs.setLikes(post.getLikes());
 //        postRs.setMyLike();
         postRs.setPostText(post.getPostText());
-        postRs.setTags(post.getTags().toString());
+        postRs.setTags(Collections.singleton(post.getTags().toString()));
         postRs.setTime(post.getTime().format(formatter));
         postRs.setTitle(post.getTitle());
 //        postRs.setType(post.getT);

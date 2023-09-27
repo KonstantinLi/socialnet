@@ -1,22 +1,9 @@
 package ru.skillbox.socialnet.entity.post;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.Person;
@@ -29,15 +16,15 @@ public class Post {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** Заблокирован */
   @Column(name = "is_blocked")
-  private boolean isBlocked;
+  private Boolean isBlocked;
 
   /** Удален */
   @Column(name = "is_deleted")
-  private boolean isDeleted;
+  private Boolean isDeleted;
 
   /** Дата и время создания */
   @Column(name = "time")
@@ -57,16 +44,31 @@ public class Post {
 
   /** Автор  поста */
   @ManyToOne
-  @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person"))
+  @JoinColumn(
+          name = "author_id",
+          nullable = false,
+          referencedColumnName = "id",
+          foreignKey = @ForeignKey(name = "fk_person")
+  )
   private Person author;
 
   /** Теги  поста */
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "post2tag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-  private List<Tag> tags = new ArrayList<>();
+  @JoinTable(
+          name = "post2tag",
+          joinColumns = @JoinColumn(name = "post_id"),
+          inverseJoinColumns = @JoinColumn(name = "tag_id")
+  )
+  private Set<Tag> tags = new HashSet<>();
+
+  @OneToMany(
+          mappedBy = "post",
+          cascade = CascadeType.ALL,
+          orphanRemoval = true
+  )
+  private Set<PostComment> comments = new HashSet<>();
 
   /** Файлы в посте */
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<PostFile> files;
-
+  private Set<PostFile> files = new HashSet<>();
 }
