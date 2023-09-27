@@ -3,11 +3,10 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.services.UserService;
-import ru.skillbox.socialnet.util.ValidationUtilsRq;
+import ru.skillbox.socialnet.exception.AuthException;
 
 
 @RestController
@@ -15,7 +14,7 @@ import ru.skillbox.socialnet.util.ValidationUtilsRq;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final ValidationUtilsRq validationUtils;
+    private final AuthException validationUtils;
 private final UserService userService;
 
     @GetMapping("/{id}")
@@ -27,7 +26,7 @@ private final UserService userService;
     }
 
     @GetMapping("/me")
-    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws ExceptionBadRq {
+    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws AuthException {
         return userService.userMe(token);
     }
 }

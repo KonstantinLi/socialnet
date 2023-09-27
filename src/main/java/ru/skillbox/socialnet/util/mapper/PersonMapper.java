@@ -5,8 +5,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
-import ru.skillbox.socialnet.dto.PersonRs;
 
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.Person;
 
 @Mapper
@@ -31,6 +31,5 @@ public interface PersonMapper {
     @Mapping(source = "person.city", target = "city")
     @Mapping(source = "friendStatus", target = "friend_status")
     @Mapping(source = " isBlockedByCurrentUser", target = "is_blocked_by_current_user")
-
     PersonRs personToPersonRs(Person person, String friendStatus, Boolean  isBlockedByCurrentUser);
 }

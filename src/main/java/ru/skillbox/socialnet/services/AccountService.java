@@ -8,12 +8,11 @@ import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.PersonSettings;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
-import ru.skillbox.socialnet.model.RegisterRq;
+import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
-import ru.skillbox.socialnet.util.ValidationUtilsRq;
+import ru.skillbox.socialnet.exception.AuthException;
 
 import java.util.Base64;
 import java.util.Date;
@@ -22,20 +21,25 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AccountService {
     public final PersonRepository personRepository;
-    public final ValidationUtilsRq validationUtils;
     public final PersonSettingsRepository personSettingsRepository;
     public final CaptchaRepository captchaRepository;
 
-    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws ExceptionBadRq, BadRequestException {
-        validationUtils.validationRegPassword(registerRq.getPasswd1(), registerRq.getPasswd2());
+    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws BadRequestException {
+        if (!registerRq.getPasswd1().equals(registerRq.getPasswd2())) {
+           AuthException.builder().message("Пароли не совпадают");
+        }
         Captcha captcha = captchaRepository.findBySecretСode(registerRq.getCodeSecret()).orElseThrow(
-                () -> new BadRequestException(""));
-        validationUtils.validationCode(registerRq.getCode(), captcha.getCode());
+                () -> new BadRequestException("Картинка устарела"));
+        if (!registerRq.getCode().equals(captcha.getCode())) {
+            AuthException.builder().message("Введенный код не совпадает с кодом картинки");
+        }
         if (personRepository.findByEmail(registerRq.getEmail()).isEmpty()) {
             Person person = addPerson(registerRq);
             personRepository.save(person);
         } else {
-            validationUtils.checkUserAvailability(registerRq.getEmail());
+            String sb = "Пользователь с email: '" + registerRq.getEmail() +
+                    "' уже зарегистрирован";
+            AuthException.builder().message(sb);
         }
         RegisterRs<ComplexRs> response = new RegisterRs<>();
         ComplexRs complexRs = new ComplexRs();

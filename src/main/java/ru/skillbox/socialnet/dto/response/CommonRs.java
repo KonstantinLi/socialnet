@@ -4,10 +4,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Collection;
 
 @Data
-public class CommonRsComplexRs<T>{
+public class CommonRs<T>{
 
     private T data;
     private Integer itemPerPage;
@@ -17,7 +16,7 @@ public class CommonRsComplexRs<T>{
     private Long timeStamp;
 
 
-    public CommonRsComplexRs() {
+    public CommonRs() {
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 }

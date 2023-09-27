@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.ComplexRs;
-import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.FriendShip;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
@@ -47,17 +47,17 @@ public class FriendShipService {
      *     пока заполняется пустыми значениями
      *
      */
-    private CommonRsComplexRs<ComplexRs> generateCommonRsComplexRs() {
-        CommonRsComplexRs<ComplexRs> response = new CommonRsComplexRs<>();
-        //TODO выяснить откуда брать значение полей для класса ComplexRs и переписать создание класса
-        ComplexRs complexRs = new ComplexRs(null, null, null, null);
-        ArrayList<ComplexRs> complexRsList = new ArrayList<>();
-        complexRsList.add(complexRs);
-        response.setData(complexRsList);
-        response.setItemPerPage(1);
-        response.setPerPage(0);
-        response.setOffset(0);
-        response.setTotal((long) 1);
+    private CommonRs<ComplexRs> generateCommonRsComplexRs() {
+        CommonRs<ComplexRs> response = new CommonRs<>();
+//        //TODO выяснить откуда брать значение полей для класса ComplexRs и переписать создание класса
+//        ComplexRs complexRs = new ComplexRs(null, null, null, null);
+//        ArrayList<ComplexRs> complexRsList = new ArrayList<>();
+//        complexRsList.add(complexRs);
+//        response.setData(complexRsList);
+//        response.setItemPerPage(1);
+//        response.setPerPage(0);
+//        response.setOffset(0);
+//        response.setTotal((long) 1);
         return response;
     }
 
@@ -90,7 +90,7 @@ public class FriendShipService {
      * @throws PersonNotFoundExeption - может быть сгенерировано исключение, если персона,
      * с которой хотят дружить не найдена
      */
-    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> sendFriendshipRequest(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl( destinationPersonId);
@@ -119,7 +119,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не в таблице friendships
      * не найдены запиаи со статусом FRIEND для обеих персон
      */
-    public CommonRsComplexRs<ComplexRs> deleteFriendById(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> deleteFriendById(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
@@ -143,7 +143,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
      * у принимающей стороны или REQUEST у передающей стороны
      */
-    public CommonRsComplexRs<ComplexRs> addFriendById(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> addFriendById(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
@@ -166,7 +166,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundExeption - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
      * c одной стороны или REQUEST с другой стороны
      */
-    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
+    public CommonRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);

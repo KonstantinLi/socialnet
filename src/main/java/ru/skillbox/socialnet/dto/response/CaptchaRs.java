@@ -8,4 +8,21 @@ public class CaptchaRs {
     private String code;
     private String image;
 
+    @Data
+    public static class CurrencyRs {
+
+        private String euro;
+        private String usd;
+
+    }
+
+    @Data
+    public static class WeatherRs {
+
+        private String city;
+        private String clouds;
+        private String date;
+        private String temp;
+
+    }
 }

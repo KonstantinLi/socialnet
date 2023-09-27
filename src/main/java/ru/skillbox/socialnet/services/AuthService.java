@@ -5,22 +5,16 @@ import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CaptchaRs;
-import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
-import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
-import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.*;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
-import ru.skillbox.socialnet.model.LoginRq;
+import ru.skillbox.socialnet.dto.request.LoginRq;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.util.ValidationUtilsRq;
+import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
@@ -29,15 +23,15 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    public final ValidationUtilsRq validationUtils;
+    public final AuthException validationUtils;
     private final AccountService accountService;
     private final JwtTokenUtils jwtTokenUtils;
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
 
 
-    public CommonRsComplexRs<ComplexRs> logout(String authorization) {
-        CommonRsComplexRs<ComplexRs> commonRsComplexRs = new CommonRsComplexRs<>();
+    public CommonRs<ComplexRs> logout(String authorization) {
+        CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
         commonRsComplexRs.setTimeStamp(new Date().getTime());
@@ -45,12 +39,13 @@ public class AuthService {
         return commonRsComplexRs;
     }
 
-    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws ExceptionBadRq {
-        validationUtils.validationEmail(loginRq.getEmail());
+    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws AuthException {
         Person person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow(
-                () -> new ExceptionBadRq("Пользователь не найден"));
+                () -> new AuthException("Пользователь не найден"));
         String password = accountService.getDecodedPassword(person.getPassword());
-        validationUtils.validationPassword(password, loginRq.getPassword());
+        if (!loginRq.getPassword().equals(password)) {
+            AuthException.builder().message("Пароли не совпадают");
+        }
         CommonRsPersonRs<PersonRs> commonRsPersonRs = new CommonRsPersonRs<>();
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, "", false);
         personRs.setToken(getToken(person));
@@ -77,8 +72,6 @@ public class AuthService {
         captcha.setCode(code);
         captcha.setSecretСode(secretCode);
         Date dateNow = new Date();
-//        SimpleDateFormat formatForDateNow = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");
-//        captcha.setTime(formatForDateNow.format(dateNow));
         captcha.setTime(LocalDateTime.now().toString());
         return captcha;
     }

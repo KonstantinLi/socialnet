@@ -2,15 +2,14 @@ package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.entity.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
-import java.util.Collection;
 import java.util.Optional;
 
 @Service

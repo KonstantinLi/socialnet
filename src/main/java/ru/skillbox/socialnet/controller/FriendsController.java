@@ -2,10 +2,10 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.ComplexRs;
-import ru.skillbox.socialnet.dto.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRsComplexRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.CommonRsListPersonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
 import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
@@ -19,29 +19,29 @@ public class FriendsController {
     private final FriendShipService friendShipService;
 
     @PostMapping("/{id}")
-    public CommonRsComplexRs<ComplexRs> sendFriendshipRequest(@RequestHeader(name = "authorization") String authorization,
-                                                   @PathVariable(name = "id") Long id)
+    public CommonRs<ComplexRs> sendFriendshipRequest(@RequestHeader(name = "authorization") String authorization,
+                                                     @PathVariable(name = "id") Long id)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.sendFriendshipRequest(id, authorization);
     }
 
     @DeleteMapping("/{id}")
-    public CommonRsComplexRs<ComplexRs>  deleteFriendById(@RequestHeader(name = "authorization") String authorization,
-                                               @PathVariable(name = "id")  Long id)
+    public CommonRs<ComplexRs> deleteFriendById(@RequestHeader(name = "authorization") String authorization,
+                                                @PathVariable(name = "id")  Long id)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.deleteFriendById(id, authorization);
     }
 
     @PostMapping("/request/{id}")
-    public CommonRsComplexRs<ComplexRs> addFriendById(@RequestHeader(name = "authorization") String authorization,
-                                           @PathVariable(name = "id") Long id)
+    public CommonRs<ComplexRs> addFriendById(@RequestHeader(name = "authorization") String authorization,
+                                             @PathVariable(name = "id") Long id)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.addFriendById(id, authorization);
     }
 
     @DeleteMapping("/request/{id}")
-    public CommonRsComplexRs<ComplexRs> declineFriendshipRequestById(@RequestHeader(name = "authorization") String authorization,
-                                                          @PathVariable(name = "id") Long id)
+    public CommonRs<ComplexRs> declineFriendshipRequestById(@RequestHeader(name = "authorization") String authorization,
+                                                            @PathVariable(name = "id") Long id)
             throws PersonNotFoundExeption, FriendShipNotFoundExeption {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
@@ -61,8 +61,8 @@ public class FriendsController {
 
     @GetMapping("/request")
     public CommonRsListPersonRs<PersonRs> getPotentialFriendsOfCurrentUser(@RequestHeader(name = "authorization") String authorization,
-                                                     @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-                                                     @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
+                                                                           @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
+                                                                           @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
         return friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
