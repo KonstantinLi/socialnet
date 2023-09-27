@@ -23,6 +23,10 @@
     <mapstruct.version>1.5.3.Final</mapstruct.version>
     <lombok.version>1.18.24</lombok.version>
     <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+    <spring-context.version>6.0.11</spring-context.version>
+    <jsonwebtoken.version>0.9.1</jsonwebtoken.version>
+    <jaxb-api.version>2.3.1</jaxb-api.version>
+    <cage.version>1.0</cage.version>
   </properties>
 
   <!-- Spring -->
@@ -52,7 +56,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>6.0.11</version>
+      <version>${spring-context.version}</version>
     </dependency>
 
     <!-- DB -->
@@ -83,12 +87,12 @@
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt</artifactId>
-      <version>0.9.1</version>
+      <version>${jsonwebtoken.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <version>2.3.1</version>
+      <version>${jaxb-api.version}</version>
     </dependency>
 
     <!-- Test -->
@@ -103,9 +107,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.GitHub.cage</groupId>
+      <groupId>com.github.cage</groupId>
       <artifactId>cage</artifactId>
-      <version>1.0</version>
+      <version>${cage.version}</version>
     </dependency>
   </dependencies>
 
