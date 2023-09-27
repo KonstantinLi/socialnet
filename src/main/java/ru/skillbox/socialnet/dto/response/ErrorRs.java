@@ -18,4 +18,10 @@ public class ErrorRs {
         this.errorDescription = errorDescription;
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
+
+    public ErrorRs (RuntimeException exception) {
+        this.error = exception.getClass().getSimpleName();
+        this.errorDescription = exception.getMessage();
+        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    }
 }
