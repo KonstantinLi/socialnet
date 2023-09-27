@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @ConfigurationPropertiesScan
+@EnableScheduling
 public class SocialNetApp {
 
   public static void main(String[] args) {

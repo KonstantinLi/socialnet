@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.services;
+package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

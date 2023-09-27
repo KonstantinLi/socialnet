@@ -9,7 +9,7 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.dto.request.RegisterRq;
-import ru.skillbox.socialnet.services.AccountService;
+import ru.skillbox.socialnet.service.AccountService;
 
 @RestController
 @RequestMapping("/api/v1/account")

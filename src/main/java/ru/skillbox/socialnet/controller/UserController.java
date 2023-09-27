@@ -6,25 +6,25 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.CommonRsPersonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.services.UserService;
+import ru.skillbox.socialnet.service.PersonService;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
-private final UserService userService;
+    private final PersonService personService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById (@PathVariable(value = "id") Integer id,
-                                                                   @RequestHeader("authorization") String token) {
+    public ResponseEntity<CommonRsPersonRs<PersonRs>> GetUserById(@PathVariable(value = "id") Integer id,
+                                                                  @RequestHeader("authorization") String token) {
         CommonRsPersonRs<PersonRs> response = new CommonRsPersonRs<>();
         response.setData(new PersonRs());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
-    public CommonRsPersonRs<PersonRs> getUserMe (@RequestHeader("authorization") String token) throws BadRequestException {
-        return userService.userMe(token);
+    public CommonRsPersonRs<PersonRs> getUserMe(@RequestHeader("authorization") String token) throws BadRequestException {
+        return personService.userMe(token);
     }
 }

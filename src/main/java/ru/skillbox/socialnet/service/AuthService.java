@@ -1,5 +1,5 @@
 
-package ru.skillbox.socialnet.services;
+package ru.skillbox.socialnet.service;
 
 import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.util.JwtTokenUtils;
+import ru.skillbox.socialnet.service.AccountService;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
