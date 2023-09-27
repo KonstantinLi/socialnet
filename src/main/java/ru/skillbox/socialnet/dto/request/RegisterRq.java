@@ -15,10 +15,9 @@ public class RegisterRq {
     @NotNull(message = "Введите имя")
     private String firstName;
     private String lastName;
-    //     @Size(min = 8, message = "Password should have at least 8 characters")
-    @NotNull(message = "Введите пароль")
+    @Size(min = 8, message = "Пароль должен содержать не менее 8 символов")
     private String passwd1;
-    @NotNull(message = "Повторите пароль")
+    @NotNull(message = "Пароли не совпадают")
     private String passwd2;
 }
 
