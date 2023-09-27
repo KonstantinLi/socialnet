@@ -52,6 +52,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+    <!-- https://mavenlibs.com/maven/dependency/com.github.cage/cage -->
+    <dependency>
+      <groupId>com.GitHub.cage</groupId>
+      <artifactId>cage</artifactId>
+      <version>1.0</version>
+    </dependency>
     <!-- https://mavenlibs.com/maven/dependency/org.springframework/spring-context -->
     <dependency>
       <groupId>org.springframework</groupId>

@@ -3,6 +3,7 @@ package ru.skillbox.socialnet.dto.response;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import ru.skillbox.socialnet.entity.enums.MessagePermission;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -26,11 +27,11 @@ private String birth_date;
     private Boolean is_blocked_by_current_user;
     private String last_name;
     private String last_online_time;
-//    private MessagePermission messagesPermission;
+    private MessagePermission messages_permission;
 
 
 
     private String reg_date;
 
-    private Boolean user_deleted;
+    private Boolean is_deleted;
 }
