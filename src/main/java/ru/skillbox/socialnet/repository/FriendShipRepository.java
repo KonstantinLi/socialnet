@@ -58,7 +58,8 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
     @Modifying
     @Query(value = "delete from friendships f " +
             " where (f.src_person_id = :src_person_id and f.dst_person_id = :dst_person_id) " +
-            "   or  (f.src_person_id = :dst_person_id and f.dst_person_id = :src_person_id)", nativeQuery = true)
+            "   or  (f.src_person_id = :dst_person_id and f.dst_person_id = :src_person_id)",
+            nativeQuery = true)
     void delRelationsFromPersons(@Param("src_person_id") long src_person_id,
                                  @Param("dst_person_id") long dst_person_id);
 
@@ -69,6 +70,12 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
      */
     @Query(value = "select f.status from FriendShip f " +
             " where f.sourcePerson = :sourcePerson and f.destinationPerson = :destinationPerson ")
-    Optional<FriendShipStatus> getFriendshipStatusBetweenPersons(@Param("sourcePerson") Person sourcePerson,
+    Optional<FriendShipStatus> getFriendShipStatusBetweenPersons(@Param("sourcePerson") Person sourcePerson,
                                                                  @Param("destinationPerson") Person destinationPerson);
+
+    @Query(value = "select f.status from FriendShip f " +
+            " where f.sourcePerson.id = :sourcePersonId and f.destinationPerson.id = :destinationPersonId ")
+    Optional<FriendShipStatus> getFriendShipStatusBetweenTwoPersons(
+            @Param("sourcePersonId") Long sourcePersonI,
+            @Param("destinationPersonId") Long destinationPersonI);
 }
