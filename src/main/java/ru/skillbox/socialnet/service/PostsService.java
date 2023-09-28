@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class PostsService {
     private final PostsRepository postsRepository;
     private final TagsRepository tagsRepository;
-    private final PersonsRepository personsRepository;
+    private final PersonRepository personRepository;
     private final LikesRepository likesRepository;
     private final FriendShipRepository friendShipRepository;
     private final WeatherRepository weatherRepository;
@@ -133,20 +133,20 @@ public class PostsService {
 
                 switch (name.length) {
                     case 1 -> {
-                        personIds = personsRepository.findAllByFirstNameAndIsDeleted(
+                        personIds = personRepository.findAllByFirstNameAndIsDeleted(
                                     name[0], false
                                 )
                                 .stream()
                                 .map(Person::getId)
                                 .collect(Collectors.toSet());
-                        personIds.addAll(personsRepository.findAllByLastNameAndIsDeleted(
+                        personIds.addAll(personRepository.findAllByLastNameAndIsDeleted(
                                     name[0], false
                                 )
                                 .stream()
                                 .map(Person::getId)
                                 .toList());
                     }
-                    case 2 -> personIds = personsRepository.findAllByFirstNameAndLastNameAndIsDeleted(
+                    case 2 -> personIds = personRepository.findAllByFirstNameAndLastNameAndIsDeleted(
                                 name[0], name[1], false
                             )
                             .stream()
@@ -269,7 +269,7 @@ public class PostsService {
         Optional<Person> optionalPerson;
 
         try {
-            optionalPerson = personsRepository.findById(id);
+            optionalPerson = personRepository.findById(id);
         } catch (Exception e) {
             throw new InternalServerErrorException("fetchPerson", e);
         }

@@ -11,6 +11,7 @@ import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
@@ -84,4 +85,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                       @Param("status_name") String statusName);
 
     Optional<Person> findByEmail(String email);
+
+    Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
+    Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
+    Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 }

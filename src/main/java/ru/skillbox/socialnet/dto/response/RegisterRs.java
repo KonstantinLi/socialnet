@@ -8,10 +8,4 @@ public class RegisterRs<T>{
     private T data;
     private String email;
     private Long timestamp;
-
-
-    public RegisterRs() {
-        super();
-    }
-
 }
