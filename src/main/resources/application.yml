@@ -6,6 +6,8 @@ client:
   remote: 217.107.219.242:8080
 
 spring:
+  profiles:
+    active: @spring.profiles.active@
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -35,3 +37,7 @@ logging:
   level:
     org.hibernate:
       SQL: info
+
+logger:
+  console:
+    thresholdFilter: @logger.console.thresholdFilter@

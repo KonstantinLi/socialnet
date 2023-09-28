@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+    <Properties>
+        <Property name="console.thresholdFilter">${spring:logger.console.thresholdFilter}</Property>
+    </Properties>
+
     <Appenders>
         <Console name="ConsoleAppender">
+            <ThresholdFilter level="${console.thresholdFilter}"/>
             <PatternLayout disableAnsi="false" pattern="%highlight{%d %-5p [%t] %c{10} - %m%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=snow, DEBUG=cyan, TRACE=blue}"/>
         </Console>
-        <RollingFile name="RollingFileAppender"
+
+        <RollingFile name="FileAppender"
                      fileName="./logs/log4j2.log"
                      filePattern="./logs/$${date:yyyy-MM}/log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
-            <PatternLayout disableAnsi="false" pattern="%d %-5p [%t] %c{10} - %m%n"/>
+            <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
+            <PatternLayout pattern="%d %-5p [%t] %c{10} - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval = "3" />
-                <SizeBasedTriggeringPolicy size="100 MB" />
+                <SizeBasedTriggeringPolicy size="250 MB" />
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="ErrorFileAppender"
+                     fileName="./logs/errors.log"
+                     filePattern="./logs/$${date:yyyy-MM}/log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d %-5p [%t] %c{10} - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "5" />
+                <SizeBasedTriggeringPolicy size="250 MB" />
             </Policies>
         </RollingFile>
     </Appenders>
@@ -18,11 +35,12 @@
     <Loggers>
         <Logger name="ru.skillbox.socialnet" level="debug" additivity="false">
             <AppenderRef ref="ConsoleAppender"/>
-            <AppenderRef ref="RollingFileAppender"/>
+            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="ErrorFileAppender" level="error"/>
         </Logger>
         <Root level="error">
             <AppenderRef ref="ConsoleAppender"/>
-            <AppenderRef ref="RollingFileAppender"/>
+            <AppenderRef ref="ErrorFileAppender"/>
         </Root>
     </Loggers>
 </Configuration>
