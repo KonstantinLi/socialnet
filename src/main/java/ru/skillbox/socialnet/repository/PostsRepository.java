@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import ru.skillbox.socialnet.entity.post.Post;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 
 import java.time.LocalDateTime;
 import java.util.List;

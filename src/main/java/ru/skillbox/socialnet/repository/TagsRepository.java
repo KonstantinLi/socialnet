@@ -2,7 +2,7 @@ package ru.skillbox.socialnet.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import ru.skillbox.socialnet.entity.post.Tag;
+import ru.skillbox.socialnet.entity.postrelated.Tag;
 
 import java.util.Optional;
 

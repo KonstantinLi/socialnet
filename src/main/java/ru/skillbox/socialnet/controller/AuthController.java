@@ -2,13 +2,13 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.dto.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.exception.ExceptionBadRq;
-import ru.skillbox.socialnet.model.LoginRq;
-import ru.skillbox.socialnet.services.AuthService;
+import ru.skillbox.socialnet.dto.request.LoginRq;
+import ru.skillbox.socialnet.service.AuthService;
 
 @RestController
 @RequestMapping("/api/v1/auth")

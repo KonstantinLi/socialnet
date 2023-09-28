@@ -1,7 +1,7 @@
 package ru.skillbox.socialnet.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 import java.util.Set;
 

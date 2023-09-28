@@ -2,7 +2,7 @@ package ru.skillbox.socialnet.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import ru.skillbox.socialnet.entity.post.Tag;
+import ru.skillbox.socialnet.entity.postrelated.Tag;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING

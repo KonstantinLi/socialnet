@@ -2,12 +2,10 @@ package ru.skillbox.socialnet.mapper;
 
 import org.mapstruct.*;
 
-import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.PostRs;
 
-import ru.skillbox.socialnet.entity.post.Post;
-import ru.skillbox.socialnet.entity.post.PostComment;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,

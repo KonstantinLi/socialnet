@@ -3,10 +3,10 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.exception.ExceptionBadRq;
-import ru.skillbox.socialnet.services.UserService;
+import ru.skillbox.socialnet.service.UserService;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
 

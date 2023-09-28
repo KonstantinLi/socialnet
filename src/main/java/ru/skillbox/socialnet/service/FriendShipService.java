@@ -9,18 +9,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.ComplexRs;
-import ru.skillbox.socialnet.dto.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.entity.FriendShip;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.entity.personrelated.FriendShip;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
 import ru.skillbox.socialnet.exception.PersonNotFoundExeption;
+import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
-import ru.skillbox.socialnet.util.mapper.PersonMapper;
+import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 @Slf4j
 @Service
@@ -29,6 +29,7 @@ public class FriendShipService {
     private final FriendShipRepository friendShipRepository;
     private final PersonRepository personRepository;
     private final JwtTokenUtils jwtTokenUtils;
+    private final PersonMapper personMapper;
 
     /**
      *
@@ -50,7 +51,7 @@ public class FriendShipService {
     private CommonRs<ComplexRs> generateCommonRsComplexRs() {
         CommonRs<ComplexRs> response = new CommonRs<>();
         //TODO выяснить откуда брать значение полей для класса ComplexRs и переписать создание класса
-        ComplexRs complexRs = new ComplexRs(null, null, null, null);
+        ComplexRs complexRs = new ComplexRs();
         ArrayList<ComplexRs> complexRsList = new ArrayList<>();
         complexRsList.add(complexRs);
        // response.setData(complexRsList);
@@ -236,7 +237,7 @@ public class FriendShipService {
     private List<PersonRs> generatePersonsData(Page<Person> personsPage, String friendShipStatus, Boolean isBlocked) {
         ArrayList<PersonRs> personsData = new ArrayList<>();
         personsPage.forEach(person -> {
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, friendShipStatus, isBlocked);
+            PersonRs personRs = personMapper.personToPersonRs(person, friendShipStatus, isBlocked);
             personsData.add(personRs);
         });
         return personsData;
@@ -298,7 +299,7 @@ public class FriendShipService {
             Optional<FriendShipStatus> optionalStatus = friendShipRepository.getFriendhipStatusBetweenPersons(
                     currentPerson, person);
             FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, status.name(),
+            PersonRs personRs = personMapper.personToPersonRs(person, status.name(),
                     status == FriendShipStatus.BLOCKED);
             personsData.add(personRs);
         }

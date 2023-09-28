@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.repository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.CrudRepository;
 
-import ru.skillbox.socialnet.entity.Like;
+import ru.skillbox.socialnet.entity.postrelated.Like;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 
 import java.util.Optional;

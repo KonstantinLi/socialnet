@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.skillbox.socialnet.dto.request.response.ErrorRs;
+import ru.skillbox.socialnet.dto.response.ErrorRs;
 
 @ControllerAdvice
 public class ErrorHandler {
@@ -20,9 +20,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(ExceptionBadRq.class)
     public ResponseEntity<ErrorRs> handle(Exception exception) {
-        ErrorRs errorRs = new ErrorRs();
-        errorRs.setError("");
-        errorRs.setError_description(exception.getLocalizedMessage());
+        ErrorRs errorRs = new ErrorRs("", exception.getLocalizedMessage());
         ResponseEntity responseEntity = new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
         return responseEntity;
     }
