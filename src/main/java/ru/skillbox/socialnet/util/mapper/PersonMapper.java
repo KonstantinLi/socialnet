@@ -5,14 +5,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
-import ru.skillbox.socialnet.dto.PersonRs;
-
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 @Mapper
 public interface PersonMapper {
 
     PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "person.id", target = "id")
     @Mapping(source = "person.firstName", target = "first_name")
@@ -21,16 +21,26 @@ public interface PersonMapper {
     @Mapping(source = "person.regDate", target = "reg_date", dateFormat = "dd.MM.yyyy")
     @Mapping(source = "person.changePasswordToken", target = "token")
     default Boolean onlineStatusToBoolean(String onlineStatus) {
-        return  onlineStatus==null ? false :  onlineStatus.equalsIgnoreCase("TRUE");
+        return onlineStatus != null && onlineStatus.equalsIgnoreCase("TRUE");
     }
-    @Mapping(source = "person.onlineStatus", target = "online")
-    @Mapping(source ="person.messagePermission", target = "messages_permission")
-    @Mapping(source = "person.isBlocked", target = "is_blocked")
-    @Mapping(source = "person.isDeleted", target = "is_deleted")
-    @Mapping(source = "person.lastOnlineTime", target = "last_online_time", dateFormat = "dd.MM.yyyy hh:mm:ss")
-    @Mapping(source = "person.city", target = "city")
-    @Mapping(source = "friendStatus", target = "friend_status")
-    @Mapping(source = " isBlockedByCurrentUser", target = "is_blocked_by_current_user")
 
-    PersonRs personToPersonRs(Person person, String friendStatus, Boolean  isBlockedByCurrentUser);
+
+    //TODO Два метода для одной задачи, что делать?
+    @Mapping(source = "person.onlineStatus", target = "online")
+    @Mapping(source = "person.messagePermission", target = "messagesPermission")
+    @Mapping(source = "person.isBlocked", target = "isBlocked")
+    @Mapping(source = "person.isDeleted", target = "userDeleted")
+    @Mapping(source = "person.lastOnlineTime", target = "lastOnlineTime", dateFormat = "dd.MM.yyyy hh:mm:ss")
+    @Mapping(source = "person.city", target = "city")
+    @Mapping(source = "friendStatus", target = "friendStatus")
+    @Mapping(source = "isBlockedByCurrentUser", target = "isBlockedByCurrentUser")
+    PersonRs personToPersonRs(Person person, String friendStatus, Boolean isBlockedByCurrentUser);
+
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "isDeleted", target = "userDeleted")
+    @Mapping(source = "isBlocked", target = "isBlocked")
+    @Mapping(source = "regDate", target = "regDate")
+    @Mapping(source = "birthDate", target = "birthDate")
+    PersonRs personToPersonRs(Person person);
 }
