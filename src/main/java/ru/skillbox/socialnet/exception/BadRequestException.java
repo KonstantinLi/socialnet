@@ -1,13 +1,6 @@
 package ru.skillbox.socialnet.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class BadRequestException extends RuntimeException {
+public class BadRequestException extends CommonException {
     public BadRequestException(String message) {
         super(message);
     }

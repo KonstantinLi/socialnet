@@ -351,7 +351,7 @@ public class FriendShipService {
         ArrayList<PersonRs> personsData = new ArrayList<>();
         for (Person person : persons) {
             Optional<FriendShipStatus> optionalStatus =
-                    friendShipRepository.getFriendshipStatusBetweenPersons(currentPerson, person);
+                    friendShipRepository.getFriendShipStatusBetweenPersons(currentPerson, person);
             FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
             PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(
                     person,
