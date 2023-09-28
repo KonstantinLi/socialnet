@@ -2,9 +2,9 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
@@ -27,7 +27,7 @@ public class UserController {
                                           @RequestHeader("authorization") String token)
             throws BadRequestException {
 
-        return personService.getUserById(id, jwtTokenUtils.getId(token));
+        return personService.getUserById(jwtTokenUtils.getId(token), id);
     }
 
     @GetMapping("/me")

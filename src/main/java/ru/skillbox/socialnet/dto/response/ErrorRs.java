@@ -21,7 +21,7 @@ public class ErrorRs {
 
     public ErrorRs (RuntimeException exception) {
         this.error = exception.getClass().getSimpleName();
-        this.errorDescription = exception.getMessage();
+        this.errorDescription = exception.getLocalizedMessage();
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 }
