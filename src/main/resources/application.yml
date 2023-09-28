@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/socialnet
+    url: jdbc:postgresql://${POSTGRESQL_HOST:217.107.219.242}:${POSTGRESQL_PORT:5432}/socialnet
     username: root
     password: root
 
