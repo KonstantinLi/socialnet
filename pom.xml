@@ -78,6 +78,18 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- AWS s3 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>ec2</artifactId>
+      <version>2.20.149</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>2.20.149</version>
+    </dependency>
+
     <!-- Other -->
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -118,7 +130,6 @@
       <version>${cage.version}</version>
     </dependency>
   </dependencies>
-
 
   <build>
     <plugins>

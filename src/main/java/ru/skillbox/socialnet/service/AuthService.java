@@ -5,15 +5,17 @@ import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.response.*;
-import ru.skillbox.socialnet.entity.Person;
-import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.dto.request.LoginRq;
-import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.dto.response.CaptchaRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
+import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ public class AuthService {
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
 
+    //TODO не используется authorization параметр?
     public CommonRs<ComplexRs> logout(String authorization) {
         CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
@@ -38,22 +41,25 @@ public class AuthService {
         return commonRsComplexRs;
     }
 
-    public CommonRsPersonRs<PersonRs> login(LoginRq loginRq) throws BadRequestException {
+    public CommonRs<PersonRs> login(LoginRq loginRq) {
         Person person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow(
                 () -> new AuthException("Пользователь не найден"));
         String password = accountService.getDecodedPassword(person.getPassword());
         if (!loginRq.getPassword().equals(password)) {
             throw new AuthException("Пароли не совпадают");
         }
-        CommonRsPersonRs<PersonRs> commonRsPersonRs = new CommonRsPersonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, "", false);
+        CommonRs<PersonRs> commonRs = new CommonRs<>();
+        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person,
+                "", false);
         personRs.setToken(getToken(person));
-        commonRsPersonRs.setData(personRs);
-        commonRsPersonRs.setTimeStamp(new Date().getTime());
-        return commonRsPersonRs;
+        commonRs.setData(personRs);
+        commonRs.setTimeStamp(new Date().getTime());
+
+        return commonRs;
     }
 
     public CaptchaRs captcha() {
+
         GCage gCage = new GCage();
         String code = Integer.toString(generateRandomInt(100000));
         String secretCode = getEncodedCaptchaCode(code);
@@ -63,15 +69,17 @@ public class AuthService {
         CaptchaRs captchaRs = new CaptchaRs();
         captchaRs.setCode(secretCode);
         captchaRs.setImage(image);
+
         return captchaRs;
     }
 
     private Captcha addCaptcha(String code, String secretCode) {
+
         Captcha captcha = new Captcha();
         captcha.setCode(code);
-        captcha.setSecretСode(secretCode);
-        Date dateNow = new Date();
+        captcha.setSecretCode(secretCode);
         captcha.setTime(LocalDateTime.now().toString());
+
         return captcha;
     }
 
@@ -85,7 +93,8 @@ public class AuthService {
         return new String(decodedBytes);
     }
 
-    public static int generateRandomInt(int upperRange){
+    public static int generateRandomInt(int upperRange) {
+        //TODO сонар ругвется, что делать? Забить?
         Random random = new Random();
         return random.nextInt(upperRange);
     }

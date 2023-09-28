@@ -1,13 +1,12 @@
 package ru.skillbox.socialnet.exception;
 
-import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Builder
+@Getter
+@Setter
 public class AuthException extends RuntimeException {
-    public String message;
     public AuthException(String message) {
         super(message);
-        this.message = message;
     }
-
 }

@@ -16,6 +16,7 @@ public class CaptchaRs {
 
     }
 
+    //TODO что тут происходит? Оо
     @Data
     public static class WeatherRs {
 
