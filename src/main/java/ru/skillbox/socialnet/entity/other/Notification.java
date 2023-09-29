@@ -25,7 +25,7 @@ public class Notification {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** контакст */
   @Column(name = "contact")

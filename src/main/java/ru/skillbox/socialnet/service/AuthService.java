@@ -12,7 +12,7 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
-import ru.skillbox.socialnet.exception.AuthException;
+import ru.skillbox.socialnet.exception.auth.AuthException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
@@ -20,7 +20,6 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Random;
 
 @Service

@@ -19,7 +19,7 @@ public class Post2Tag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   @ManyToOne
   @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "fk_post2tag_post"))

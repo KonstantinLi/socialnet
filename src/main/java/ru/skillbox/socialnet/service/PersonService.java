@@ -10,9 +10,8 @@ import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.PersonIsBlockedException;
-import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.person.PersonIsBlockedException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
@@ -30,7 +29,7 @@ public class PersonService {
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
-    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) throws BadRequestException {
+    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);

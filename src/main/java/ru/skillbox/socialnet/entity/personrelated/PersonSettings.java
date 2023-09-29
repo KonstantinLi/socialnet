@@ -19,7 +19,7 @@ public class PersonSettings {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   @Column(name = "comment_comment")
   private boolean commentComment;

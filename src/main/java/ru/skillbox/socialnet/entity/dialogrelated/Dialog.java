@@ -22,7 +22,7 @@ public class Dialog {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** Первый участник */
   @ManyToOne
@@ -46,5 +46,5 @@ public class Dialog {
 
   /** Ссылка на последнее сообщение */
   @Column(name = "last_message_id")
-  private long lastMessageId;
+  private Long lastMessageId;
 }

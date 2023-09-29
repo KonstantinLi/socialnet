@@ -13,8 +13,9 @@ import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.PostComment;
-import ru.skillbox.socialnet.exception.old.BadRequestException;
-import ru.skillbox.socialnet.exception.old.NoRecordFoundException;
+import ru.skillbox.socialnet.exception.post.PostCommentCreateException;
+import ru.skillbox.socialnet.exception.post.PostCommentNotFoundException;
+import ru.skillbox.socialnet.exception.post.PostNotFoundException;
 import ru.skillbox.socialnet.mapper.CommentMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
@@ -43,7 +44,7 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
-            throw new BadRequestException("Comment text is absent");
+            throw new PostCommentCreateException("Comment text is absent");
         }
 
         Post post = fetchPost(postId, false);
@@ -116,7 +117,7 @@ public class PostCommentsService {
         );
 
         if (optionalPostComment.isEmpty()) {
-            throw new NoRecordFoundException("Post comment record " + id + " not found in the post of " + postId);
+            throw new PostCommentNotFoundException(id);
         }
 
         return optionalPostComment.get();
@@ -132,7 +133,7 @@ public class PostCommentsService {
         }
 
         if (optionalPost.isEmpty()) {
-            throw new NoRecordFoundException("Post record " + id + " not found");
+            throw new PostNotFoundException(id);
         }
 
         return optionalPost.get();
@@ -151,7 +152,7 @@ public class PostCommentsService {
             );
 
             if (parentPostComment.getParentId() != null) {
-                throw new BadRequestException("Subcomment of subcomment is not allowed");
+                throw new PostCommentCreateException("Subcomment of subcomment is not allowed");
             }
         }
 

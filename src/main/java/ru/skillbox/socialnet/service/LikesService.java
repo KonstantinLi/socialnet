@@ -8,8 +8,11 @@ import ru.skillbox.socialnet.entity.postrelated.Like;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.PostComment;
-import ru.skillbox.socialnet.exception.old.BadRequestException;
-import ru.skillbox.socialnet.exception.old.NoRecordFoundException;
+import ru.skillbox.socialnet.exception.like.LikeAlreadyExistsException;
+import ru.skillbox.socialnet.exception.like.LikeNotFoundException;
+import ru.skillbox.socialnet.exception.like.LikeTargetNotProvidedException;
+import ru.skillbox.socialnet.exception.post.PostCommentNotFoundException;
+import ru.skillbox.socialnet.exception.post.PostNotFoundException;
 import ru.skillbox.socialnet.repository.LikesRepository;
 import ru.skillbox.socialnet.dto.request.LikeRq;
 import ru.skillbox.socialnet.repository.PostCommentsRepository;
@@ -44,7 +47,7 @@ public class LikesService {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (likeRq.getType() == null || likeRq.getItemId() == null) {
-            throw new BadRequestException("No like type or item id provided");
+            throw new LikeTargetNotProvidedException();
         }
 
         Optional<Like> optionalLike = likesRepository.findByPersonIdAndTypeAndEntityId(
@@ -52,10 +55,7 @@ public class LikesService {
         );
 
         if (optionalLike.isPresent()) {
-            throw new BadRequestException(
-                    "Like record by person " + myId + " of " + likeRq.getType()
-                            + " id " + likeRq.getItemId() + " already exists"
-            );
+            throw new LikeAlreadyExistsException(myId, likeRq.getType(), likeRq.getItemId());
         }
 
         switch (likeRq.getType()) {
@@ -63,18 +63,14 @@ public class LikesService {
                 Optional<Post> optionalPost = postsRepository.findById(likeRq.getItemId());
 
                 if (optionalPost.isEmpty()) {
-                    throw new NoRecordFoundException(
-                            "Post record " + likeRq.getItemId() + " not found"
-                    );
+                    throw new PostNotFoundException(likeRq.getItemId());
                 }
             }
             case Comment -> {
                 Optional<PostComment> optionalPostComment = postCommentsRepository.findById(likeRq.getItemId());
 
                 if (optionalPostComment.isEmpty()) {
-                    throw new NoRecordFoundException(
-                            "Post comment record " + likeRq.getItemId() + " not found"
-                    );
+                    throw new PostCommentNotFoundException(likeRq.getItemId());
                 }
             }
         }
@@ -98,9 +94,7 @@ public class LikesService {
         );
 
         if (optionalLike.isEmpty()) {
-            throw new NoRecordFoundException(
-                    "Like record by person " + myId + " of " + type + " id " + itemId + " not found"
-            );
+            throw new LikeNotFoundException(myId, type, itemId);
         }
 
         likesRepository.deleteByPersonIdAndTypeAndEntityId(

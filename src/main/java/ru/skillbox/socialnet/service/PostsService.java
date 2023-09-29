@@ -17,8 +17,9 @@ import ru.skillbox.socialnet.entity.enums.PostType;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.Tag;
-import ru.skillbox.socialnet.exception.old.BadRequestException;
-import ru.skillbox.socialnet.exception.old.NoRecordFoundException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.post.PostCreateException;
+import ru.skillbox.socialnet.exception.post.PostNotFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
@@ -52,10 +53,10 @@ public class PostsService {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (postRq.getTitle() == null || postRq.getTitle().isBlank()) {
-            throw new BadRequestException("Post title is absent");
+            throw new PostCreateException("Post title is absent");
         }
         if (postRq.getPostText() == null || postRq.getPostText().isBlank()) {
-            throw new BadRequestException("Post text is absent");
+            throw new PostCreateException("Post text is absent");
         }
 
         Post post = new Post();
@@ -255,7 +256,7 @@ public class PostsService {
         Optional<Person> optionalPerson = personRepository.findById(id);
 
         if (optionalPerson.isEmpty()) {
-            throw new NoRecordFoundException("Person record " + id + " not found");
+            throw new PersonNotFoundException(id);
         }
 
         return optionalPerson.get();
@@ -271,7 +272,7 @@ public class PostsService {
         }
 
         if (optionalPost.isEmpty()) {
-            throw new NoRecordFoundException("Post record " + id + " not found");
+            throw new PostNotFoundException(id);
         }
 
         return optionalPost.get();

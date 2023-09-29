@@ -4,8 +4,6 @@ import lombok.Data;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 @Data
