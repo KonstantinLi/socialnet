@@ -1,5 +1,6 @@
-package ru.skillbox.socialnet.exception;
+package ru.skillbox.socialnet.exception.old;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
+import ru.skillbox.socialnet.exception.old.BadRequestException;
 
 public class FriendShipNotFoundExeption extends BadRequestException {
     private FriendShipStatus status;

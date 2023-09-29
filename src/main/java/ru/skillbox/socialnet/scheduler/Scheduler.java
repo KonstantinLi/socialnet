@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.config;
+package ru.skillbox.socialnet.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 @Async
 @RequiredArgsConstructor
-public class SchedulerConfig {
+public class Scheduler {
     private final CaptchaRepository captchaRepository;
 
     @Scheduled(fixedDelayString = "PT02H")

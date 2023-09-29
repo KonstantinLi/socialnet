@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.exception;
+package ru.skillbox.socialnet.exception.old;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

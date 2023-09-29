@@ -9,8 +9,8 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ComplexRs {
 
-    private Integer count;
-    private Integer id;
+    private Long count;
+    private Long id;
     private String message;
-    private Integer messageId;
+    private Long messageId;
 }

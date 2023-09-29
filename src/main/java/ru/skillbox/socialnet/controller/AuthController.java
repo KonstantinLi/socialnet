@@ -6,7 +6,7 @@ import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.dto.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.exception.old.ExceptionBadRq;
 import ru.skillbox.socialnet.dto.request.LoginRq;
 import ru.skillbox.socialnet.service.AuthService;
 

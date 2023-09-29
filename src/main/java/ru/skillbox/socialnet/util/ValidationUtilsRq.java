@@ -2,8 +2,8 @@ package ru.skillbox.socialnet.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
-import ru.skillbox.socialnet.exception.ErrorHandler;
+import ru.skillbox.socialnet.exception.old.ExceptionBadRq;
+import ru.skillbox.socialnet.exception.old.ErrorHandler;
 
 @Service
 @RequiredArgsConstructor

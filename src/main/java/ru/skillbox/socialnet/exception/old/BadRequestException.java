@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.exception;
+package ru.skillbox.socialnet.exception.old;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

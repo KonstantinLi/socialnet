@@ -7,8 +7,8 @@ import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.personrelated.PersonSettings;
 import ru.skillbox.socialnet.entity.other.Captcha;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.exception.old.BadRequestException;
+import ru.skillbox.socialnet.exception.old.ExceptionBadRq;
 import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
@@ -41,7 +41,6 @@ public class AccountService {
         ComplexRs complexRs = new ComplexRs();
         response.setData(complexRs);
         response.setEmail(registerRq.getEmail());
-        response.setTimestamp(new Date().getTime());
         return response;
     }
 

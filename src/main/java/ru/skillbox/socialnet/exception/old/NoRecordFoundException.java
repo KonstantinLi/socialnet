@@ -1,6 +1,7 @@
-package ru.skillbox.socialnet.exception;
+package ru.skillbox.socialnet.exception.old;
 
 import ru.skillbox.socialnet.dto.response.ErrorRs;
+import ru.skillbox.socialnet.exception.old.BadRequestException;
 
 public class NoRecordFoundException extends BadRequestException {
     public static final String ERROR_NO_RECORD_FOUND = "No record found";

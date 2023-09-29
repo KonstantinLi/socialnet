@@ -17,9 +17,8 @@ import ru.skillbox.socialnet.entity.enums.PostType;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.Tag;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.InternalServerErrorException;
-import ru.skillbox.socialnet.exception.NoRecordFoundException;
+import ru.skillbox.socialnet.exception.old.BadRequestException;
+import ru.skillbox.socialnet.exception.old.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
@@ -127,85 +126,80 @@ public class PostsService {
 
         Set<Long> personIds = null;
 
-        try {
-            if (author != null && !author.isBlank()) {
-                String[] name = author.trim().split("\\s+", 2);
+        if (author != null && !author.isBlank()) {
+            String[] name = author.trim().split("\\s+", 2);
 
-                switch (name.length) {
-                    case 1 -> {
-                        personIds = personRepository.findAllByFirstNameAndIsDeleted(
-                                    name[0], false
-                                )
-                                .stream()
-                                .map(Person::getId)
-                                .collect(Collectors.toSet());
-                        personIds.addAll(personRepository.findAllByLastNameAndIsDeleted(
-                                    name[0], false
-                                )
-                                .stream()
-                                .map(Person::getId)
-                                .toList());
-                    }
-                    case 2 -> personIds = personRepository.findAllByFirstNameAndLastNameAndIsDeleted(
-                                name[0], name[1], false
+            switch (name.length) {
+                case 1 -> {
+                    personIds = personRepository.findAllByFirstNameAndIsDeleted(
+                                name[0], false
                             )
                             .stream()
                             .map(Person::getId)
                             .collect(Collectors.toSet());
+                    personIds.addAll(personRepository.findAllByLastNameAndIsDeleted(
+                                name[0], false
+                            )
+                            .stream()
+                            .map(Person::getId)
+                            .toList());
                 }
+                case 2 -> personIds = personRepository.findAllByFirstNameAndLastNameAndIsDeleted(
+                            name[0], name[1], false
+                        )
+                        .stream()
+                        .map(Person::getId)
+                        .collect(Collectors.toSet());
             }
-
-            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-            Boolean isDeleted = false;
-
-            List<Predicate> predicatesPage = new ArrayList<>();
-            CriteriaQuery<Post> pageQuery = builder.createQuery(Post.class);
-            Root<Post> pageRoot = pageQuery.from(Post.class);
-            pageQuery.select(pageRoot);
-
-            List<Predicate> predicatesCount = new ArrayList<>();
-            CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
-            Root<Post> countRoot = countQuery.from(Post.class);
-            countQuery.select(builder.count(countRoot));
-
-            predicatesPage.add(builder.equal(pageRoot.get("isDeleted"), isDeleted));
-            predicatesCount.add(builder.equal(countRoot.get("isDeleted"), isDeleted));
-            if (personIds != null) {
-                predicatesPage.add(pageRoot.get("authorId").in(personIds));
-                predicatesCount.add(countRoot.get("authorId").in(personIds));
-            }
-            if (dateFrom != null) {
-                Timestamp timestampFrom = new Timestamp(dateFrom);
-                LocalDateTime timeFrom = localDateTimeConverter.convertToDatabaseColumn(timestampFrom);
-                predicatesPage.add(builder.greaterThanOrEqualTo(pageRoot.get("time"), timeFrom));
-                predicatesCount.add(builder.greaterThanOrEqualTo(countRoot.get("time"), timeFrom));
-            }
-            if (dateTo != null) {
-                Timestamp timestampTo = new Timestamp(dateTo);
-                predicatesPage.add(builder.lessThanOrEqualTo(pageRoot.get("time"), timestampTo));
-                predicatesCount.add(builder.lessThanOrEqualTo(countRoot.get("time"), timestampTo));
-            }
-
-            // TODO: getPostsByQuery tags & text
-
-            pageQuery.where(builder.and(predicatesPage.toArray(new Predicate[0])));
-            countQuery.where(builder.and(predicatesCount.toArray(new Predicate[0])));
-            pageQuery.orderBy(builder.desc(pageRoot.get("time")));
-
-            return getListPostResponse(
-                    entityManager
-                            .createQuery(pageQuery)
-                            .setMaxResults(perPage)
-                            .setFirstResult(offset * perPage)
-                            .getResultList(),
-                    entityManager
-                            .createQuery(countQuery)
-                            .getSingleResult(),
-                    myId, offset, perPage);
-
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getPostsByQuery", e);
         }
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        Boolean isDeleted = false;
+
+        List<Predicate> predicatesPage = new ArrayList<>();
+        CriteriaQuery<Post> pageQuery = builder.createQuery(Post.class);
+        Root<Post> pageRoot = pageQuery.from(Post.class);
+        pageQuery.select(pageRoot);
+
+        List<Predicate> predicatesCount = new ArrayList<>();
+        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+        Root<Post> countRoot = countQuery.from(Post.class);
+        countQuery.select(builder.count(countRoot));
+
+        predicatesPage.add(builder.equal(pageRoot.get("isDeleted"), isDeleted));
+        predicatesCount.add(builder.equal(countRoot.get("isDeleted"), isDeleted));
+        if (personIds != null) {
+            predicatesPage.add(pageRoot.get("authorId").in(personIds));
+            predicatesCount.add(countRoot.get("authorId").in(personIds));
+        }
+        if (dateFrom != null) {
+            Timestamp timestampFrom = new Timestamp(dateFrom);
+            LocalDateTime timeFrom = localDateTimeConverter.convertToDatabaseColumn(timestampFrom);
+            predicatesPage.add(builder.greaterThanOrEqualTo(pageRoot.get("time"), timeFrom));
+            predicatesCount.add(builder.greaterThanOrEqualTo(countRoot.get("time"), timeFrom));
+        }
+        if (dateTo != null) {
+            Timestamp timestampTo = new Timestamp(dateTo);
+            predicatesPage.add(builder.lessThanOrEqualTo(pageRoot.get("time"), timestampTo));
+            predicatesCount.add(builder.lessThanOrEqualTo(countRoot.get("time"), timestampTo));
+        }
+
+        // TODO: getPostsByQuery tags & text
+
+        pageQuery.where(builder.and(predicatesPage.toArray(new Predicate[0])));
+        countQuery.where(builder.and(predicatesCount.toArray(new Predicate[0])));
+        pageQuery.orderBy(builder.desc(pageRoot.get("time")));
+
+        return getListPostResponse(
+                entityManager
+                        .createQuery(pageQuery)
+                        .setMaxResults(perPage)
+                        .setFirstResult(offset * perPage)
+                        .getResultList(),
+                entityManager
+                        .createQuery(countQuery)
+                        .getSingleResult(),
+                myId, offset, perPage);
     }
 
     @Transactional
@@ -216,22 +210,18 @@ public class PostsService {
         List<Post> posts;
         long total;
 
-        try {
-            posts = postsRepository.findAllByAuthorIdAndIsDeleted(
-                    person.getId(),
-                    false,
-                    PageRequest.of(
-                            offset, perPage,
-                            Sort.by("time").descending()
-                    )
-            );
-            total = postsRepository.countByAuthorIdAndIsDeleted(
-                    person.getId(),
-                    false
-            );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getWall", e);
-        }
+        posts = postsRepository.findAllByAuthorIdAndIsDeleted(
+                person.getId(),
+                false,
+                PageRequest.of(
+                        offset, perPage,
+                        Sort.by("time").descending()
+                )
+        );
+        total = postsRepository.countByAuthorIdAndIsDeleted(
+                person.getId(),
+                false
+        );
 
         return getListPostResponse(posts, total, myId, offset, perPage);
     }
@@ -244,35 +234,25 @@ public class PostsService {
         List<Post> posts;
         long total;
 
-        try {
-            posts = postsRepository.findAllByIsDeletedAndTimeGreaterThan(
-                    false,
-                    person.getLastOnlineTime(),
-                    PageRequest.of(
-                            offset, perPage,
-                            Sort.by("time").descending()
-                    )
-            );
-            total = postsRepository.countByIsDeletedAndTimeGreaterThan(
-                    false,
-                    person.getLastOnlineTime()
-            );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getFeeds", e);
-        }
+        posts = postsRepository.findAllByIsDeletedAndTimeGreaterThan(
+                false,
+                person.getLastOnlineTime(),
+                PageRequest.of(
+                        offset, perPage,
+                        Sort.by("time").descending()
+                )
+        );
+        total = postsRepository.countByIsDeletedAndTimeGreaterThan(
+                false,
+                person.getLastOnlineTime()
+        );
 
         return getListPostResponse(posts, total, myId, offset, perPage);
     }
 
 
     private Person fetchPerson(Long id) {
-        Optional<Person> optionalPerson;
-
-        try {
-            optionalPerson = personRepository.findById(id);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fetchPerson", e);
-        }
+        Optional<Person> optionalPerson = personRepository.findById(id);
 
         if (optionalPerson.isEmpty()) {
             throw new NoRecordFoundException("Person record " + id + " not found");
@@ -284,14 +264,10 @@ public class PostsService {
     private Post fetchPost(Long id, Boolean isDeleted) {
         Optional<Post> optionalPost;
 
-        try {
-            if (isDeleted == null) {
-                optionalPost = postsRepository.findById(id);
-            } else {
-                optionalPost = postsRepository.findByIdAndIsDeleted(id, isDeleted);
-            }
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fetchPost", e);
+        if (isDeleted == null) {
+            optionalPost = postsRepository.findById(id);
+        } else {
+            optionalPost = postsRepository.findByIdAndIsDeleted(id, isDeleted);
         }
 
         if (optionalPost.isEmpty()) {
@@ -308,19 +284,9 @@ public class PostsService {
     }
 
     private void savePost(Post post, PostRq postRq) {
-        try {
-            post = postMapper.postRqToPost(postRq, post);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("savePost", e);
-        }
+        fillTags(postMapper.postRqToPost(postRq, post));
 
-        fillTags(post);
-
-        try {
-            postsRepository.save(post);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("savePost", e);
-        }
+        postsRepository.save(post);
     }
 
     private CommonRs<List<PostRs>> getListPostResponse(
@@ -352,16 +318,10 @@ public class PostsService {
     }
 
     private PostRs postToPostRs(Post post, Long myId) {
-        PostRs postRs;
+        PostRs postRs = postMapper.postToPostRs(post);
 
-        try {
-            postRs = postMapper.postToPostRs(post);
-
-            postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Post, post.getId()));
-            postRs.setMyLike(likesRepository.existsByPersonId(myId));
-        } catch (Exception e) {
-            throw new InternalServerErrorException("postToPostRs", e);
-        }
+        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Post, post.getId()));
+        postRs.setMyLike(likesRepository.existsByPersonId(myId));
 
         fillAuthor(postRs.getAuthor(), myId);
 
@@ -387,35 +347,25 @@ public class PostsService {
      * @return The post entity given as parameter
      */
     private Post fillTags(Post post) {
-        try {
-            post.setTags(
-                    post.getTags().stream().map(tag -> {
-                        Optional<Tag> optionalTag = tagsRepository.findByTag(tag.getTag());
+        post.setTags(
+                post.getTags().stream().map(tag -> {
+                    Optional<Tag> optionalTag = tagsRepository.findByTag(tag.getTag());
 
-                        if (optionalTag.isPresent()) {
-                            return optionalTag.get();
-                        }
+                    if (optionalTag.isPresent()) {
+                        return optionalTag.get();
+                    }
 
-                        tag.setId(null);
-                        return tagsRepository.save(tag);
-                    }).collect(Collectors.toSet())
-            );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fillTags", e);
-        }
+                    tag.setId(null);
+                    return tagsRepository.save(tag);
+                }).collect(Collectors.toSet())
+        );
 
         return post;
     }
 
     private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
-        Optional<FriendShip> optionalFriendship;
-
-        try {
-            optionalFriendship = friendShipRepository
+        Optional<FriendShip> optionalFriendship = friendShipRepository
                     .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getFriendshipStatus", e);
-        }
 
         if (optionalFriendship.isEmpty()) {
             return FriendShipStatus.UNKNOWN;
@@ -429,16 +379,10 @@ public class PostsService {
         personRs.setFriendStatus(friendshipStatus.toString());
         personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendShipStatus.BLOCKED);
 
-        Optional<Weather> optionalWeather;
+        Optional<Weather> optionalWeather = weatherRepository.findByCity(personRs.getCity());
 
-        try {
-            optionalWeather = weatherRepository.findByCity(personRs.getCity());
-
-            if (optionalWeather.isPresent()) {
-                personRs.setWeather(weatherMapper.weatherToWeatherRs(optionalWeather.get()));
-            }
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fillAuthor", e);
+        if (optionalWeather.isPresent()) {
+            personRs.setWeather(weatherMapper.weatherToWeatherRs(optionalWeather.get()));
         }
 
         return personRs;

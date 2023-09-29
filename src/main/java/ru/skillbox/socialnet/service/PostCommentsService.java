@@ -13,9 +13,8 @@ import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.PostComment;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.InternalServerErrorException;
-import ru.skillbox.socialnet.exception.NoRecordFoundException;
+import ru.skillbox.socialnet.exception.old.BadRequestException;
+import ru.skillbox.socialnet.exception.old.NoRecordFoundException;
 import ru.skillbox.socialnet.mapper.CommentMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
@@ -94,37 +93,27 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
         Post post = fetchPost(postId, false);
 
-        List<PostComment> postComments;
-        long total;
+        List<PostComment> postComments = postCommentsRepository.findAllByPostIdAndIsDeleted(
+                post.getId(),
+                false,
+                PageRequest.of(
+                        offset, perPage,
+                        Sort.by("time").descending()
+                )
+        );
 
-        try {
-            postComments = postCommentsRepository.findAllByPostIdAndIsDeleted(
-                    post.getId(),
-                    false,
-                    PageRequest.of(
-                            offset, perPage,
-                            Sort.by("time").descending()
-                    )
-            );
-            total = postCommentsRepository.countByPostIdAndIsDeleted(
-                    post.getId(), false
-            );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getComments", e);
-        }
+        long total = postCommentsRepository.countByPostIdAndIsDeleted(
+                post.getId(), false
+        );
 
         return getListPostCommentResponse(postComments, total, myId, offset, perPage);
     }
 
 
     protected PostComment fetchPostComment(Long id, Long postId, Boolean isDeleted) {
-        Optional<PostComment> optionalPostComment;
-
-        try {
-            optionalPostComment = postCommentsRepository.findByIdAndPostIdAndIsDeleted(id, postId, isDeleted);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fetchPostComment", e);
-        }
+        Optional<PostComment> optionalPostComment = postCommentsRepository.findByIdAndPostIdAndIsDeleted(
+                id, postId, isDeleted
+        );
 
         if (optionalPostComment.isEmpty()) {
             throw new NoRecordFoundException("Post comment record " + id + " not found in the post of " + postId);
@@ -136,14 +125,10 @@ public class PostCommentsService {
     private Post fetchPost(Long id, Boolean isDeleted) {
         Optional<Post> optionalPost;
 
-        try {
-            if (isDeleted == null) {
-                optionalPost = postsRepository.findById(id);
-            } else {
-                optionalPost = postsRepository.findByIdAndIsDeleted(id, isDeleted);
-            }
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fetchPost", e);
+        if (isDeleted == null) {
+            optionalPost = postsRepository.findById(id);
+        } else {
+            optionalPost = postsRepository.findByIdAndIsDeleted(id, isDeleted);
         }
 
         if (optionalPost.isEmpty()) {
@@ -172,12 +157,8 @@ public class PostCommentsService {
 
         postComment.setParentId(null);
 
-        try {
-            commentMapper.commentRqToPostComment(commentRq, postComment);
-            postCommentsRepository.save(postComment);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("savePostComment", e);
-        }
+        commentMapper.commentRqToPostComment(commentRq, postComment);
+        postCommentsRepository.save(postComment);
     }
 
     private CommonRs<List<CommentRs>> getListPostCommentResponse(
@@ -209,16 +190,10 @@ public class PostCommentsService {
     }
 
     private CommentRs postCommentToCommentRs(PostComment postComment, Long myId) {
-        CommentRs commentRs;
+        CommentRs commentRs = commentMapper.postCommentToCommentRs(postComment);
 
-        try {
-            commentRs = commentMapper.postCommentToCommentRs(postComment);
-
-            commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
-            commentRs.setMyLike(likesRepository.existsByPersonId(myId));
-        } catch (Exception e) {
-            throw new InternalServerErrorException("postCommentToCommentRs", e);
-        }
+        commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
+        commentRs.setMyLike(likesRepository.existsByPersonId(myId));
 
         fillAuthor(commentRs.getAuthor(), myId);
 
@@ -226,20 +201,14 @@ public class PostCommentsService {
     }
 
     private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
-        Optional<FriendShip> optionalFriendship;
-
-        try {
-            optionalFriendship = friendShipRepository
+        Optional<FriendShip> optionalFriendShip = friendShipRepository
                     .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getFriendshipStatus", e);
-        }
 
-        if (optionalFriendship.isEmpty()) {
+        if (optionalFriendShip.isEmpty()) {
             return FriendShipStatus.UNKNOWN;
         }
 
-        return optionalFriendship.get().getStatus();
+        return optionalFriendShip.get().getStatus();
     }
 
     private PersonRs fillAuthor(PersonRs personRs, Long myId) {
@@ -247,16 +216,10 @@ public class PostCommentsService {
         personRs.setFriendStatus(friendshipStatus.toString());
         personRs.setIsBlockedByCurrentUser(friendshipStatus == FriendShipStatus.BLOCKED);
 
-        Optional<Weather> optionalWeather;
+        Optional<Weather> optionalWeather = weatherRepository.findByCity(personRs.getCity());
 
-        try {
-            optionalWeather = weatherRepository.findByCity(personRs.getCity());
-
-            if (optionalWeather.isPresent()) {
-                personRs.setWeather(weatherMapper.weatherToWeatherRs(optionalWeather.get()));
-            }
-        } catch (Exception e) {
-            throw new InternalServerErrorException("fillAuthor", e);
+        if (optionalWeather.isPresent()) {
+            personRs.setWeather(weatherMapper.weatherToWeatherRs(optionalWeather.get()));
         }
 
         return personRs;

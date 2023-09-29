@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-import ru.skillbox.socialnet.exception.FriendShipNotFoundExeption;
+import ru.skillbox.socialnet.exception.old.FriendShipNotFoundExeption;
 
 import java.util.Optional;
 

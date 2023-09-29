@@ -8,9 +8,8 @@ import ru.skillbox.socialnet.entity.postrelated.Like;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.PostComment;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.InternalServerErrorException;
-import ru.skillbox.socialnet.exception.NoRecordFoundException;
+import ru.skillbox.socialnet.exception.old.BadRequestException;
+import ru.skillbox.socialnet.exception.old.NoRecordFoundException;
 import ru.skillbox.socialnet.repository.LikesRepository;
 import ru.skillbox.socialnet.dto.request.LikeRq;
 import ru.skillbox.socialnet.repository.PostCommentsRepository;
@@ -48,15 +47,9 @@ public class LikesService {
             throw new BadRequestException("No like type or item id provided");
         }
 
-        Optional<Like> optionalLike;
-
-        try {
-            optionalLike = likesRepository.findByPersonIdAndTypeAndEntityId(
-                        myId, likeRq.getType(), likeRq.getItemId()
-                    );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("putLike", e);
-        }
+        Optional<Like> optionalLike = likesRepository.findByPersonIdAndTypeAndEntityId(
+                myId, likeRq.getType(), likeRq.getItemId()
+        );
 
         if (optionalLike.isPresent()) {
             throw new BadRequestException(
@@ -67,13 +60,7 @@ public class LikesService {
 
         switch (likeRq.getType()) {
             case Post -> {
-                Optional<Post> optionalPost;
-
-                try {
-                    optionalPost = postsRepository.findById(likeRq.getItemId());
-                } catch (Exception e) {
-                    throw new InternalServerErrorException("putLike", e);
-                }
+                Optional<Post> optionalPost = postsRepository.findById(likeRq.getItemId());
 
                 if (optionalPost.isEmpty()) {
                     throw new NoRecordFoundException(
@@ -82,13 +69,7 @@ public class LikesService {
                 }
             }
             case Comment -> {
-                Optional<PostComment> optionalPostComment;
-
-                try {
-                    optionalPostComment = postCommentsRepository.findById(likeRq.getItemId());
-                } catch (Exception e) {
-                    throw new InternalServerErrorException("putLike", e);
-                }
+                Optional<PostComment> optionalPostComment = postCommentsRepository.findById(likeRq.getItemId());
 
                 if (optionalPostComment.isEmpty()) {
                     throw new NoRecordFoundException(
@@ -103,11 +84,7 @@ public class LikesService {
         like.setType(likeRq.getType());
         like.setEntityId(likeRq.getItemId());
 
-        try {
-            likesRepository.save(like);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("putLike", e);
-        }
+        likesRepository.save(like);
 
         return getLikeResponse(like);
     }
@@ -116,15 +93,9 @@ public class LikesService {
     public CommonRs<LikeRs> deleteLike(String authorization, Long itemId, LikeType type) {
         Long myId = jwtTokenUtils.getId(authorization);
 
-        Optional<Like> optionalLike;
-
-        try {
-            optionalLike = likesRepository.findByPersonIdAndTypeAndEntityId(
-                    myId, type, itemId
-            );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("deleteLike", e);
-        }
+        Optional<Like> optionalLike = likesRepository.findByPersonIdAndTypeAndEntityId(
+                myId, type, itemId
+        );
 
         if (optionalLike.isEmpty()) {
             throw new NoRecordFoundException(
@@ -132,13 +103,9 @@ public class LikesService {
             );
         }
 
-        try {
-            likesRepository.deleteByPersonIdAndTypeAndEntityId(
-                    myId, type, itemId
-            );
-        } catch (Exception e) {
-            throw new InternalServerErrorException("deleteLike", e);
-        }
+        likesRepository.deleteByPersonIdAndTypeAndEntityId(
+                myId, type, itemId
+        );
 
         return getLikeResponse(optionalLike.get());
     }
@@ -148,14 +115,10 @@ public class LikesService {
         CommonRs<LikeRs> commonRsLikeRs = new CommonRs<>();
         LikeRs likeRs = new LikeRs();
 
-        try {
-            likeRs.setUsers(likesRepository.findAllByTypeAndEntityId(like.getType(), like.getEntityId())
-                    .stream()
-                    .map(Like::getPersonId)
-                    .collect(Collectors.toSet()));
-        } catch (Exception e) {
-            throw new InternalServerErrorException("getLikeResponse", e);
-        }
+        likeRs.setUsers(likesRepository.findAllByTypeAndEntityId(like.getType(), like.getEntityId())
+                .stream()
+                .map(Like::getPersonId)
+                .collect(Collectors.toSet()));
 
         likeRs.setLikes(likeRs.getUsers().size());
         commonRsLikeRs.setData(likeRs);

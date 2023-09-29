@@ -12,16 +12,14 @@ public class ErrorRs {
     public ErrorRs(String error, String errorDescription) {
         this.error = error;
         this.errorDescription = errorDescription;
-        timestamp = new Date().getTime();
     }
 
     public ErrorRs(String error) {
         this.error = error;
         this.errorDescription = error;
-        timestamp = new Date().getTime();
     }
 
     private String error;
-    private Long timestamp;
+    private Long timestamp = new Date().getTime();
     private String errorDescription;
 }

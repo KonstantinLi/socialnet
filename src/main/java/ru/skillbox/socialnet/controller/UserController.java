@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.exception.ExceptionBadRq;
+import ru.skillbox.socialnet.exception.old.ExceptionBadRq;
 import ru.skillbox.socialnet.service.UserService;
 import ru.skillbox.socialnet.util.ValidationUtilsRq;
 
