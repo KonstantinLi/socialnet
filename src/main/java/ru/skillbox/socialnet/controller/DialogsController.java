@@ -1,0 +1,19 @@
+package ru.skillbox.socialnet.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/dialogs")
+public class DialogsController {
+
+
+    @GetMapping("/unreaded")
+    public void getUnreadedDialogs() {
+        //TODO убрать заглушку
+        //реализация отсутствует на период разработки
+    }
+}

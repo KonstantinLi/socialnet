@@ -11,7 +11,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/socialnet
+    url: jdbc:postgresql://${POSTGRESQL_HOST:217.107.219.242}:${POSTGRESQL_PORT:5432}/socialnet
     username: root
     password: root
 
@@ -29,6 +29,11 @@ spring:
     drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
+  servlet:
+    multipart:
+      max-file-size=5MB
+      max-request-size=5MB
+
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
   lifetime: 1h
@@ -41,3 +46,15 @@ logging:
 logger:
   console:
     thresholdFilter: @logger.console.thresholdFilter@
+
+aws:
+  image-bucket-name: socialnet-bucket
+  access-key-id: AKIAV3IS4ZIFYKNKL4MX
+  secret-access-key: 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
+  region: eu-north-1
+  max-image-file-size: 5242880
+  photo-url-prefix: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/
+  default-photo-url: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/profile_photo_default.jpg
+  log-bucket-name: socialnet-logs
+  max-log-file-size: 5242880
+  log-url-prefix: https://socialnet-logs.s3.eu-north-1.amazonaws.com/

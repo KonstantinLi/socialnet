@@ -9,13 +9,19 @@ import java.time.ZoneOffset;
 @Data
 public class ErrorRs {
 
-    private Long timeStamp;
     private String error;
-    private String error_description;
+    private String errorDescription;
+    private Long timeStamp;
 
-    public ErrorRs(String error, String error_description) {
-        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    public ErrorRs(String error, String errorDescription) {
         this.error = error;
-        this.error_description = error_description;
+        this.errorDescription = errorDescription;
+        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+    }
+
+    public ErrorRs (RuntimeException exception) {
+        this.error = exception.getClass().getSimpleName();
+        this.errorDescription = exception.getLocalizedMessage();
+        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
 }
