@@ -3,11 +3,14 @@ package ru.skillbox.socialnet.security;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.Collections;
 
+//TODO Опять сонар. Хочет переименовать класс, например в UserDetailsImpl можно?
+@SuppressWarnings("unused")
 public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

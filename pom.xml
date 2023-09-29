@@ -52,6 +52,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+    <!-- https://mavenlibs.com/maven/dependency/com.github.cage/cage -->
+    <dependency>
+      <groupId>com.GitHub.cage</groupId>
+      <artifactId>cage</artifactId>
+      <version>1.0</version>
+    </dependency>
     <!-- https://mavenlibs.com/maven/dependency/org.springframework/spring-context -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -70,6 +76,18 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
       <scope>runtime</scope>
+    </dependency>
+
+    <!-- AWS s3 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>ec2</artifactId>
+      <version>2.20.149</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>2.20.149</version>
     </dependency>
 
     <!-- Other -->
@@ -122,7 +140,6 @@
       <version>${cage.version}</version>
     </dependency>
   </dependencies>
-
 
   <build>
     <plugins>

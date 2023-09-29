@@ -16,13 +16,17 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
+
     private final JwtTokenUtils jwtTokenUtils;
 
+    @SuppressWarnings("NullableProblems")
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
-    ) throws ServletException, IOException {
-        String authJwt = request.getHeader("authorization");
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String authJwt = request.getHeader("Authorization");
 
         if (authJwt == null || !jwtTokenUtils.validateAccessToken(authJwt)) {
             filterChain.doFilter(request, response);
@@ -34,11 +38,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private void setAuthenticationContext(String token) {
+
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         jwtTokenUtils.getSubject(token),
                         null,
-                        jwtTokenUtils.getRoles(token).stream().map(SimpleGrantedAuthority::new).toList());
+                        jwtTokenUtils.getRoles(token)
+                                .stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .toList());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

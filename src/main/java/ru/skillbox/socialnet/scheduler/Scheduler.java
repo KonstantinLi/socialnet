@@ -1,10 +1,8 @@
 package ru.skillbox.socialnet.scheduler;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
@@ -13,9 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+//TODO Две закомментированные аннотации?
 @Configuration
-@EnableScheduling
-@ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
+//@EnableScheduling
+//@ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 @Async
 @RequiredArgsConstructor
 public class Scheduler {
@@ -25,8 +24,6 @@ public class Scheduler {
     private void deleteCaptcha() {
         LocalDateTime date = LocalDateTime.now();
         Optional<List<Captcha>> captchas = captchaRepository.findByTime(date.minusHours(2));
-        if (!captchas.isEmpty()) {
-            captchaRepository.deleteAll(captchas.get());
-        }
+        captchas.ifPresent(captchaRepository::deleteAll);
     }
 }

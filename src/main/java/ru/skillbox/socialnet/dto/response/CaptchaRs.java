@@ -7,5 +7,4 @@ public class CaptchaRs {
 
     private String code;
     private String image;
-
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+
 public class CommentRs {
     private PersonRs author;
     private String commentText;

@@ -26,13 +26,19 @@ public class Dialog {
 
   /** Первый участник */
   @ManyToOne
-  @JoinColumn(name = "first_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_dialog_first_person"))
+  @JoinColumn(name = "first_person_id",
+          nullable = false,
+          referencedColumnName = "id",
+          foreignKey = @ForeignKey(name = "fk_dialog_first_person"))
   private Person firstPerson;
 
   /** Второй участник */
   @ManyToOne
-  @JoinColumn(name = "second_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_dialog_second_person"))
-  private Person second_person_id;
+  @JoinColumn(name = "second_person_id",
+          nullable = false,
+          referencedColumnName = "id",
+          foreignKey = @ForeignKey(name = "fk_dialog_second_person"))
+  private Person secondPersonId;
 
   /** Дата и время последнего общения */
   @Column(name = "last_active_time")

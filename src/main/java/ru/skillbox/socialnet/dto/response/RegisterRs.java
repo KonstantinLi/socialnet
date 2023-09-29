@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class RegisterRs<T>{
+public class RegisterRs<T> {
 
     private T data;
     private String email;
