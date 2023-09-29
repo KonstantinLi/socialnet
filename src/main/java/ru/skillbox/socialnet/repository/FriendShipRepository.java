@@ -78,8 +78,6 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
     Optional<FriendShipStatus> getFriendShipStatusBetweenTwoPersons(
             @Param("sourcePersonId") Long sourcePersonI,
             @Param("destinationPersonId") Long destinationPersonI);
-    Optional<FriendShipStatus> getFriendhipStatusBetweenPersons(@Param("sourcePerson") Person sourcePerson,
-                                                                @Param("destinationPerson") Person destinationPerson);
 
     Optional<FriendShip> findBySrcPersonIdAndDstPersonId(Long srcPersonId, Long dstPersonId);
 }
