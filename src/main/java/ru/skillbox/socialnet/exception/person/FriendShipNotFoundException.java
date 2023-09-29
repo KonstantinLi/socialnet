@@ -1,7 +1,8 @@
-package ru.skillbox.socialnet.exception;
+package ru.skillbox.socialnet.exception.person;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
+import ru.skillbox.socialnet.exception.BadRequestException;
 
-public class FriendShipNotFoundException extends CommonException {
+public class FriendShipNotFoundException extends BadRequestException {
     private final FriendShipStatus status;
     public FriendShipNotFoundException(FriendShipStatus status) {
         super("запись о дружбе не найдена");

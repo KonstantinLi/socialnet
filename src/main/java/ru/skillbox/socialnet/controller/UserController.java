@@ -6,7 +6,6 @@ import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.service.PersonService;
 
@@ -24,15 +23,13 @@ public class UserController {
 
     @GetMapping("/{id}")
     public CommonRs<PersonRs> getUserById(@PathVariable(value = "id") Long id,
-                                          @RequestHeader("authorization") String token)
-            throws BadRequestException {
+                                          @RequestHeader("authorization") String token) {
 
         return personService.getUserById(jwtTokenUtils.getId(token), id);
     }
 
     @GetMapping("/me")
-    public CommonRs<PersonRs> getMyInfo(@RequestHeader(value = "authorization") String token)
-            throws BadRequestException {
+    public CommonRs<PersonRs> getMyInfo(@RequestHeader(value = "authorization") String token) {
 
         return getUserById(jwtTokenUtils.getId(token), token);
     }

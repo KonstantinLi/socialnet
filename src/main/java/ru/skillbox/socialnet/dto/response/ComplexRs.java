@@ -1,14 +1,16 @@
 package ru.skillbox.socialnet.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+
 
 @Data
-@RequiredArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ComplexRs {
 
     private Long count;
-    private Integer id;
+    private Long id;
     private String message;
     private Long messageId;
 }

@@ -12,15 +12,14 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
-import ru.skillbox.socialnet.exception.AuthException;
+import ru.skillbox.socialnet.exception.auth.AuthException;
+import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Random;
 
 @Service
@@ -30,13 +29,13 @@ public class AuthService {
     private final JwtTokenUtils jwtTokenUtils;
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
+    private final PersonMapper personMapper;
 
     //TODO не используется authorization параметр?
     public CommonRs<ComplexRs> logout(String authorization) {
         CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
-        commonRsComplexRs.setTimeStamp(new Date().getTime());
         SecurityContextHolder.clearContext();
         return commonRsComplexRs;
     }
@@ -49,11 +48,10 @@ public class AuthService {
             throw new AuthException("Пароли не совпадают");
         }
         CommonRs<PersonRs> commonRs = new CommonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person,
+        PersonRs personRs = personMapper.personToPersonRs(person,
                 "", false);
         personRs.setToken(getToken(person));
         commonRs.setData(personRs);
-        commonRs.setTimeStamp(new Date().getTime());
 
         return commonRs;
     }

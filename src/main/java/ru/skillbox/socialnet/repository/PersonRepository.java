@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
@@ -82,4 +83,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                       @Param("status_name") String statusName);
 
     Optional<Person> findByEmail(String email);
+
+    Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
+    Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
+    Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 }

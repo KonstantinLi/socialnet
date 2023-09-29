@@ -1,11 +1,15 @@
 package ru.skillbox.socialnet.entity.personrelated;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import ru.skillbox.socialnet.entity.enums.MessagePermission;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
+import ru.skillbox.socialnet.entity.postrelated.Like;
+import ru.skillbox.socialnet.entity.enums.MessagePermission;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 
 @Getter
 @Setter
@@ -13,82 +17,116 @@ import java.time.LocalDateTime;
 @Table(name = "persons")
 public class Person {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "first_name")
-    private String firstName;
+  /** имя */
+  @Column(name = "first_name")
+  private String firstName;
 
-    @Column(name = "last_name")
-    private String lastName;
+  /** фамилия */
+  @Column(name = "last_name")
+  private String lastName;
 
-    @Column(name = "reg_date")
-    private LocalDateTime regDate;
+  /** дата и время регистрации */
+  @Column(name = "reg_date")
+  private LocalDateTime regDate;
 
-    @Column(name = "birth_date")
-    private LocalDateTime birthDate;
+  /** дата рождения */
+  @Column(name = "birth_date")
+  private LocalDateTime birthDate;
 
-    @Column(name = "e_mail")
-    private String email;
+  /** email */
+  @Column(name = "e_mail")
+  private String email;
 
-    @Column(name = "phone")
-    private String phone;
+  /** phone */
+  @Column(name = "phone")
+  private String phone;
 
-    @Column(name = "password")
-    private String password;
+  /** пароль */
+  @Column(name = "password")
+  private String password;
 
-    @Column(name = "photo")
-    private String photo;
+  /** ссылка на изображение */
+  @Column(name = "photo")
+  private String photo;
 
-    @Column(name = "about")
-    private String about;
+  /** текст о себе */
+  @Column(name = "about")
+  private String about;
 
-    @Column(name = "city")
-    private String city;
+  /** город проживания */
+  @Column(name = "city")
+  private String city;
 
-    @Column(name = "country")
-    private String country;
+  /** страна проживания */
+  @Column(name = "country")
+  private String country;
 
-    @Column(name = "change_password_token")
-    private String changePasswordToken;
+  /** Токен для изменения пароля */
+  @Column(name = "change_password_token")
+  private String changePasswordToken;
 
-    @Column(name = "configuration_code")
-    private Integer configurationCode;
+  /** Конфигурационный код */
+  @Column(name = "configuration_code")
+  private Integer configurationСode;
 
-    @Column(name = "deleted_time")
-    private LocalDateTime deletedTime;
+  /** Дата и время удаления */
+  @Column(name = "deleted_time")
+  private LocalDateTime deletedTime;
 
-    @Column(name = "last_online_time")
-    private LocalDateTime lastOnlineTime;
+  /** время последнего пребывания онлайн */
+  @Column(name = "last_online_time")
+  private LocalDateTime lastOnlineTime;
 
-    @Column(name = "is_approved")
-    private Boolean isApproved;
+  /** подтверждена ли регистрация */
+  @Column(name = "is_approved")
+  private Boolean isApproved;
 
-    @Column(name = "is_blocked")
-    private Boolean isBlocked;
+  /** блокировка пользователя модератором / администратором */
+  @Column(name = "is_blocked")
+  private Boolean isBlocked;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+  /** Удален */
+  @Column(name = "is_deleted")
+  private Boolean isDeleted;
 
-    @Column(name = "online_status")
-    private String onlineStatus;
+  /** Статус */
+  @Column(name = "online_status")
+  private Boolean onlineStatus;
 
-    @Column(name = "notifications_session_id")
-    private String notificationSessionId;
+  /** идентификатор сессии уведомлений */
+  @Column(name = "notifications_session_id")
+  private String notificationSessionId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "message_permissions")
-    private MessagePermission messagePermission;
+  /** разрешение на получение сообщений: ALL - от всех пользователей (кроме заблокированных), FRIENDS - только от друзей */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "message_permissions")
+  private MessagePermission messagePermissions;
 
-    @OneToOne
-    @JoinColumn(name = "person_settings_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_person_settings"))
-    private PersonSettings personSettings;
+  @OneToOne
+  @JoinColumn(name = "person_settings_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person_settings"))
+  private PersonSettings personSettings;
 
 
-    @Column(name = "telegram_id")
-    private Long telegramId;
+  /** ссылка на телеграмм ? */
+  @Column(name = "telegram_id")
+  private Long telegramId;
+
+
+  @OneToMany(cascade = CascadeType.ALL,
+          orphanRemoval = true,
+          fetch = FetchType.LAZY
+  )
+  @JoinColumn(name = "person_id", foreignKey = @ForeignKey(name = "fk_like_person"))
+  private Set<Like> likes;
+
+  @OneToMany(cascade = CascadeType.ALL,
+          orphanRemoval = true,
+          fetch = FetchType.LAZY
+  )
+  @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "fk_person"))
+  private Set<Post> posts;
 }

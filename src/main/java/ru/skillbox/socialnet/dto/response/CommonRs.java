@@ -2,20 +2,14 @@ package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.util.Date;
 
 @Data
 public class CommonRs<T> {
-
-    private Long timeStamp;
     private T data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
     private Long total;
-
-    public CommonRs() {
-        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-    }
+    private Long timestamp = new Date().getTime();
 }

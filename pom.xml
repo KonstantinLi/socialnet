@@ -112,6 +112,16 @@
       <artifactId>jaxb-api</artifactId>
       <version>${jaxb-api.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
+    <!-- JSON Mapping -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
 
     <!-- Test -->
     <dependency>

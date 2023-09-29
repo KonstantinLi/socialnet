@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.EmptyFileException;
-import ru.skillbox.socialnet.exception.FileSizeException;
-import ru.skillbox.socialnet.exception.UnsupportedFileTypeException;
+import ru.skillbox.socialnet.exception.file.EmptyFileException;
+import ru.skillbox.socialnet.exception.file.FileErrorException;
+import ru.skillbox.socialnet.exception.file.FileSizeException;
+import ru.skillbox.socialnet.exception.file.UnsupportedFileTypeException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -77,7 +77,7 @@ public class AwsS3Handler {
         try {
             fileContent = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
-            throw new BadRequestException("File cannot be read");
+            throw new FileErrorException("File cannot be read");
         }
 
         uploadFile(type, fileContent, logFileName, logBucketName);
