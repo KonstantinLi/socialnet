@@ -44,6 +44,8 @@ logging:
       SQL: info
 
 logger:
+  path: logs
+  expired: PT168H
   console:
     thresholdFilter: @logger.console.thresholdFilter@
 

@@ -1,10 +1,9 @@
 package ru.skillbox.socialnet.dto;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.EmptyFileException;
 import ru.skillbox.socialnet.exception.FileSizeException;
 import ru.skillbox.socialnet.exception.UnsupportedFileTypeException;
@@ -12,26 +11,32 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.DirectoryUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadDirectoryRequest;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO remove log-files-handle methods
-@Slf4j
+import static software.amazon.awssdk.transfer.s3.SizeConstant.MB;
+
 @Component
-public class AwsS3Handler {
+public class AwsS3Handler implements LogUploader {
 
     @Value("${aws.image-bucket-name}")
     private String imageBucketName;
+
+    @Value("${aws.log-bucket-name}")
+    private String logBucketName;
 
     @Value("${aws.access-key-id}")
     private String accessKeyId;
@@ -45,16 +50,30 @@ public class AwsS3Handler {
     @Value("${aws.max-image-file-size}")
     private String maxImageSize;
 
-    @Value("${aws.log-bucket-name}")
-    private String logBucketName;
-
-    @Value("${aws.max-log-file-size}")
-    private String maxLogFileSize;
-
-    @Value("${aws.log-url-prefix}")
-    private String logUrlPrefix;
-
     private S3Client client;
+    private S3AsyncClient asyncClient;
+
+    @Override
+    public void uploadLog(String path) {
+        initializeS3AsyncClient();
+
+        try (S3TransferManager manager = S3TransferManager.builder().s3Client(asyncClient).build()) {
+            DirectoryUpload directoryUpload =
+                    manager.uploadDirectory(UploadDirectoryRequest.builder()
+                            .source(Paths.get(path))
+                            .bucket(logBucketName)
+                            .build());
+
+            directoryUpload.completionFuture().join();
+        }
+
+        deleteFilesWithExtension(logBucketName, ".log");
+    }
+
+    @Override
+    public void deleteExpiredLogs(Duration expired) {
+        deleteOldFiles(logBucketName, expired);
+    }
 
     public void uploadImage(String type, MultipartFile image, String generatedFileName) throws IOException {
         initializeS3Client();
@@ -64,23 +83,6 @@ public class AwsS3Handler {
         byte[] imageContent = image.getBytes();
 
         uploadFile(type, imageContent, generatedFileName, imageBucketName);
-    }
-
-
-    public void uploadLogFile(String type, File file, String logFileName) {
-        initializeS3Client();
-        checkLogForUpload(file);
-        logFileName = checkForSameFileName(logFileName);
-
-        byte[] fileContent;
-
-        try {
-            fileContent = Files.readAllBytes(file.toPath());
-        } catch (IOException e) {
-            throw new BadRequestException("File cannot be read");
-        }
-
-        uploadFile(type, fileContent, logFileName, logBucketName);
     }
 
     private void uploadFile(String type,
@@ -99,31 +101,59 @@ public class AwsS3Handler {
         client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
     }
 
-    public List<String> getLogFilesUrls() {
-        initializeS3Client();
-        List<String> logFilesList = getBucketContentNames(logBucketName);
-        List<String> logFilesUrls = new ArrayList<>();
-
-        logFilesList.forEach(logFileName -> {
-            logFileName = logUrlPrefix + logFileName;
-            logFilesUrls.add(logFileName);
-        });
-
-        return logFilesUrls;
+    private void deleteFilesWithExtension(String bucketName, String fileExtension) {
+        deleteFiles(bucketName, fileExtension, deleteFileWithExtension());
     }
 
-    private void checkLogForUpload(File file) {
-        if (file == null) {
-            log.error("File is null");
-        } else if (!file.exists()) {
-            log.error("File does not exist");
-        } else if (!file.canRead()) {
-            log.error("File cannot be read");
-        } else if (file.length() > getMaxLogFileSize()) {
-            log.error("File is too large");
-        } else if (!file.getName().endsWith("log") && !file.getName().endsWith("txt")) {
-            log.error("File type is not supported. Supported fileTypes: .log, .txt");
-        }
+    private void deleteOldFiles(String bucketName, Duration expired) {
+        deleteFiles(bucketName, expired, deleteExpiredFile());
+    }
+
+    private void deleteFiles(
+            String bucketName,
+            Object condition,
+            TriConsumer<String, S3Object, Object> triConsumer) {
+
+        initializeS3Client();
+
+        ListObjectsV2Request listObjectsRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+
+        ListObjectsV2Response listObjectsResponse;
+        do {
+            listObjectsResponse = client.listObjectsV2(listObjectsRequest);
+
+            for (S3Object s3Object : listObjectsResponse.contents()) {
+                triConsumer.accept(bucketName, s3Object, condition);
+            }
+
+            listObjectsRequest = ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .continuationToken(listObjectsResponse.nextContinuationToken())
+                    .build();
+
+        } while (listObjectsResponse.isTruncated());
+    }
+
+    private TriConsumer<String, S3Object, Object> deleteExpiredFile() {
+        return (bucketName, s3Object, expired) -> {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime lastModified = LocalDateTime.ofInstant(s3Object.lastModified(), ZoneId.of("UTC+3"));
+
+            if (Duration.between(lastModified, now).compareTo((Duration) expired) > 0) {
+                deleteFile(s3Object.key(), bucketName);
+            }
+        };
+    }
+
+    private TriConsumer<String, S3Object, Object> deleteFileWithExtension() {
+        return (bucketName, s3Object, extension) -> {
+            String key = s3Object.key();
+            if (key.endsWith((String) extension)) {
+                deleteFile(key, bucketName);
+            }
+        };
     }
 
     public List<String> getBucketContentNames(String bucketName) {
@@ -140,23 +170,6 @@ public class AwsS3Handler {
                 .forEach(s3Object -> fileNames.add(s3Object.key()));
 
         return fileNames;
-    }
-
-    private String checkForSameFileName(String generatedFileName) {
-        String fileIdentifier = generatedFileName.split("_", 2)[0];
-
-        List<String> fileNames = getBucketContentNames(logBucketName);
-
-        for (String name : fileNames) {
-            if (name.contains(fileIdentifier)) {
-                generatedFileName = "%s_%s".formatted(generatedFileName, generateSalt());
-                log.warn("File with the same name already exists." +
-                        " New file will be uploaded with name: " +
-                        generatedFileName);
-            }
-        }
-
-        return generatedFileName;
     }
 
     private void checkImageForUpload(MultipartFile file) {
@@ -205,22 +218,35 @@ public class AwsS3Handler {
     }
 
     private void initializeS3Client() {
+        if (this.client == null) {
 
-        Region region = getRegion();
-        AwsCredentialsProvider credentialsProvider = getCredentialsProvider();
+            Region region = getRegion();
+            AwsCredentialsProvider credentialsProvider = getCredentialsProvider();
 
-        this.client = S3Client.builder()
-                .credentialsProvider(credentialsProvider)
-                .region(region)
-                .build();
+            this.client = S3Client.builder()
+                    .credentialsProvider(credentialsProvider)
+                    .region(region)
+                    .build();
+        }
+    }
+
+    private void initializeS3AsyncClient() {
+        if (this.asyncClient == null) {
+
+            Region region = getRegion();
+            AwsCredentialsProvider credentialsProvider = getCredentialsProvider();
+
+            this.asyncClient = S3AsyncClient.crtBuilder()
+                    .credentialsProvider(credentialsProvider)
+                    .region(region)
+                    .targetThroughputInGbps(20.0)
+                    .minimumPartSizeInBytes(8 * MB)
+                    .build();
+        }
     }
 
     private Region getRegion() {
         return Region.of(regionName);
-    }
-
-    private Long getMaxLogFileSize() {
-        return Long.parseLong(maxLogFileSize);
     }
 
     private Long getMaxImageSize() {
@@ -233,6 +259,7 @@ public class AwsS3Handler {
                 secretAccessKey);
     }
 
+    // TODO: Удалить?
     private String generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] generatedBytes = new byte[20];

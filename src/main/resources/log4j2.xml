@@ -12,22 +12,22 @@
 
         <RollingFile name="FileAppender"
                      fileName="./logs/log4j2.log"
-                     filePattern="./logs/$${date:yyyy-MM}/log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
+                     filePattern="./logs/$${date:yyyy-MM}/log4j2-%d{dd-MMMM-yyyy}-%i.log.gz">
             <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
             <PatternLayout pattern="%d %-5p [%t] %c{10} - %m%n"/>
             <Policies>
-                <TimeBasedTriggeringPolicy interval = "3" />
-                <SizeBasedTriggeringPolicy size="250 MB" />
+                <TimeBasedTriggeringPolicy interval = "1" />
+                <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
         </RollingFile>
 
         <RollingFile name="ErrorFileAppender"
                      fileName="./logs/errors.log"
-                     filePattern="./logs/$${date:yyyy-MM}/log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
+                     filePattern="./logs/$${date:yyyy-MM}/errors-%d{dd-MMMM-yyyy}-%i.log.gz">
             <PatternLayout pattern="%d %-5p [%t] %c{10} - %m%n"/>
             <Policies>
-                <TimeBasedTriggeringPolicy interval = "5" />
-                <SizeBasedTriggeringPolicy size="250 MB" />
+                <TimeBasedTriggeringPolicy interval = "1" />
+                <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
         </RollingFile>
     </Appenders>
