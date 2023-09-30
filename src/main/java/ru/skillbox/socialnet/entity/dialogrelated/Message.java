@@ -1,11 +1,18 @@
 package ru.skillbox.socialnet.entity.dialogrelated;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,40 +20,37 @@ import java.time.LocalDateTime;
 @Table(name = "messages")
 public class Message {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+  @Column(name = "is_deleted")
+  private boolean isDeleted;
 
-    @Column(name = "message_text", columnDefinition = "text")
-    private String messageText;
+  /** Текст сообщения */
+  @Column(name = "message_text", columnDefinition = "text")
+  private String messageText;
 
-    @Column(name = "read_status")
-    private String readStatus;
+  /** Статус сообщения */
+  @Column(name = "read_status")
+  private String readStatus;
 
-    @Column(name = "time")
-    private LocalDateTime time;
+  /** Дата и время сообщения */
+  @Column(name = "time")
+  private LocalDateTime time;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_messages_author"))
-    private Person author;
+  /** Автор  сообщения */
+  @ManyToOne
+  @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_messages_author"))
+  private Person author;
 
-    @ManyToOne
-    @JoinColumn(name = "recipient_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_messages_recipient"))
-    private Person recipient;
+  /** Получатель  сообщения */
+  @ManyToOne
+  @JoinColumn(name = "recipient_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_messages_recipient"))
+  private Person recipient;
 
-    @ManyToOne
-    @JoinColumn(name = "dialog_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_messages_dialog"))
-    private Dialog dialog;
+  /** Диалог */
+  @ManyToOne
+  @JoinColumn(name = "dialog_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_messages_dialog"))
+  private Dialog dialog;
 }

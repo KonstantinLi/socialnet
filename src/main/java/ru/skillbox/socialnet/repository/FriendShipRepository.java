@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
+import ru.skillbox.socialnet.exception.person.FriendShipNotFoundException;
 
 import java.util.Optional;
 
@@ -78,4 +78,6 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
     Optional<FriendShipStatus> getFriendShipStatusBetweenTwoPersons(
             @Param("sourcePersonId") Long sourcePersonI,
             @Param("destinationPersonId") Long destinationPersonI);
+
+    Optional<FriendShip> findBySrcPersonIdAndDstPersonId(Long srcPersonId, Long dstPersonId);
 }

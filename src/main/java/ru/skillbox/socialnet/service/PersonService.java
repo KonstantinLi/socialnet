@@ -10,12 +10,11 @@ import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.PersonIsBlockedException;
-import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.person.PersonIsBlockedException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -24,13 +23,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PersonService {
-
+    private final PersonMapper personMapper;
     private final PersonRepository personRepository;
     private final FriendShipRepository friendShipRepository;
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
-    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) throws BadRequestException {
+    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);
@@ -50,10 +49,13 @@ public class PersonService {
             person.setPhoto(defaultPhotoUrl);
         }
 
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person);
-        PersonMapper.INSTANCE.personToPersonRs(person,
+        PersonRs personRs = personMapper.personToPersonRs(person);
+
+        // TODO: is there a result of the following sentence?
+        personMapper.personToPersonRs(person,
                 friendShipStatus.map(Enum::name).orElse(null),
                 isBlockedByCurrentUser);
+
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
 
@@ -71,7 +73,7 @@ public class PersonService {
         Person savedPerson = personRepository.save(person);
 
         CommonRs<PersonRs> response = new CommonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(savedPerson);
+        PersonRs personRs = personMapper.personToPersonRs(savedPerson);
         response.setData(personRs);
 
         return response;
@@ -88,7 +90,7 @@ public class PersonService {
         Person savedPerson = personRepository.save(person);
 
         CommonRs<PersonRs> response = new CommonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(savedPerson);
+        PersonRs personRs = personMapper.personToPersonRs(savedPerson);
         response.setData(personRs);
     }
 
@@ -155,7 +157,7 @@ public class PersonService {
             person.setLastName(userData.getLastName());
         }
         if (userData.getMessagesPermission() != null) {
-            person.setMessagePermission(
+            person.setMessagePermissions(
                     MessagePermission.valueOf(userData.getMessagesPermission()));
         }
         if (userData.getPhotoId() != null) {

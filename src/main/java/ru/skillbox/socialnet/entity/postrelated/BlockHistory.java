@@ -1,11 +1,18 @@
 package ru.skillbox.socialnet.entity.postrelated;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,35 +20,30 @@ import java.time.LocalDateTime;
 @Table(name = "block_history")
 public class BlockHistory {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "comment_text")
-    private String action;
+  /** Действие */
+  @Column(name = "comment_text")
+  private String action;
 
-    @Column(name = "time")
-    private LocalDateTime time;
+  /** Дата и время события */
+  @Column(name = "time")
+  private LocalDateTime time;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_block_history_person"))
-    private Person author;
+  /** Автор  поста */
+  @ManyToOne
+  @JoinColumn(name = "author_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_block_history_person"))
+  private Person author;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_block_history_post"))
-    private Post post;
+  /** Пост */
+  @ManyToOne
+  @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_block_history_post"))
+  private Post post;
 
-
-    @ManyToOne
-    @JoinColumn(name = "comment_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_block_history_comment"))
-    private PostComment comment;
+  /** Комментарий */
+  @ManyToOne
+  @JoinColumn(name = "comment_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_block_history_comment"))
+  private PostComment comment;
 }

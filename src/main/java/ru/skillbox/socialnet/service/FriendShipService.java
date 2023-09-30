@@ -11,12 +11,12 @@ import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
-import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.person.FriendShipNotFoundException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class FriendShipService {
-
+    private final PersonMapper personMapper;
     private final FriendShipRepository friendShipRepository;
     private final PersonRepository personRepository;
     private final JwtTokenUtils jwtTokenUtils;
@@ -282,7 +282,7 @@ public class FriendShipService {
 
         ArrayList<PersonRs> personsData = new ArrayList<>();
         personsPage.forEach(person -> {
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person, friendShipStatus, isBlocked);
+            PersonRs personRs = personMapper.personToPersonRs(person, friendShipStatus, isBlocked);
             personsData.add(personRs);
         });
 
@@ -353,7 +353,7 @@ public class FriendShipService {
             Optional<FriendShipStatus> optionalStatus =
                     friendShipRepository.getFriendShipStatusBetweenPersons(currentPerson, person);
             FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
-            PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(
+            PersonRs personRs = personMapper.personToPersonRs(
                     person,
                     status.name(),
                     status == FriendShipStatus.BLOCKED);

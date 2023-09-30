@@ -14,10 +14,10 @@ public class Storage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "owner_id")
-    private long ownerId;
+    private Long ownerId;
 
     @Column(name = "file_name")
     private String fileName;

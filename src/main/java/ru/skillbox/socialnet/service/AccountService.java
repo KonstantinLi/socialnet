@@ -9,8 +9,7 @@ import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.personrelated.PersonSettings;
-import ru.skillbox.socialnet.exception.AuthException;
-import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.auth.AuthException;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.repository.PersonSettingsRepository;
@@ -28,13 +27,13 @@ public class AccountService {
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
-    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws BadRequestException {
+    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) {
 
         if (!registerRq.getPasswd1().equals(registerRq.getPasswd2())) {
             throw new AuthException("Пароли не совпадают");
         }
         Captcha captcha = captchaRepository.findBySecretCode(registerRq.getCodeSecret()).orElseThrow(
-                () -> new BadRequestException("Картинка устарела"));
+                () -> new AuthException("Картинка устарела"));
         if (!registerRq.getCode().equals(captcha.getCode())) {
             throw new AuthException("Введенный код не совпадает с кодом картинки");
         }
