@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
-import ru.skillbox.socialnet.errs.BadRequestException;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 

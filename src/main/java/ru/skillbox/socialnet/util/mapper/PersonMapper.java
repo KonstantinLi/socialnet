@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 import java.util.List;
 

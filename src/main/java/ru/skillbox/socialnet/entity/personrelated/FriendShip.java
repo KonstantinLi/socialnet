@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.entity;
+package ru.skillbox.socialnet.entity.personrelated;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

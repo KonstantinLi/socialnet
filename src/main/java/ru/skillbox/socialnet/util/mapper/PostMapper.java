@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.util.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import ru.skillbox.socialnet.dto.response.PostRs;
-import ru.skillbox.socialnet.entity.post.Post;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

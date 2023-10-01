@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.entity.other;
+package ru.skillbox.socialnet.entity.locationrelated;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,23 +12,27 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "currencies")
-public class Currency {
+@Table(name = "countries")
+public class Country {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   /** Наименование */
-  @Column(name = "name")
   private String name;
 
-  /** Цена */
-  @Column(name = "price")
-  private String price;
+  /** Полное наименование */
+  @Column(name = "full_name")
+  private String fullName;
 
-  /** Дата и время обновления */
-  @Column(name = "update_time")
-  private String updateTime;
+  /** Код страны */
+  @Column(name = "code2")
+  private String code2;
+
+  /** Международное наименование */
+  @Column(name = "international_name")
+  private String internationalName;
+
 
 }

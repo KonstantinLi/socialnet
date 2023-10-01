@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.security.service;
+package ru.skillbox.socialnet.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.util.List;

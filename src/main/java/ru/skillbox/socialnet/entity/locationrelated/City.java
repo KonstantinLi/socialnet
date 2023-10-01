@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.entity.city;
+package ru.skillbox.socialnet.entity.locationrelated;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

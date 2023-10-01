@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.entity.post;
+package ru.skillbox.socialnet.entity.postrelated;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 @Getter
 @Setter

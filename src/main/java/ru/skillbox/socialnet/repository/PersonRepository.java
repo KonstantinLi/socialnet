@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.skillbox.socialnet.entity.Person;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 import java.util.Optional;
 

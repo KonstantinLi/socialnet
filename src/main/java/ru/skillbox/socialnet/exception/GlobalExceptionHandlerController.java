@@ -1,10 +1,9 @@
-package ru.skillbox.socialnet.errs.controller;
+package ru.skillbox.socialnet.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.skillbox.socialnet.errs.BadRequestException;
 import ru.skillbox.socialnet.dto.response.ErrorRs;
 
 @ControllerAdvice
