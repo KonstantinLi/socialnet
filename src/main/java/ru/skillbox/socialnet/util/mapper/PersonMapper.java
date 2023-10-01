@@ -3,7 +3,7 @@ package ru.skillbox.socialnet.util.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.Person;
 
 import java.util.List;

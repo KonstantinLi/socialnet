@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.PersonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
 import ru.skillbox.socialnet.errs.BadRequestException;

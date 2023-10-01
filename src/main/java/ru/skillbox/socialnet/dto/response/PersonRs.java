@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.dto;
+package ru.skillbox.socialnet.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

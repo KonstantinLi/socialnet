@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.skillbox.socialnet.dto.PostRs;
+import ru.skillbox.socialnet.dto.response.PostRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
 import ru.skillbox.socialnet.entity.post.Post;
