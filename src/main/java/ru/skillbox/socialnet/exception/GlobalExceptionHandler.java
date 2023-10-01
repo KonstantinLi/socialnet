@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.skillbox.socialnet.dto.response.ErrorRs;
 
 @ControllerAdvice
-public class GlobalExceptionHandlerController {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorRs> handleBadRequestException(Exception exception) {
