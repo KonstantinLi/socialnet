@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,7 +135,7 @@ public class PostsService {
 //                getPostsSearchPs.getTags(),
 //                getPostsSearchPs.getText(),
                 nextPage);
-        result.setData(PostMapper.INSTANCE.toRsList(postPage.getContent()));
+//        result.setData(PostMapper.INSTANCE.toRsList(postPage.getContent()));
         result.setTotal(postPage.getTotalElements());
         result.setItemPerPage(postPage.getContent().size());
         result.setPerPage(perPage);

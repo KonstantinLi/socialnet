@@ -17,13 +17,9 @@ import ru.skillbox.socialnet.exception.person.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
-import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
 import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

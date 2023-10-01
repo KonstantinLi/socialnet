@@ -1,27 +1,28 @@
 package ru.skillbox.socialnet.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import ru.skillbox.socialnet.entity.enums.PostType;
 
+import java.util.Set;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostRs {
 
     private PersonRs author;
-    private CommentRs comment;
+    private Set<CommentRs> comments;
     private Long id;
     private Integer likes;
-    private String tags;
+    private Set<String> tags;
     private String time;
     private String title;
-    private PostType type;
-    @JsonProperty("is_blocked")
-    private Boolean isBlocked;
-    @JsonProperty("my_like")
+    private String type;
+    private boolean isBlocked;
     private Boolean myLike;
-    @JsonProperty("post_text")
     private String postText;
 
 }
