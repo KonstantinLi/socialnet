@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.PostRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
-import ru.skillbox.socialnet.security.util.JwtTokenUtils;
+import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.service.PostsService;
 
 import java.util.List;

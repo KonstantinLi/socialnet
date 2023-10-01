@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.response.PostRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
-import ru.skillbox.socialnet.entity.post.Post;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.repository.PostsRepository;
-import ru.skillbox.socialnet.util.mapper.PostMapper;
+import ru.skillbox.socialnet.mapper.PostMapper;
 
 import java.util.List;
 
