@@ -19,9 +19,9 @@ public class JwtTokenUtils {
     private final JwtProperties jwtProperties;
 
     public String generateToken(Person person) {
-        Map<String, Object> claims = new HashMap<>() {{
-            put("roles", List.of("ROLE_USER"));
-        }};
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", List.of("ROLE_USER"));
 
         Date now = new Date();
         Date expired = new Date(now.getTime() + jwtProperties.getLifetime().toMillis());
@@ -73,6 +73,7 @@ public class JwtTokenUtils {
         return getSubject(token).split(",")[1];
     }
 
+    //TODO Сонар жалуется, но я не понимаю как исправить
     public List<String> getRoles(String token) {
         return getClaims(token).get("roles", List.class);
     }

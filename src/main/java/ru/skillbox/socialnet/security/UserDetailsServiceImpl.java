@@ -15,21 +15,25 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
+
     private final PersonRepository personRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
         try {
-            Person person = personRepository.findByEmail(email).orElseThrow(
-                    () -> new UsernameNotFoundException(String.format("User with email %s is not found", email))
-            );
+            Person person = personRepository.findByEmail(email)
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException(String.format(
+                                    "Пользователь с email %s не найден", email))
+                    );
             return new User(
                     person.getId() + "," + person.getEmail(),
                     person.getPassword(),
                     List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
         } catch (NumberFormatException ex) {
-            throw new RuntimeException("User's id should have numeric format");
+            throw new IllegalArgumentException("Переданное Id пользователя не является числом");
         }
     }
 }

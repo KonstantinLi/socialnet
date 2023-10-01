@@ -1,26 +1,31 @@
 package ru.skillbox.socialnet.dto.response;
 
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.util.Date;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ErrorRs {
-
-    private Long timeStamp;
-    private String error;
-    @JsonProperty("error_description")
-    private String errorDescription;
-
     public ErrorRs(String error, String errorDescription) {
-        this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
         this.error = error;
         this.errorDescription = errorDescription;
+        timestamp = new Date().getTime();
     }
+
+    public ErrorRs(String error) {
+        this.error = error;
+        this.errorDescription = error;
+    }
+
+    public ErrorRs (RuntimeException exception) {
+        this.error = exception.getClass().getSimpleName();
+        this.errorDescription = exception.getLocalizedMessage();
+    }
+
+    private String error;
+    private Long timestamp = new Date().getTime();
+    private String errorDescription;
 }

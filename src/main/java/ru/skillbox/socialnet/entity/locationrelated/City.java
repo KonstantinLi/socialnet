@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
+import ru.skillbox.socialnet.entity.locationrelated.Country;
 
 @Getter
 @Setter
@@ -21,7 +22,7 @@ public class City {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** Наименование */
   @Column(name = "name")

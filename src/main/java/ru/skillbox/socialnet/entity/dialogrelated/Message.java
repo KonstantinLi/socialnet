@@ -22,7 +22,7 @@ public class Message {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   @Column(name = "is_deleted")
   private boolean isDeleted;

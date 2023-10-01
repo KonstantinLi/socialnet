@@ -33,20 +33,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.csrf().disable()
                 .cors()
                 .and()
-                .authorizeHttpRequests(registry -> registry.requestMatchers("/api/v1/admin-console/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/auth/login").permitAll()
-                        .requestMatchers("/api/v1/auth/captcha").permitAll()
-                        .requestMatchers("/api/v1/account/register").permitAll()
-                        .requestMatchers("/api/v1/**").authenticated()
-                        .anyRequest().permitAll())
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(handler -> handler.authenticationEntryPoint((request, response, ex) -> response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        ex.getMessage()
-                )))
+                .authorizeHttpRequests(registry ->
+                        registry.requestMatchers("/api/v1/admin-console/**")
+                                .hasRole("ADMIN")
+                                .requestMatchers("/api/v1/auth/login").permitAll()
+                                .requestMatchers("/api/v1/auth/captcha").permitAll()
+                                .requestMatchers("/api/v1/account/register").permitAll()
+                                .requestMatchers("/api/v1/**").authenticated()
+                                .anyRequest().permitAll())
+                .sessionManagement(manager ->
+                        manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(handler ->
+                        handler.authenticationEntryPoint((request, response, ex) ->
+                                response.sendError(
+                                        HttpServletResponse.SC_UNAUTHORIZED,
+                                        ex.getMessage()
+                                )))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -54,9 +60,10 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(clientProperties.getLocal(), clientProperties.getRemote()));
-        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -68,6 +75,7 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
+
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -79,11 +87,13 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
+
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 }

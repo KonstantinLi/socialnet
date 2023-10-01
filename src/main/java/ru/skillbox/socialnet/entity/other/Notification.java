@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.enums.NotificationType;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 @Getter
 @Setter
@@ -25,7 +26,7 @@ public class Notification {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** контакст */
   @Column(name = "contact")

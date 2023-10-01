@@ -12,15 +12,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
+
     private final JwtTokenUtils jwtTokenUtils;
 
+    @SuppressWarnings("NullableProblems")
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+
         String authJwt = request.getHeader("Authorization");
 
         if (authJwt == null || !jwtTokenUtils.validateAccessToken(authJwt)) {
@@ -33,11 +38,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private void setAuthenticationContext(String token) {
+
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         jwtTokenUtils.getSubject(token),
                         null,
-                        jwtTokenUtils.getRoles(token).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+                        jwtTokenUtils.getRoles(token)
+                                .stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .toList());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

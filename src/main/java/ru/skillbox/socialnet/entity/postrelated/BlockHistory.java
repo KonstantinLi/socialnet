@@ -22,7 +22,7 @@ public class BlockHistory {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
 
   /** Действие */
   @Column(name = "comment_text")
