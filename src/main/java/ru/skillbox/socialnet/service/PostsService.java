@@ -27,7 +27,6 @@ import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
 import ru.skillbox.socialnet.dto.response.PostRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
-import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.repository.PostsRepository;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
@@ -135,7 +134,7 @@ public class PostsService {
 //                getPostsSearchPs.getTags(),
 //                getPostsSearchPs.getText(),
                 nextPage);
-//        result.setData(PostMapper.INSTANCE.toRsList(postPage.getContent()));
+        result.setData(postMapper.listPostToListPostRs(postPage.getContent()));
         result.setTotal(postPage.getTotalElements());
         result.setItemPerPage(postPage.getContent().size());
         result.setPerPage(perPage);
