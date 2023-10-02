@@ -18,6 +18,8 @@ import java.util.List;
         }
 )
 public interface PostMapper {
+
+    @Mapping(source = "time", target = "time", dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     PostRs postToPostRs(Post post);
 
     List<PostRs> listPostToListPostRs(List<Post> posts);

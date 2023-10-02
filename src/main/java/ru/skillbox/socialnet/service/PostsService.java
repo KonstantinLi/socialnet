@@ -129,10 +129,12 @@ public class PostsService {
         Pageable nextPage = PageRequest.of(offset, perPage);
         CommonRs<List<PostRs>> result = new CommonRs<>();
         Page<Post> postPage = postsRepository.findPostsByQuery(getPostsSearchPs.getAuthor(),
-                getPostsSearchPs.getDateFrom(),
-                getPostsSearchPs.getDateTo(),
-//                getPostsSearchPs.getTags(),
-//                getPostsSearchPs.getText(),
+                getPostsSearchPs.getDateFrom() / 1000,
+                getPostsSearchPs.getDateTo() / 1000,
+                getPostsSearchPs.getTags() == null, //в запросе не получилось сделать проверку, получал ошибку:
+                                                            //Already found parameter binding with same index / parameter name but differing binding type;
+                getPostsSearchPs.getTags(),
+                getPostsSearchPs.getText(),
                 nextPage);
         result.setData(postMapper.listPostToListPostRs(postPage.getContent()));
         result.setTotal(postPage.getTotalElements());

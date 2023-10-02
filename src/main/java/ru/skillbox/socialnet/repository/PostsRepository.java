@@ -17,26 +17,42 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByIdAndIsDeleted(long Id, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
-    select
-        p.*
-    from
-        posts as p
-        inner join persons as a
-            on p.author_id = a.id
-    where
-        case when cast(:author as varchar) is null then true
-            else (a.first_name ilike concat('%', cast(:author as varchar), '%')
-                or a.last_name ilike concat('%', cast(:author as varchar), '%')) end
-        and case when :dateFrom = 0 then true
-            else extract(epoch FROM p.time) >= :dateFrom end
-        and case when :dateTo = 0 then true
-            else extract(epoch FROM p.time) <= :dateTo end
-    """)
+            select
+                p.*
+            from
+                posts p
+                    inner join persons a
+                        on p.author_id = a.id
+                    left join post2tag sort_t
+                        on p.id = sort_t.post_id
+                    left join post2tag pt
+                            inner join tags t
+                                on pt.tag_id = t.id
+                        on p.id = pt.post_id
+            where
+                not p.is_deleted
+                and (cast(:author as varchar) is null
+                    or a.first_name ilike concat('%', cast(:author as varchar), '%')
+                    or a.last_name ilike concat('%', cast(:author as varchar), '%')
+                    or concat(a.first_name,' ',a.last_name) ilike concat('%', cast(:author as varchar), '%')
+                    or concat(a.last_name,' ',a.first_name) ilike concat('%', cast(:author as varchar), '%'))
+                and (:dateFrom = 0 or extract(epoch FROM p.time) >= :dateFrom)
+                and (:dateTo = 0 or extract(epoch FROM p.time) <= :dateTo)
+                and (:tagsNull or t.tag in (:tags))
+                and (cast(:text as text) is null
+                    or p.post_text ilike concat('%', cast(:text as text), '%')
+                    or p.title ilike concat('%', cast(:text as text), '%'))
+            group by p.id
+            order by
+                count(distinct sort_t.tag_id) desc,
+                min(p.time) desc
+            """)
     Page<Post> findPostsByQuery(@Param("author") String author,
                                 @Param("dateFrom") long dateFrom,
                                 @Param("dateTo") long dateTo,
-//                                @Param("tags") String[] tags,
-//                                @Param("text") String text,
+                                @Param("tagsNull") boolean tagsNull,
+                                @Param("tags") String[] tags,
+                                @Param("text") String text,
                                 Pageable nextPage);
 
     long countByAuthorIdAndIsDeleted(
