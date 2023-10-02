@@ -23,8 +23,15 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
                 posts p
                     inner join persons a
                         on p.author_id = a.id
-                    left join post2tag sort_t
-                        on p.id = sort_t.post_id
+                    left join (select
+                                    pt.post_id,
+                                    count(distinct t.id) count
+                                from post2tag pt
+                                    inner join tags t
+                                        on pt.tag_id = t.id
+                                        and (:tagsNull or t.tag in (:tags))
+                                    group by pt.post_id) sort
+                        on p.id = sort.post_id
                     left join post2tag pt
                             inner join tags t
                                 on pt.tag_id = t.id
@@ -42,9 +49,9 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
                 and (cast(:text as text) is null
                     or p.post_text ilike concat('%', cast(:text as text), '%')
                     or p.title ilike concat('%', cast(:text as text), '%'))
-            group by p.id
+            group by p.id, coalesce(sort.count,0)
             order by
-                count(distinct sort_t.tag_id) desc,
+                coalesce(sort.count,0) desc,
                 min(p.time) desc
             """)
     Page<Post> findPostsByQuery(@Param("author") String author,
