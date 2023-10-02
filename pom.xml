@@ -29,6 +29,27 @@
     <cage.version>1.0</cage.version>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <spring.profiles.active>dev</spring.profiles.active>
+        <logger.console.thresholdFilter>ALL</logger.console.thresholdFilter>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>prod</id>
+      <properties>
+        <spring.profiles.active>prod</spring.profiles.active>
+        <logger.console.thresholdFilter>OFF</logger.console.thresholdFilter>
+      </properties>
+    </profile>
+  </profiles>
+
   <!-- Spring -->
   <dependencies>
     <dependency>
@@ -38,10 +59,22 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -52,14 +85,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
-    <!-- https://mavenlibs.com/maven/dependency/com.github.cage/cage -->
     <dependency>
-      <groupId>com.GitHub.cage</groupId>
-      <artifactId>cage</artifactId>
-      <version>1.0</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
     </dependency>
-    <!-- https://mavenlibs.com/maven/dependency/org.springframework/spring-context -->
-    <dependency>
+      <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>${spring-context.version}</version>
@@ -89,6 +119,16 @@
       <artifactId>s3</artifactId>
       <version>2.20.149</version>
     </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3-transfer-manager</artifactId>
+      <version>2.20.109</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk.crt</groupId>
+      <artifactId>aws-crt</artifactId>
+      <version>0.23.2</version>
+    </dependency>
 
     <!-- Other -->
     <dependency>
@@ -116,6 +156,16 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-spring-boot</artifactId>
+          <exclusions>
+              <exclusion>
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
 
     <!-- JSON Mapping -->
     <dependency>
