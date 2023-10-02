@@ -1,11 +1,20 @@
 package ru.skillbox.socialnet.entity.personrelated;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,31 +22,32 @@ import java.time.LocalDateTime;
 @Table(name = "friendships")
 public class FriendShip {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    /**
-     * Дата и время отправки
-     */
-    @Column(name = "sent_time")
-    private LocalDateTime sentTime;
+  /** Дата и время отправки */
+  @Column(name = "sent_time")
+  private LocalDateTime sentTime;
 
-    @ManyToOne
-    @JoinColumn(name = "src_person_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_friendship_person_src"))
-    private Person sourcePerson;
+  @Column(name = "dst_person_id", insertable=false, updatable=false)
+  private Long dstPersonId;
 
-    @ManyToOne
-    @JoinColumn(name = "dst_person_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_friendship_person_dst"))
-    private Person destinationPerson;
+  @Column(name = "src_person_id", insertable=false, updatable=false)
+  private Long srcPersonId;
 
-    @Column(name = "status_name")
-    @Enumerated(EnumType.STRING)
-    private FriendShipStatus status;
+  /** статус */
+  @Column(name = "status_name")
+  @Enumerated(EnumType.STRING)
+  private FriendShipStatus status;
+
+
+  @ManyToOne
+  @JoinColumn(name = "dst_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_friendship_person_dst"))
+  private Person destinationPerson;
+
+  @ManyToOne
+  @JoinColumn(name = "src_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_friendship_person_src"))
+  private Person sourcePerson;
+
 }

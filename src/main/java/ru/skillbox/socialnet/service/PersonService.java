@@ -7,18 +7,15 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
-import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.util.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,11 +23,11 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final FriendShipRepository friendShipRepository;
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
-    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) throws BadRequestException {
+    //TODO currentUserdId не используется?
+    public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);
@@ -51,9 +48,6 @@ public class PersonService {
         }
 
         PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person);
-        PersonMapper.INSTANCE.personToPersonRs(person,
-                friendShipStatus.map(Enum::name).orElse(null),
-                isBlockedByCurrentUser);
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
 
@@ -71,7 +65,7 @@ public class PersonService {
         Person savedPerson = personRepository.save(person);
 
         CommonRs<PersonRs> response = new CommonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(savedPerson);
+        PersonRs personRs = personMapper.personToPersonRs(savedPerson);
         response.setData(personRs);
 
         return response;

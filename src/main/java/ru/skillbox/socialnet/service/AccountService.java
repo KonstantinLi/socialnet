@@ -36,15 +36,14 @@ public class AccountService {
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
-
-
+    
     public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws BadRequestException {
 
         if (!registerRq.getPasswd1().equals(registerRq.getPasswd2())) {
             throw new AuthException("Пароли не совпадают");
         }
         Captcha captcha = captchaRepository.findBySecretCode(registerRq.getCodeSecret()).orElseThrow(
-                () -> new BadRequestException("Картинка устарела"));
+                () -> new AuthException("Картинка устарела"));
         if (!registerRq.getCode().equals(captcha.getCode())) {
             throw new AuthException("Введенный код не совпадает с кодом картинки");
         }

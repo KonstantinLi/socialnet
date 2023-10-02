@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
-import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.person.FriendShipNotFoundException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.service.FriendShipService;
 
 import java.util.List;
