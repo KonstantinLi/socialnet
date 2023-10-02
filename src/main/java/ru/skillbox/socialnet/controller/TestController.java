@@ -4,22 +4,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.skillbox.socialnet.dto.AwsS3Handler;
+import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.repository.PersonRepository;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/test")
 @RequiredArgsConstructor
 public class TestController {
 
-    private final AwsS3Handler awsS3Handler;
+    private final PersonRepository personRepository;
 
     @GetMapping()
     public String test() {
 
-        StringBuilder sb = new StringBuilder();
-        awsS3Handler.getLogFilesUrls().forEach(url -> sb.append(url).append("\n"));
-        sb.append("\n").append("test complete");
+        Optional<Person> optionalPerson = personRepository.findByEmail("mmccreedyc@hibu.com");
 
-        return sb.toString();
+        Person person = optionalPerson.get();
+
+
+        return "pass: " + person.getPassword();
     }
 }

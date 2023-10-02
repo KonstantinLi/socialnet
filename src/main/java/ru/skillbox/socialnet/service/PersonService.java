@@ -3,19 +3,22 @@ package ru.skillbox.socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.util.mapper.PersonMapper;
+import ru.skillbox.socialnet.mapper.PersonMapper;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,9 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
+    private final FriendShipRepository friendShipRepository;
+
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
@@ -47,7 +53,7 @@ public class PersonService {
             person.setPhoto(defaultPhotoUrl);
         }
 
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(person);
+        PersonRs personRs = personMapper.personToPersonRs(person);
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
 
@@ -82,7 +88,7 @@ public class PersonService {
         Person savedPerson = personRepository.save(person);
 
         CommonRs<PersonRs> response = new CommonRs<>();
-        PersonRs personRs = PersonMapper.INSTANCE.personToPersonRs(savedPerson);
+        PersonRs personRs = personMapper.personToPersonRs(savedPerson);
         response.setData(personRs);
     }
 
@@ -149,7 +155,7 @@ public class PersonService {
             person.setLastName(userData.getLastName());
         }
         if (userData.getMessagesPermission() != null) {
-            person.setMessagePermission(
+            person.setMessagePermissions(
                     MessagePermission.valueOf(userData.getMessagesPermission()));
         }
         if (userData.getPhotoId() != null) {

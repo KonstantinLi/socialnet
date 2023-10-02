@@ -10,6 +10,7 @@ import ru.skillbox.socialnet.dto.EmailHandler;
 import ru.skillbox.socialnet.dto.request.*;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
+import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.personrelated.PersonSettings;
@@ -188,6 +189,8 @@ public class AccountService {
         person.setPassword(getEncodedPassword(registrationInfo.getPasswd1()));
         person.setFirstName(registrationInfo.getFirstName());
         person.setLastName(registrationInfo.getLastName());
+        person.setMessagePermissions(MessagePermission.ALL);
+        person.setOnlineStatus(true);
         PersonSettings personSettings = new PersonSettings();
         personSettingsRepository.save(personSettings);
         person.setPersonSettings(personSettings);

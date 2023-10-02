@@ -1,8 +1,8 @@
 package ru.skillbox.socialnet.dto.request;
 
-import lombok.Data;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Data;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 
 @Data

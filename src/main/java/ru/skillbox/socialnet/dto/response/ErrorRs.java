@@ -14,7 +14,7 @@ public class ErrorRs {
     private Long timeStamp;
 
 
-    public ErrorRs (RuntimeException exception) {
+    public ErrorRs(RuntimeException exception) {
         this.error = exception.getClass().getSimpleName();
         this.errorDescription = exception.getMessage();
         this.timeStamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);

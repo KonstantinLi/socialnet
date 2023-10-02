@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.*;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
+import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.service.AccountService;
 
 @RestController

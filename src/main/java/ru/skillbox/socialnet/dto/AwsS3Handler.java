@@ -1,41 +1,17 @@
 package ru.skillbox.socialnet.dto;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.EmptyFileException;
-import ru.skillbox.socialnet.exception.FileSizeException;
-import ru.skillbox.socialnet.exception.UnsupportedFileTypeException;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.exception.file.EmptyFileException;
-import ru.skillbox.socialnet.exception.file.FileSizeException;
-import ru.skillbox.socialnet.exception.file.UnsupportedFileTypeException;
+import ru.skillbox.socialnet.exception.EmptyFileException;
+import ru.skillbox.socialnet.exception.FileSizeException;
+import ru.skillbox.socialnet.exception.UnsupportedFileTypeException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-
-//TODO remove log-files-handle methods
-@Slf4j
-@Component
-public class AwsS3Handler {
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -54,6 +30,7 @@ import java.util.List;
 
 import static software.amazon.awssdk.transfer.s3.SizeConstant.MB;
 
+@Slf4j
 @Component
 public class AwsS3Handler implements LogUploader {
 
@@ -126,7 +103,8 @@ public class AwsS3Handler implements LogUploader {
         client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
     }
 
-    private void deleteFilesWithExtension(String bucketName, String fileExtension) {
+    private void deleteFilesWithExtension(String bucketName,
+                                          @SuppressWarnings("SameParameterValue") String fileExtension) {
         deleteFiles(bucketName, fileExtension, deleteFileWithExtension());
     }
 
@@ -164,7 +142,8 @@ public class AwsS3Handler implements LogUploader {
     private TriConsumer<String, S3Object, Object> deleteExpiredFile() {
         return (bucketName, s3Object, expired) -> {
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime lastModified = LocalDateTime.ofInstant(s3Object.lastModified(), ZoneId.of("UTC+3"));
+            LocalDateTime lastModified = LocalDateTime.ofInstant(
+                    s3Object.lastModified(), ZoneId.of("UTC+3"));
 
             if (Duration.between(lastModified, now).compareTo((Duration) expired) > 0) {
                 deleteFile(s3Object.key(), bucketName);
@@ -197,6 +176,7 @@ public class AwsS3Handler implements LogUploader {
         return fileNames;
     }
 
+    //TODO remove unused method?
     private String checkForSameFileName(String generatedFileName) {
         String fileIdentifier = generatedFileName.split("_", 2)[0];
 
@@ -260,16 +240,6 @@ public class AwsS3Handler implements LogUploader {
     }
 
     private void initializeS3Client() {
-<<<<<<< HEAD
-
-        Region region = getRegion();
-        AwsCredentialsProvider credentialsProvider = getCredentialsProvider();
-
-        this.client = S3Client.builder()
-                .credentialsProvider(credentialsProvider)
-                .region(region)
-                .build();
-=======
         if (this.client == null) {
 
             Region region = getRegion();
@@ -299,10 +269,6 @@ public class AwsS3Handler implements LogUploader {
 
     private Region getRegion() {
         return Region.of(regionName);
-    }
-
-    private Long getMaxLogFileSize() {
-        return Long.parseLong(maxLogFileSize);
     }
 
     private Long getMaxImageSize() {
