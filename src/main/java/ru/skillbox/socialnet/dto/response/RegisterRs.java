@@ -2,6 +2,9 @@ package ru.skillbox.socialnet.dto.response;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 @Data
 public class RegisterRs<T> {
 
@@ -9,9 +12,7 @@ public class RegisterRs<T> {
     private String email;
     private Long timestamp;
 
-
     public RegisterRs() {
-        super();
+        this.timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
     }
-
 }

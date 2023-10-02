@@ -52,3 +52,14 @@ aws:
   log-bucket-name: socialnet-logs
   max-log-file-size: 5242880
   log-url-prefix: https://socialnet-logs.s3.eu-north-1.amazonaws.com/
+
+email:
+  project-email: socialnetskillboxemailer@gmail.com
+  project-email-password: qbwg zftv ehtl hnjm
+  smtp-auth: true
+  smtp-starttls-enable: true
+  smtp-host: smtp.gmail.com
+  smtp-port: 587
+  smtp-ssl-trust: true
+  recovery-base-url: http://localhost:8080/
+  recovery-email-blueprint: emailBlueprint.html
