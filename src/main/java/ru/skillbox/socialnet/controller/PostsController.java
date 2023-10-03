@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.PostRs;
+import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
+import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.service.PostsService;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class PostsController {
+
+    private final JwtTokenUtils jwtTokenUtils;
     private final PostsService postsService;
 
     @GetMapping("/post/{id}")
@@ -69,19 +73,27 @@ public class PostsController {
     }
 
     @GetMapping("/post")
-    public CommonRs<List<PostRs>> getPostsByQuery(
-            @RequestHeader String authorization,
-            @RequestParam(required = false) String author,
-            @RequestParam(value = "date_from", required = false) Long dateFrom,
-            @RequestParam(value = "date_to", required = false) Long dateTo,
-            @RequestParam(defaultValue = "0") Integer offset,
-            @RequestParam(defaultValue = "20") Integer perPage,
-            @RequestParam(required = false) List<String> tags,
-            @RequestParam(required = false) String text
-    ) {
-        return postsService.getPostsByQuery(
-                authorization, author, dateFrom, dateTo, offset, perPage, tags, text
-        );
+    public CommonRs<List<PostRs>> getPostsByQuery(@RequestHeader(value = "authorization") String token,
+                                                  @RequestParam(value = "author", required = false) String author,
+                                                  @RequestParam(value = "date_from",
+                                                          required = false, defaultValue = "0") long dateFrom,
+                                                  @RequestParam(value = "date_to",
+                                                          required = false, defaultValue = "0") long dateTo,
+                                                  @RequestParam(value = "offset",
+                                                          required = false, defaultValue = "0") int offset,
+                                                  @RequestParam(value = "perPage",
+                                                          required = false, defaultValue = "20") int perPage,
+                                                  @RequestParam(value = "tags", required = false) String[] tags,
+                                                  @RequestParam(value = "text", required = false) String text) {
+        return postsService.getPostsByQuery(jwtTokenUtils.getId(token),
+                GetPostsSearchPs.builder()
+                        .author(author)
+                        .dateFrom(dateFrom)
+                        .dateTo(dateTo)
+                        .tags(tags)
+                        .text(text).build(),
+                offset,
+                perPage);
     }
 
     @GetMapping("/feeds")

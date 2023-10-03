@@ -26,8 +26,7 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
-    #drop-first: false
+    drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
   servlet:
@@ -37,7 +36,7 @@ spring:
 
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
-  lifetime: 1h
+  lifetime: 12h
 
 logging:
   level:

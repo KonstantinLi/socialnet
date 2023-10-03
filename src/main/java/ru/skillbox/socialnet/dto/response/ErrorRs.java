@@ -12,6 +12,7 @@ public class ErrorRs {
     public ErrorRs(String error, String errorDescription) {
         this.error = error;
         this.errorDescription = errorDescription;
+        timestamp = new Date().getTime();
     }
 
     public ErrorRs(String error) {
