@@ -8,10 +8,8 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
-import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.service.PersonService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -78,11 +76,6 @@ public class UserController {
                                               @RequestParam(value = "perPage",
                                                       required = false, defaultValue = "20") int perPage) {
 
-//        CommonRs<List<PersonRs>> response = new CommonRs<>();
-//        ArrayList<PersonRs> persons = new ArrayList<>();
-//        response.setData(persons);
-//
-//        return response;
         return personService.getUsersByQuery(jwtTokenUtils.getId(token),
                 GetUsersSearchPs.builder()
                         .ageFrom(ageFrom)
