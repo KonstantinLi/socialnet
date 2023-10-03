@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
+import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.personrelated.PersonSettings;
@@ -63,6 +64,8 @@ public class AccountService {
         PersonSettings personSettings = new PersonSettings();
         personSettingsRepository.save(personSettings);
         person.setPersonSettings(personSettings);
+        person.setMessagePermissions(MessagePermission.ALL);
+        person.setOnlineStatus(true);
         person.setPhoto(defaultPhotoUrl);
 
         return person;
