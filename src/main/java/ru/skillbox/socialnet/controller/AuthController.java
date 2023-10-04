@@ -2,6 +2,7 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.aspect.OnlineStatusUpdate;
 import ru.skillbox.socialnet.dto.request.LoginRq;
 import ru.skillbox.socialnet.dto.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
@@ -22,6 +23,7 @@ public class AuthController {
         return authService.login(loginRq);
     }
 
+    @OnlineStatusUpdate
     @PostMapping("/logout")
     public CommonRs<ComplexRs> logout(@RequestHeader String authorization) {
 

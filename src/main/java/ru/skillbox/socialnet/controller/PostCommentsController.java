@@ -2,6 +2,7 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.aspect.OnlineStatusUpdate;
 import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.response.CommentRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
@@ -15,6 +16,7 @@ import java.util.List;
 public class PostCommentsController {
     private final PostCommentsService postCommentsService;
 
+    @OnlineStatusUpdate
     @PutMapping("/{id}/comments/{comment_id}")
     public CommonRs<CommentRs> editComment(
             @RequestHeader String authorization,
@@ -25,6 +27,7 @@ public class PostCommentsController {
         return postCommentsService.editComment(authorization, id, commentId, commentRq);
     }
 
+    @OnlineStatusUpdate
     @DeleteMapping("/{id}/comments/{comment_id}")
     public CommonRs<CommentRs> deleteComment(
             @RequestHeader String authorization,
@@ -34,6 +37,7 @@ public class PostCommentsController {
         return postCommentsService.deleteComment(authorization, id, commentId);
     }
 
+    @OnlineStatusUpdate
     @PutMapping("/{id}/comments/{comment_id}/recover")
     public CommonRs<CommentRs> recoverComment(
             @RequestHeader String authorization,
@@ -43,6 +47,7 @@ public class PostCommentsController {
         return postCommentsService.recoverComment(authorization, id, commentId);
     }
 
+    @OnlineStatusUpdate
     @GetMapping("/{postId}/comments")
     public CommonRs<List<CommentRs>> getComments(
             @RequestHeader String authorization,
@@ -53,6 +58,7 @@ public class PostCommentsController {
         return postCommentsService.getComments(authorization, postId, offset, perPage);
     }
 
+    @OnlineStatusUpdate
     @PostMapping("/{postId}/comments")
     public CommonRs<CommentRs> createComment(
             @RequestHeader String authorization,
