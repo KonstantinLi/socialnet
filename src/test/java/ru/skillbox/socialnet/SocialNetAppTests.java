@@ -21,7 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.skillbox.socialnet.controller.PostsController;
 import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.repository.PersonRepository;
+import ru.skillbox.socialnet.repository.PostsRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 import java.io.File;
@@ -51,6 +53,8 @@ class SocialNetAppTests {
     @Autowired
     private PersonRepository personRepository;
     @Autowired
+    private PostsRepository postsRepository;
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Test
@@ -66,7 +70,29 @@ class SocialNetAppTests {
         this.mockMvc.perform(get("/api/v1/post/1").header("authorization", token))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title").value("post 1"))
                 .andExpect(jsonPath("$.data.post_text").value("text test post 1"));
+    }
+
+    @Test
+    public void getPostByIdBadRequestNotFoundPost() throws Exception {
+        Person person = personRepository.findById(Long.valueOf(1)).get();
+        String token = jwtTokenUtils.generateToken(person);
+
+        this.mockMvc.perform(get("/api/v1/post/3").header("authorization", token))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error_description").value("Post id 3 not found"));
+    }
+
+    @Test
+    public void getPostByIdBadRequestUnauthorized() throws Exception {
+        Person person = personRepository.findById(Long.valueOf(2)).get();
+        String token = jwtTokenUtils.generateToken(person);
+        token = token.replaceAll("a", "b");
+        this.mockMvc.perform(get("/api/v1/post/1").header("authorization", token))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -75,12 +101,10 @@ class SocialNetAppTests {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
         String requestBody = "{\n" +
-//                "  \"tags\": \"winter\",\n" +
                 "  \"title\": \"NEW TITLE\",\n" +
-                "  \"postText\": \"some new text\",\n" +
-                "  \"isDeleted\": true\n" +
+                "  \"post_text\": \"some new text\"\n" +
                 "}";
-
+        Post post = postsRepository.findById(Long.valueOf(2)).get();
         this.mockMvc.perform(put("/api/v1/post/2")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -88,6 +112,7 @@ class SocialNetAppTests {
                         .header("authorization", token))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title").value("NEW TITLE"))
                 .andExpect(jsonPath("$.data.post_text").value("some new text"));
     }
 }

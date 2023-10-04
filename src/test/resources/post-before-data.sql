@@ -118,8 +118,8 @@ insert into persons (first_name, last_name, e_mail, phone, reg_date, birth_date,
 insert into tags (tag) values ('morbi vel');
 insert into tags (tag) values ('posuere nonummy integer');
 
-insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (1, false, true, '2023-04-29 06:21:49', '⁰⁴⁵', 'text test post 1');
-insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (2, true, false, '2023-07-25 23:47:43', '1', 'bibendum felis sed interdum venenatis turpis enim blandit mi in porttitor pede justo eu massa donec dapibus duis at velit eu est congue elementum in hac habitasse platea dictumst morbi vestibulum velit id pretium');
+insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (1, false, true, '2023-04-29 06:21:49', 'post 1', 'text test post 1');
+insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (2, true, false, '2023-07-25 23:47:43', 'post 2', 'text test post 2');
 
 insert into post2tag (post_id, tag_id) values (1, 1);
 insert into post2tag (post_id, tag_id) values (2, 2);
