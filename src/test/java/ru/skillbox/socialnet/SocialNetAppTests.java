@@ -1,27 +1,36 @@
 package ru.skillbox.socialnet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hibernate.annotations.SQLDelete;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.skillbox.socialnet.controller.PostsController;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import static org.hamcrest.Matchers.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -41,6 +50,8 @@ class SocialNetAppTests {
     private JwtTokenUtils jwtTokenUtils;
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void contextLoads() throws Exception {
@@ -60,15 +71,23 @@ class SocialNetAppTests {
 
     @Test
     public void updateById() throws Exception {
-//        assertThat(postsController).isNotNull();
+
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
+        String requestBody = "{\n" +
+//                "  \"tags\": \"winter\",\n" +
+                "  \"title\": \"NEW TITLE\",\n" +
+                "  \"postText\": \"some new text\",\n" +
+                "  \"isDeleted\": true\n" +
+                "}";
 
-        this.mockMvc.perform(get("/api/v1/post/1").header("authorization", token).contentType(MediaType.APPLICATION_JSON)
-                .content("{/post.json}"))
+        this.mockMvc.perform(put("/api/v1/post/2")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("authorization", token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.post_text").value("some new text"));
     }
-
 }
