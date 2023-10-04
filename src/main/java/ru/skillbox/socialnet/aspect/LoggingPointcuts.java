@@ -12,7 +12,6 @@ public class LoggingPointcuts {
     @Pointcut("(within(ru.skillbox.socialnet.security..*) && !within(ru.skillbox.socialnet.security.JwtRequestFilter)) || " +
             "within(ru.skillbox.socialnet.repository..*) || " +
             "within(ru.skillbox.socialnet.controller..*) || " +
-            "within(ru.skillbox.socialnet.service..*) || " +
-            "within(ru.skillbox.socialnet.util..*)")
+            "within(ru.skillbox.socialnet.service..*)")
     public void applicationPackagePointcut() {}
 }
