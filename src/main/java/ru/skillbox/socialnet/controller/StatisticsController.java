@@ -3,6 +3,7 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
+import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.service.StatisticsService;
 
 import java.util.List;
@@ -73,8 +74,8 @@ public class StatisticsController {
     }
 
     @GetMapping("/like/entity")
-    public Long getLikeEntity(@RequestParam Long entityId) {
-        return statisticsService.getLikeEntity(entityId);
+    public Long getLikeEntity(@RequestParam Long entityId, @RequestParam LikeType type) {
+        return statisticsService.getLikeEntity(entityId, type);
     }
 
     @GetMapping("/dialog")

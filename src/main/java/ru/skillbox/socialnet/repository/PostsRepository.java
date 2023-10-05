@@ -26,4 +26,6 @@ public interface PostsRepository extends CrudRepository<Post, Long> {
     List<Post> findAllByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time, Pageable pageable
     );
+
+    long countByIsDeleted(boolean isDeleted);
 }

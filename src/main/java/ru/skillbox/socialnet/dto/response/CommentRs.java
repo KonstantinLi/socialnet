@@ -15,7 +15,7 @@ public class CommentRs {
     private Long id;
     private Boolean isBlocked;
     private Boolean isDeleted;
-    private Integer likes;
+    private Long likes;
     private Boolean myLike;
     private Long parentId;
     private Long postId;

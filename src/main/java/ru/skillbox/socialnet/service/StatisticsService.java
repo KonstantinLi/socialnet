@@ -2,10 +2,13 @@ package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
+import ru.skillbox.socialnet.entity.enums.LikeType;
+import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.exception.person.PersonIsDeletedException;
+import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.repository.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,82 +16,134 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class StatisticsService {
+    private final PersonRepository personRepository;
+    private final TagsRepository tagsRepository;
+    private final Post2tagRepository post2tagRepository;
+    private final PostsRepository postsRepository;
+    private final PostCommentsRepository postCommentsRepository;
+    private final MessagesRepository messagesRepository;
+    private final LikesRepository likesRepository;
+    private final DialogsRepository dialogsRepository;
+    private final CountriesRepository countriesRepository;
+    private final CitiesRepository citiesRepository;
+
     public Long getAllUsers() {
-        return 0l;
+        return personRepository.countByIsDeleted(false);
     }
 
     public Long getAllUsersByCountry(String country) {
-        return 0l;
+        return personRepository.countByCountryAndIsDeleted(country, false);
     }
 
     public Long getAllUsersByCity(String city) {
-        return 0l;
+        return personRepository.countByCityAndIsDeleted(city, false);
     }
 
     public Long getAllTags() {
-        return 0l;
+        return tagsRepository.count();
     }
 
     public Long getTagsByPost(Long postId) {
-        return 0l;
+        return post2tagRepository.countByPostId(postId);
     }
 
     public Long getAllPost() {
-        return 0l;
+        return postsRepository.countByIsDeleted(false);
     }
 
     public Long getAllPostByUser(Long userId) {
-        return 0l;
+        return postsRepository.countByAuthorIdAndIsDeleted(userId, false);
     }
 
     public Long getAllMessage() {
-        return 0l;
+        return messagesRepository.countByIsDeleted(false);
     }
 
     public Long getMessageByDialog(Long dialogId) {
-        return 0l;
+        return messagesRepository.countByDialogIdAndIsDeleted(dialogId, false);
     }
 
     public Map<String, Long> getMessage(Long firstUserId, Long secondUserId) {
         Map<String, Long> map = new HashMap<>();
+
+        Person firstUser = personRepository.findById(firstUserId).orElseThrow(
+                () -> new PersonNotFoundException(firstUserId)
+        );
+        if (firstUser.getIsDeleted()) {
+            throw new PersonIsDeletedException(firstUserId);
+        }
+
+        Person secondUser = personRepository.findById(secondUserId).orElseThrow(
+                () -> new PersonNotFoundException(secondUserId)
+        );
+        if (secondUser.getIsDeleted()) {
+            throw new PersonIsDeletedException(secondUserId);
+        }
+
+        map.put(
+                new StringBuilder()
+                        .append(firstUser.getFirstName())
+                        .append("_")
+                        .append(firstUser.getLastName())
+                        .append("->")
+                        .append(secondUser.getFirstName())
+                        .append("_")
+                        .append(secondUser.getLastName())
+                        .toString(),
+                messagesRepository.countByAuthorIdAndRecipientId(firstUserId, secondUserId)
+        );
+
+        map.put(
+                new StringBuilder()
+                        .append(secondUser.getFirstName())
+                        .append("_")
+                        .append(secondUser.getLastName())
+                        .append("->")
+                        .append(firstUser.getFirstName())
+                        .append("_")
+                        .append(firstUser.getLastName())
+                        .toString(),
+                messagesRepository.countByAuthorIdAndRecipientId(secondUserId, firstUserId)
+        );
+
         return map;
     }
 
     public Long getAllLike() {
-        return 0l;
+        return likesRepository.count();
     }
 
-    public Long getLikeEntity(@RequestParam Long entityId) {
-        return 0l;
+    public Long getLikeEntity(Long entityId, LikeType type) {
+        return likesRepository.countByTypeAndEntityId(type, entityId);
     }
 
     public Long getDialog() {
-        return 0l;
+        return dialogsRepository.count();
     }
 
-    public Long getDialogsUser(@RequestParam Long userId) {
-        return 0l;
+    public Long getDialogsUser(Long userId) {
+        return dialogsRepository.countByFirstPersonIdOrSecondPersonId(userId, userId);
     }
 
     public Long getCountry() {
-        return 0l;
+        return countriesRepository.count();
     }
 
     public List<RegionStatisticsRs> getCountryUsers() {
-        List<RegionStatisticsRs> list = new ArrayList<>();
+        List<RegionStatisticsRs> list = countriesRepository.countRegionStatistics();
         return list;
     }
 
     public Long getCommentsByPost(Long postId) {
-        return 0l;
+        return postCommentsRepository.countByPostIdAndIsDeleted(postId, false);
     }
 
     public Long getAllCities() {
-        return 0l;
+        return citiesRepository.count();
     }
 
     public List<RegionStatisticsRs> getCitiesUsers() {
-        List<RegionStatisticsRs> list = new ArrayList<>();
+        List<RegionStatisticsRs> list = citiesRepository.countRegionStatistics();
         return list;
     }
 }

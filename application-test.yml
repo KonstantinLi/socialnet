@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRESQL_HOST:127.0.0.1}:${POSTGRESQL_PORT:5432}/socialnet_test
+
+  liquibase:
+    drop-first: true

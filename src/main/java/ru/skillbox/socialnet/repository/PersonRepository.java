@@ -87,4 +87,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
     Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
     Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
+
+    long countByIsDeleted(boolean isDeleted);
+    long countByCountryAndIsDeleted(String country, boolean isDeleted);
+    long countByCityAndIsDeleted(String city, boolean isDeleted);
 }
