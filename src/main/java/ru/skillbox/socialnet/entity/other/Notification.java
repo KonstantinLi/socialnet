@@ -3,7 +3,6 @@ package ru.skillbox.socialnet.entity.other;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.enums.NotificationType;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 

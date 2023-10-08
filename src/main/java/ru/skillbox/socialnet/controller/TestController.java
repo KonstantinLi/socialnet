@@ -21,6 +21,10 @@ public class TestController {
 
         Optional<Person> optionalPerson = personRepository.findByEmail("mmccreedyc@hibu.com");
 
+        if (optionalPerson.isEmpty()) {
+            return "Not found";
+        }
+
         Person person = optionalPerson.get();
 
 

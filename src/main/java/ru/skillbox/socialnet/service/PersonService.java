@@ -10,21 +10,20 @@ import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
-import ru.skillbox.socialnet.repository.FriendShipRepository;
-import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.mapper.PersonMapper;
+import ru.skillbox.socialnet.repository.FriendShipRepository;
+import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,6 +50,8 @@ public class PersonService {
             friendShipStatus =
                     friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
         }
+
+
         boolean isBlockedByCurrentUser = friendShipStatus.map(
                 shipStatus -> shipStatus.equals(FriendShipStatus.BLOCKED)).orElse(false);
 
