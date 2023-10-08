@@ -50,6 +50,8 @@ public class AccountService {
         }
         if (personRepository.findByEmail(registerRq.getEmail()).isEmpty()) {
             Person person = addPerson(registerRq);
+            person.setMessagePermissions(MessagePermission.ALL);
+            person.setOnlineStatus(false);
             personRepository.save(person);
         } else {
             throw new AuthException("Пользователь с email: '" + registerRq.getEmail() +

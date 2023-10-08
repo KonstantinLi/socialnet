@@ -36,7 +36,7 @@ spring:
 
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
-  lifetime: 1h
+  lifetime: 12h
 
 logging:
   level:

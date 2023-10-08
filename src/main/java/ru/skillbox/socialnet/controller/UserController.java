@@ -7,9 +7,9 @@ import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
+import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
 import ru.skillbox.socialnet.service.PersonService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,26 +58,34 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public CommonRs<List<PersonRs>> findUsers(@PathVariable(value = "id") Integer id,
-                                              @RequestHeader("authorization") String token,
-                                              @RequestParam(value = "age_from", required = false,
-                                                      defaultValue = "0") int ageFrom,
-                                              @RequestParam(value = "age_to", required = false,
-                                                      defaultValue = "0") int ageTo,
-                                              @RequestParam(value = "city", required = false) String city,
-                                              @RequestParam(value = "country", required = false) String country,
-                                              @RequestParam(value = "first_name", required = false) String firstName,
-                                              @RequestParam(value = "last_name", required = false) String lastName,
-                                              @RequestParam(value = "offset", required = false,
-                                                      defaultValue = "0") int offset,
-                                              @RequestParam(value = "perPage", required = false,
-                                                      defaultValue = "20") int perPage
-    ) {
+    public CommonRs<List<PersonRs>> findUsers(@RequestHeader("authorization") String token,
+                                              @RequestParam(value = "age_from",
+                                                      required = false, defaultValue = "0") int ageFrom,
+                                              @RequestParam(value = "age_to",
+                                                      required = false, defaultValue = "0") int ageTo,
+                                              @RequestParam(value = "city",
+                                                      required = false) String city,
+                                              @RequestParam(value = "country",
+                                                      required = false) String country,
+                                              @RequestParam(value = "first_name",
+                                                      required = false) String firstName,
+                                              @RequestParam(value = "last_name",
+                                                      required = false) String lastName,
+                                              @RequestParam(value = "offset",
+                                                      required = false, defaultValue = "0") int offset,
+                                              @RequestParam(value = "perPage",
+                                                      required = false, defaultValue = "20") int perPage) {
 
-        CommonRs<List<PersonRs>> response = new CommonRs<>();
-        ArrayList<PersonRs> persons = new ArrayList<>();
-        response.setData(persons);
-
-        return response;
+        return personService.getUsersByQuery(jwtTokenUtils.getId(token),
+                GetUsersSearchPs.builder()
+                        .ageFrom(ageFrom)
+                        .ageTo(ageTo)
+                        .city(city)
+                        .country(country)
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .build(),
+                offset,
+                perPage);
     }
 }
