@@ -1,10 +1,12 @@
 package ru.skillbox.socialnet.service;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.PostRq;
@@ -21,6 +23,10 @@ import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.exception.post.PostCreateException;
 import ru.skillbox.socialnet.exception.post.PostNotFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
+import ru.skillbox.socialnet.dto.response.PostRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
+import ru.skillbox.socialnet.repository.PostsRepository;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
@@ -33,7 +39,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Getter
 public class PostsService {
+
     private final PostsRepository postsRepository;
     private final TagsRepository tagsRepository;
     private final PersonRepository personRepository;
@@ -113,95 +121,28 @@ public class PostsService {
     }
 
     @Transactional
-    public CommonRs<List<PostRs>> getPostsByQuery(
-            String authorization,
-            String author,
-            Long dateFrom,
-            Long dateTo,
-            Integer offset,
-            Integer perPage,
-            List<String> tags,
-            String text
-    ) {
-        Long myId = jwtTokenUtils.getId(authorization);
+    public CommonRs<List<PostRs>> getPostsByQuery(Long currentUserId,
+                                                  GetPostsSearchPs getPostsSearchPs,
+                                                  int offset,
+                                                  int perPage) {
+        Pageable nextPage = PageRequest.of(offset, perPage);
+        CommonRs<List<PostRs>> result = new CommonRs<>();
+        Page<Post> postPage = postsRepository.findPostsByQuery(getPostsSearchPs.getAuthor(),
+                getPostsSearchPs.getDateFrom() / 1000,
+                getPostsSearchPs.getDateTo() / 1000,
+                getPostsSearchPs.getTags() == null,
+                getPostsSearchPs.getTags(),
+                getPostsSearchPs.getText(),
+                nextPage);
+        result.setData(postMapper.listPostToListPostRs(postPage.getContent()));
+        result.setTotal(postPage.getTotalElements());
+        result.setItemPerPage(postPage.getContent().size());
+        result.setPerPage(perPage);
+        result.setOffset(offset);
 
-        Set<Long> personIds = null;
-
-        if (author != null && !author.isBlank()) {
-            String[] name = author.trim().split("\\s+", 2);
-
-            switch (name.length) {
-                case 1 -> {
-                    personIds = personRepository.findAllByFirstNameAndIsDeleted(
-                                name[0], false
-                            )
-                            .stream()
-                            .map(Person::getId)
-                            .collect(Collectors.toSet());
-                    personIds.addAll(personRepository.findAllByLastNameAndIsDeleted(
-                                name[0], false
-                            )
-                            .stream()
-                            .map(Person::getId)
-                            .toList());
-                }
-                case 2 -> personIds = personRepository.findAllByFirstNameAndLastNameAndIsDeleted(
-                            name[0], name[1], false
-                        )
-                        .stream()
-                        .map(Person::getId)
-                        .collect(Collectors.toSet());
-            }
-        }
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        Boolean isDeleted = false;
-
-        List<Predicate> predicatesPage = new ArrayList<>();
-        CriteriaQuery<Post> pageQuery = builder.createQuery(Post.class);
-        Root<Post> pageRoot = pageQuery.from(Post.class);
-        pageQuery.select(pageRoot);
-
-        List<Predicate> predicatesCount = new ArrayList<>();
-        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
-        Root<Post> countRoot = countQuery.from(Post.class);
-        countQuery.select(builder.count(countRoot));
-
-        predicatesPage.add(builder.equal(pageRoot.get("isDeleted"), isDeleted));
-        predicatesCount.add(builder.equal(countRoot.get("isDeleted"), isDeleted));
-        if (personIds != null) {
-            predicatesPage.add(pageRoot.get("authorId").in(personIds));
-            predicatesCount.add(countRoot.get("authorId").in(personIds));
-        }
-        if (dateFrom != null) {
-            Timestamp timestampFrom = new Timestamp(dateFrom);
-            LocalDateTime timeFrom = localDateTimeConverter.convertToDatabaseColumn(timestampFrom);
-            predicatesPage.add(builder.greaterThanOrEqualTo(pageRoot.get("time"), timeFrom));
-            predicatesCount.add(builder.greaterThanOrEqualTo(countRoot.get("time"), timeFrom));
-        }
-        if (dateTo != null) {
-            Timestamp timestampTo = new Timestamp(dateTo);
-            predicatesPage.add(builder.lessThanOrEqualTo(pageRoot.get("time"), timestampTo));
-            predicatesCount.add(builder.lessThanOrEqualTo(countRoot.get("time"), timestampTo));
-        }
-
-        // TODO: getPostsByQuery tags & text
-
-        pageQuery.where(builder.and(predicatesPage.toArray(new Predicate[0])));
-        countQuery.where(builder.and(predicatesCount.toArray(new Predicate[0])));
-        pageQuery.orderBy(builder.desc(pageRoot.get("time")));
-
-        return getListPostResponse(
-                entityManager
-                        .createQuery(pageQuery)
-                        .setMaxResults(perPage)
-                        .setFirstResult(offset * perPage)
-                        .getResultList(),
-                entityManager
-                        .createQuery(countQuery)
-                        .getSingleResult(),
-                myId, offset, perPage);
+        return result;
     }
+
 
     @Transactional
     public CommonRs<List<PostRs>> getWall(String authorization, Long id, Integer offset, Integer perPage) {

@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.enums.NotificationType;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 

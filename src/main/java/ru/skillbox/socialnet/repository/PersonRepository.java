@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,4 +88,26 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
     Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
     Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
+
+    @Query(nativeQuery = true, value = """
+            select *
+            from persons
+            where id != :currentPersonId
+            and case when :ageFrom = 0 then true else date_part('year', age(current_date, birth_date)) >= :ageFrom end
+            and case when :ageTo = 0 then true else date_part('year', age(current_date, birth_date)) <= :ageTo end
+            and case when cast(:city as varchar) is null then true else city ilike :city end
+            and case when cast(:country as varchar) is null then true else country ilike :country end
+            and case when cast(:firstName as varchar) is null then true
+                else first_name ilike concat('%', cast(:firstName as varchar), '%') end
+            and case when cast(:lastName as varchar) is null then true
+                else last_name ilike concat('%', cast(:lastName as varchar), '%') end
+            """)
+    Page<Person> findUsersByQuery(@Param("currentPersonId") Long currentPersonId,
+                                  @Param("ageFrom") int ageFrom,
+                                  @Param("ageTo") int ageTo,
+                                  @Param("city") String city,
+                                  @Param("country") String country,
+                                  @Param("firstName") String firstName,
+                                  @Param("lastName") String lastName,
+                                  Pageable nextPage);
 }
