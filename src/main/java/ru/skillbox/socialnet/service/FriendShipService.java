@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
@@ -267,6 +268,18 @@ public class FriendShipService {
                 false);
 
         return generatePersonsList(personsData, offset, perPage, total);
+    }
+
+    /**
+     * @param person - пользователь, чьих друзей мы хотим получить
+     * @return - метод возвращает список всех друзей пользователя
+     */
+    public List<Person> getAllFriends(Person person) {
+        return personRepository.findPersonsByFriendship(
+                        person.getId(),
+                        FriendShipStatus.FRIEND.name(),
+                        Pageable.unpaged())
+                .getContent();
     }
 
     /**
