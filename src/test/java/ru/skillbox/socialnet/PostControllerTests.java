@@ -292,9 +292,7 @@ class PostControllerTests {
 
         this.mockMvc.perform(get("/api/v1/post")
                                 .header("authorization", token)
-//                        .param("author", "")
-//                        .param("date_from", "")
-//                        .param("dateTo", String.valueOf(new Date().getTime()))
+                                .param("author", "Adriaens")
                                 .param("text", "text test post 2")
                 )
                 .andDo(print())
@@ -302,20 +300,6 @@ class PostControllerTests {
                 .andExpect(jsonPath("$.data[0].title").value("post 2"))
                 .andExpect(jsonPath("$.data[0].post_text").value("text test post 2"));
     }
-
-//    @Test
-//    public void getPostsByQueryBadRequest() throws Exception {
-//        Person person = personRepository.findById(Long.valueOf(3)).get();
-//        String token = jwtTokenUtils.generateToken(person);
-//
-//        this.mockMvc.perform(get("/api/v1/post")
-//                        .header("authorization", token)
-//                        .param("text", "text test post 3")
-//                )
-//                .andDo(print())
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.error_description").value("Person id 3 not found"));
-//    }
 
     @Test
     public void getFeeds() throws Exception {
@@ -338,8 +322,6 @@ class PostControllerTests {
 
         this.mockMvc.perform(get("/api/v1/feeds")
                         .header("authorization", token)
-//                        .param("offset", "1")
-//                        .param("perPage", "1")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -347,22 +329,5 @@ class PostControllerTests {
                 .andExpect(jsonPath("$.data[0].post_text").value("some new text СreatePost"));
     }
 
-//    @Test
-//    public void getFeedsBadRequest() throws Exception {
-//        //todo что является ошибкой?
-//        Person person = personRepository.findById(Long.valueOf(1)).get();
-//        String token = jwtTokenUtils.generateToken(person);
-//
-////        this.mockMvc.perform(delete("/api/v1/post/2").header("authorization", token))
-////                .andDo(print())
-////                .andExpect(status().isOk());
-//
-//        this.mockMvc.perform(get("/api/v1/feeds")
-//                                .header("authorization", token)
-//                )
-//                .andDo(print())
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.error_description").value("Person id 3 not found"));
-//    }
 }
 
