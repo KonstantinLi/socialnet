@@ -295,7 +295,7 @@ class PostControllerTests {
 //                        .param("author", "")
 //                        .param("date_from", "")
 //                        .param("dateTo", String.valueOf(new Date().getTime()))
-                                .param("text", "text test post 3")
+                                .param("text", "text test post 2")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
