@@ -9,6 +9,5 @@ import lombok.Data;
 public class CommentRq {
     private String commentText;
     private Long parentId;
-
     public Boolean isDeleted;
 }

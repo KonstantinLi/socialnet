@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.socialnet.dto.AwsS3Handler;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.entity.other.Storage;
-import ru.skillbox.socialnet.exception.file.FileNotProvidedException;
+import ru.skillbox.socialnet.exception.FileNotProvidedException;
 import ru.skillbox.socialnet.repository.StorageRepository;
 
 import java.io.IOException;

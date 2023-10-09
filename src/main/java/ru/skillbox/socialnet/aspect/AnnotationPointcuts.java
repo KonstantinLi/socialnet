@@ -7,11 +7,13 @@ public class AnnotationPointcuts {
             "@annotation(ru.skillbox.socialnet.annotation.InfoLoggable)) &&" +
             "!@annotation(ru.skillbox.socialnet.annotation.DebugLoggable) && " +
             "!@annotation(ru.skillbox.socialnet.annotation.NotLoggable)")
-    public void info() {}
+    public void info() {
+    }
 
     @Pointcut("(@target(ru.skillbox.socialnet.annotation.Debug) || " +
             "@annotation(ru.skillbox.socialnet.annotation.DebugLoggable)) &&" +
             "!@annotation(ru.skillbox.socialnet.annotation.InfoLoggable) && " +
             "!@annotation(ru.skillbox.socialnet.annotation.NotLoggable)")
-    public void debug() {}
+    public void debug() {
+    }
 }

@@ -32,8 +32,8 @@ public class LoggingAspect {
 
     @AfterThrowing(
             pointcut =
-                "ru.skillbox.socialnet.aspect.LoggingPointcuts.springBeanPointcut() && " +
-                "ru.skillbox.socialnet.aspect.LoggingPointcuts.applicationPackagePointcut()",
+                    "ru.skillbox.socialnet.aspect.LoggingPointcuts.springBeanPointcut() && " +
+                            "ru.skillbox.socialnet.aspect.LoggingPointcuts.applicationPackagePointcut()",
             throwing = "ex")
     public void afterThrowingAdvice(JoinPoint joinPoint, Exception ex) {
         Signature signature = joinPoint.getSignature();
