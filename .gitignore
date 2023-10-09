@@ -32,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+!/src/main/java/ru/skillbox/socialnet/controller/TestController.java

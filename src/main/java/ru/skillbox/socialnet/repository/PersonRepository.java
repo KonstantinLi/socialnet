@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
-import ru.skillbox.socialnet.entity.personrelated.Person;
 
 import java.util.List;
 import java.util.Optional;

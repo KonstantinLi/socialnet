@@ -1,11 +1,6 @@
 package ru.skillbox.socialnet.entity.locationrelated;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,24 +10,32 @@ import lombok.Setter;
 @Table(name = "countries")
 public class Country {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  /** Наименование */
-  private String name;
+    /**
+     * Наименование
+     */
+    private String name;
 
-  /** Полное наименование */
-  @Column(name = "full_name")
-  private String fullName;
+    /**
+     * Полное наименование
+     */
+    @Column(name = "full_name")
+    private String fullName;
 
-  /** Код страны */
-  @Column(name = "code2")
-  private String code2;
+    /**
+     * Код страны
+     */
+    @Column(name = "code2")
+    private String code2;
 
-  /** Международное наименование */
-  @Column(name = "international_name")
-  private String internationalName;
+    /**
+     * Международное наименование
+     */
+    @Column(name = "international_name")
+    private String internationalName;
 
 
 }

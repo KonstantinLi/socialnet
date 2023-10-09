@@ -9,6 +9,7 @@ import ru.skillbox.socialnet.entity.personrelated.Person;
 
 import java.util.List;
 
+@SuppressWarnings("Annotator")
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING
 )
