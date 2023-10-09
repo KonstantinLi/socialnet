@@ -186,7 +186,7 @@ public class NotificationService {
         CommonRs<List<NotificationRs>> commonRs = new CommonRs<>();
 
         commonRs.setTotal((long) notificationRsList.size());
-        commonRs.setTimestamp(System.currentTimeMillis());
+        commonRs.setTimeStamp(System.currentTimeMillis());
         commonRs.setData(notificationRsList);
         commonRs.setItemPerPage(itemPerPage);
         commonRs.setPerPage(itemPerPage);

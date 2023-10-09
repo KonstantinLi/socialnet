@@ -2,34 +2,43 @@ package ru.skillbox.socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.person.PersonIsBlockedException;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.PersonIsBlockedException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PersonService {
-    private final PersonMapper personMapper;
+
     private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
     private final FriendShipRepository friendShipRepository;
+
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
-    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) {
+    //TODO currentUserdId не используется?
+    public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);
@@ -41,6 +50,8 @@ public class PersonService {
             friendShipStatus =
                     friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
         }
+
+
         boolean isBlockedByCurrentUser = friendShipStatus.map(
                 shipStatus -> shipStatus.equals(FriendShipStatus.BLOCKED)).orElse(false);
 
@@ -50,14 +61,31 @@ public class PersonService {
         }
 
         PersonRs personRs = personMapper.personToPersonRs(person);
-
-        // TODO: is there a result of the following sentence?
-        personMapper.personToPersonRs(person,
-                friendShipStatus.map(Enum::name).orElse(null),
-                isBlockedByCurrentUser);
-
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
+
+        return result;
+    }
+
+    public CommonRs<List<PersonRs>> getUsersByQuery(Long currentUserId,
+                                                    GetUsersSearchPs getUsersSearchPs,
+                                                    int offset,
+                                                    int perPage) {
+        Pageable nextPage = PageRequest.of(offset, perPage);
+        CommonRs<List<PersonRs>> result = new CommonRs<>();
+        Page<Person> personPage = personRepository.findUsersByQuery(currentUserId,
+                getUsersSearchPs.getAgeFrom(),
+                getUsersSearchPs.getAgeTo(),
+                getUsersSearchPs.getCity(),
+                getUsersSearchPs.getCountry(),
+                getUsersSearchPs.getFirstName(),
+                getUsersSearchPs.getLastName(),
+                nextPage);
+        result.setData(PersonMapper.INSTANCE.toRsList(personPage.getContent()));
+        result.setTotal(personPage.getTotalElements());
+        result.setItemPerPage(personPage.getContent().size());
+        result.setPerPage(perPage);
+        result.setOffset(offset);
 
         return result;
     }

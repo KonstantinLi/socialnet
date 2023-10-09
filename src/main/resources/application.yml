@@ -26,8 +26,7 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
-    #drop-first: false
+    drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
   servlet:
@@ -37,7 +36,7 @@ spring:
 
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
-  lifetime: 1h
+  lifetime: 12h
 
 logging:
   level:
@@ -53,7 +52,7 @@ logger:
 aws:
   image-bucket-name: socialnet-bucket
   access-key-id: AKIAV3IS4ZIFYKNKL4MX
-  secret-access-key: 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
+  secret-access-key: ${AWS_SECRET_KEY}
   region: eu-north-1
   max-image-file-size: 5242880
   photo-url-prefix: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/
@@ -61,3 +60,14 @@ aws:
   log-bucket-name: socialnet-logs
   max-log-file-size: 5242880
   log-url-prefix: https://socialnet-logs.s3.eu-north-1.amazonaws.com/
+
+email:
+  project-email: socialnetskillboxemailer@gmail.com
+  project-email-password: qbwg zftv ehtl hnjm
+  smtp-auth: true
+  smtp-starttls-enable: true
+  smtp-host: smtp.gmail.com
+  smtp-port: 587
+  smtp-ssl-trust: true
+  recovery-base-url: http://localhost:8080/
+  recovery-email-blueprint: emailBlueprint.html
