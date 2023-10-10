@@ -69,11 +69,7 @@ class PostControllerTests {
         }
     }
 
-    @Test
-    void contextLoads() throws Exception {
-    }
-
-    @Test
+   @Test
     void getPostById() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
@@ -86,7 +82,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getPostByIdBadRequestNotFoundPost() throws Exception {
+    void getPostByIdBadRequestNotFoundPost() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -97,7 +93,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getPostByIdBadRequestUnauthorized() throws Exception {
+    void getPostByIdBadRequestUnauthorized() throws Exception {
         Person person = personRepository.findById(Long.valueOf(2)).get();
         String token = jwtTokenUtils.generateToken(person);
         token = token.replaceAll("a", "b");
@@ -107,7 +103,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void updateById() throws Exception {
+    void updateById() throws Exception {
 
         Person person = personRepository.findById(1L).get();
         String token = jwtTokenUtils.generateToken(person);
@@ -129,7 +125,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void updateByIdEmptyField() throws Exception {
+    void updateByIdEmptyField() throws Exception {
 
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
@@ -150,7 +146,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void deleteById() throws Exception {
+    void deleteById() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -168,7 +164,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void deleteByIdBadRequest() throws Exception {
+    void deleteByIdBadRequest() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -179,7 +175,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void recoverById() throws Exception {
+    void recoverPostById() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -200,7 +196,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void recoverByIdBadRequest() throws Exception {
+    void recoverPostByIdBadRequest() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -211,7 +207,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getWall() throws Exception {
+    void getWall() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -226,7 +222,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getWallBadRequest() throws Exception {
+    void getWallBadRequest() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -240,7 +236,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getWallСreatePost() throws Exception {
+    void сreatePost() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -262,7 +258,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getWallСreatePostBadRequest() throws Exception {
+    void сreatePostBadRequest() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
@@ -284,14 +280,14 @@ class PostControllerTests {
 
 
     @Test
-    public void getPostsByQuery() throws Exception {
+    void getPostsByQuery() throws Exception {
         Person person = personRepository.findById(Long.valueOf(2)).get();
         String token = jwtTokenUtils.generateToken(person);
 
         this.mockMvc.perform(get("/api/v1/post")
-                                .header("authorization", token)
-                                .param("author", "Adriaens")
-                                .param("text", "text test post 2")
+                        .header("authorization", token)
+                        .param("author", "Adriaens")
+                        .param("text", "text test post 2")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -300,7 +296,7 @@ class PostControllerTests {
     }
 
     @Test
-    public void getFeeds() throws Exception {
+    void getFeeds() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 

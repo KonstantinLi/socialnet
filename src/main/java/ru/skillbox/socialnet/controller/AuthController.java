@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/logout")
     public CommonRs<ComplexRs> logout(@RequestHeader String authorization) {
 
-        return authService.logout(authorization);
+        return authService.logout();
     }
 
     @GetMapping("/captcha")

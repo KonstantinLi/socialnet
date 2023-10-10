@@ -31,8 +31,7 @@ public class AuthService {
     private final CaptchaRepository captchaRepository;
     private final PersonMapper personMapper;
 
-    //TODO не используется authorization параметр?
-    public CommonRs<ComplexRs> logout(String authorization) {
+    public CommonRs<ComplexRs> logout() {
         CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
         commonRsComplexRs.setData(complexRs);
