@@ -8,21 +8,20 @@
 #
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 #
-# You can copy and paste this template into a new `.gitlab-ci.yml` file.
-# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+# You can copy and paste this template into a new `...gitlab-ci.yml` file.
+# You should not add this template to an existing `...gitlab-ci.yml` file by using the `include:` keyword.
 #
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
 # https://docs.gitlab.com/ee/development/cicd/templates.html
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-image: maven:latest
-
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 
 stages:          # List of stages for jobs, and their order of execution
   - build
+  - test
   - package
   - deploy
 
@@ -30,9 +29,26 @@ build-job:       # This job runs in the build stage, which runs first.
   stage: build
   only:
     - dev
-    - nekrasov-viktor-dev
+  tags:
+    - socialnet_runner
   script:
-    - 'mvn compile'
+    - mvn clean
+    - mvn compile
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  except:
+    - tags
+  script:
+    - mvn test
   cache:
     paths:
       - ./target
@@ -42,11 +58,12 @@ package:
   stage: package
   only:
     - dev
-    - nekrasov-viktor-dev
+  tags:
+    - socialnet_runner
   except:
     - tags
   script:
-    - 'mvn package -Dmaven.test.skip=true'
+    - mvn package -Dmaven.test.skip=true
   artifacts:
     paths:
       - target/*.jar
@@ -56,9 +73,16 @@ package:
       - ./target
       - ./.m2
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
+
+build-docker-image:
+  stage: deploy
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+
   script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - (docker ps -a --format {{.Names}} | grep java-backend-app -w) && docker stop java-backend-app && docker rm java-backend-app || echo "Doesn't exist"
+    - docker build -t java-pro41-backend:latest .
+    - docker run --name java-backend-app -d -p 8086:8086 -t java-pro41-backend:latest
+    - docker system prune -a -f
