@@ -2,10 +2,14 @@ package ru.skillbox.socialnet.security;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import ru.skillbox.socialnet.config.JwtProperties;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +35,21 @@ public class JwtTokenUtils {
                 .setExpiration(expired)
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token) {
+        return new UsernamePasswordAuthenticationToken(
+                        getSubject(token),
+                        null,
+                        getRoles(token)
+                                .stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .toList()
+        );
+    }
+
+    public Principal getPrincipal(String token) {
+        return (Principal) getAuthentication(token).getPrincipal();
     }
 
     public boolean validateAccessToken(String token) {
