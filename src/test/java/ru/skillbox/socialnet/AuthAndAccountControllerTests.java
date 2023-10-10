@@ -1,9 +1,9 @@
 package ru.skillbox.socialnet;
 
-
+import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -55,10 +55,6 @@ public class AuthAndAccountControllerTests {
     private ObjectMapper objectMapper;
 
     private final static long EXISTING_TEST_PERSON_ID = 1L;
-
-    @Test
-    void contextLoads() throws Exception {
-    }
 
     /**
      *
