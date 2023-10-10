@@ -1,18 +1,20 @@
 package ru.skillbox.socialnet;
 
-import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-//import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.controller.AccountController;
 import ru.skillbox.socialnet.controller.AuthController;
 import ru.skillbox.socialnet.dto.request.LoginRq;
@@ -34,13 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
+@ContextConfiguration(initializers = {AuthAndAccountControllerTest.Initializer.class})
+@Testcontainers
 @AutoConfigureMockMvc
-@TestPropertySource("/application-test.yml")
-@Sql(value = {"/post-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 
-public class AuthAndAccountControllerTests {
+public class AuthAndAccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -55,6 +56,26 @@ public class AuthAndAccountControllerTests {
     private ObjectMapper objectMapper;
 
     private final static long EXISTING_TEST_PERSON_ID = 1L;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSqlContainer = new PostgreSQLContainer<>("postgres:15.1")
+            .withDatabaseName("socialNet-test")
+            .withUsername("root")
+            .withPassword("root");
+
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            log.info(postgreSqlContainer.getJdbcUrl());
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSqlContainer.getJdbcUrl(),
+                    "spring.datasource.username=" + postgreSqlContainer.getUsername(),
+                    "spring.datasource.password=" + postgreSqlContainer.getPassword(),
+                    "spring.liquibase.enabled=true"
+            ).applyTo(configurableApplicationContext.getEnvironment());
+            log.info(configurableApplicationContext.getEnvironment().getProperty("spring.datasource.url"));
+        }
+    }
+
 
     /**
      *
