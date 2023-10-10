@@ -8,7 +8,6 @@ import ru.skillbox.socialnet.entity.enums.MessagePermission;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PersonRs {
-
     private String about;
     private String city;
     private String country;

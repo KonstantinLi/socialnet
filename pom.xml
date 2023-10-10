@@ -185,6 +185,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.github.cage</groupId>
       <artifactId>cage</artifactId>
       <version>${cage.version}</version>

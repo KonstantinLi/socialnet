@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/auth/login").permitAll()
                                 .requestMatchers("/api/v1/auth/captcha").permitAll()
                                 .requestMatchers("/api/v1/account/register").permitAll()
+                                .requestMatchers("/api/v1/statistics/**").permitAll()
                                 .requestMatchers("/api/v1/**").authenticated()
                                 .anyRequest().permitAll())
                 .sessionManagement(manager ->

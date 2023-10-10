@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ComplexRs {
-
     private Long count;
     private Long id;
     private String message;

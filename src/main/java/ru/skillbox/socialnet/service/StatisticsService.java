@@ -9,9 +9,7 @@ import ru.skillbox.socialnet.exception.person.PersonIsDeletedException;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.repository.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -129,9 +127,8 @@ public class StatisticsService {
         return countriesRepository.count();
     }
 
-    public List<RegionStatisticsRs> getCountryUsers() {
-        List<RegionStatisticsRs> list = countriesRepository.countRegionStatistics();
-        return list;
+    public Collection<RegionStatisticsRs> getCountryUsers() {
+        return personRepository.countCountryStatistics();
     }
 
     public Long getCommentsByPost(Long postId) {
@@ -142,8 +139,7 @@ public class StatisticsService {
         return citiesRepository.count();
     }
 
-    public List<RegionStatisticsRs> getCitiesUsers() {
-        List<RegionStatisticsRs> list = citiesRepository.countRegionStatistics();
-        return list;
+    public Collection<RegionStatisticsRs> getCitiesUsers() {
+        return personRepository.countCityStatistics();
     }
 }

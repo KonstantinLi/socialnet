@@ -6,7 +6,7 @@ import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.service.StatisticsService;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 @RestController
@@ -94,7 +94,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/country/all")
-    public List<RegionStatisticsRs> getCountryUsers() {
+    public Collection<RegionStatisticsRs> getCountryUsers() {
         return statisticsService.getCountryUsers();
     }
 
@@ -109,7 +109,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/city/all")
-    public List<RegionStatisticsRs> getCitiesUsers() {
+    public Collection<RegionStatisticsRs> getCitiesUsers() {
         return statisticsService.getCitiesUsers();
     }
 }

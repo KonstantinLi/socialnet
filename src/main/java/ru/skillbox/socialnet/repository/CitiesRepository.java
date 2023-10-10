@@ -11,9 +11,9 @@ import java.util.List;
 @Repository
 public interface CitiesRepository extends JpaRepository<City, Long> {
     @Query(value = "SELECT t.name AS region, COUNT(p.country) AS countUsers"
-            + " FROM cities AS t LEFT JOIN persons AS p ON t.name = p.country"
-            + " GROUP BY t.name ORDER BY t.name ASC",
-            nativeQuery = true
+            + " FROM cities t LEFT JOIN persons p ON t.name = p.country"
+            + " GROUP BY t.name ORDER BY t.name ASC"
+            , nativeQuery = true
     )
     List<RegionStatisticsRs> countRegionStatistics();
 }
