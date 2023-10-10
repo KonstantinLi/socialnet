@@ -1,14 +1,10 @@
 package ru.skillbox.socialnet.entity.locationrelated;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,24 +12,32 @@ import lombok.Setter;
 @Table(name = "weather")
 public class Weather {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  /** ID */
-  @Column(name = "open_weather_id")
-  private Long openWeatherId;
+    /**
+     * ID
+     */
+    @Column(name = "open_weather_id")
+    private Long openWeatherId;
 
-  /** Город */
-  @Column(name = "city")
-  private String city;
+    /**
+     * Город
+     */
+    @Column(name = "city")
+    private String city;
 
-  /** Описание погоды */
-  @Column(name = "clouds")
-  private String clouds;
+    /**
+     * Описание погоды
+     */
+    @Column(name = "clouds")
+    private String clouds;
 
-  /** Дата */
-  @Column(name = "date")
-  private LocalDateTime date;
+    /**
+     * Дата
+     */
+    @Column(name = "date")
+    private LocalDateTime date;
 
 }

@@ -32,3 +32,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+<<<<<<< HEAD
+### Personal Settings ###
+src/main/resources/application-*.yml
+=======
+
+!/src/main/java/ru/skillbox/socialnet/controller/TestController.java
+>>>>>>> dev
