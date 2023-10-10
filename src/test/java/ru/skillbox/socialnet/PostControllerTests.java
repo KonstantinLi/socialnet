@@ -149,8 +149,6 @@ class PostControllerTests {
                 .andExpect(jsonPath("$.error_description").value("Post id 3 not found"));
     }
 
-//    deleteById
-
     @Test
     public void deleteById() throws Exception {
         Person person = personRepository.findById(Long.valueOf(1)).get();
