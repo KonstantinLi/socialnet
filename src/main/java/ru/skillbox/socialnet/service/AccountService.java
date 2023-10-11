@@ -193,6 +193,8 @@ public class AccountService {
         PersonSettings personSettings = new PersonSettings();
         personSettingsRepository.save(personSettings);
         person.setPersonSettings(personSettings);
+        person.setMessagePermissions(MessagePermission.ALL);
+        person.setOnlineStatus(true);
         person.setPhoto(defaultPhotoUrl);
 
         return person;
