@@ -49,7 +49,7 @@ public class OnlineStatusChecker {
             person.setLastOnlineTime(LocalDateTime.now());
             personRepository.save(person);
         }
-        Object proceed = joinPoint.proceed();
-        return proceed;
+
+        return joinPoint.proceed();
     }
 }

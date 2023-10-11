@@ -5,28 +5,27 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.PostRq;
-import ru.skillbox.socialnet.dto.response.*;
-import ru.skillbox.socialnet.entity.personrelated.FriendShip;
-import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.dto.response.PostRs;
+import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.enums.PostType;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
+import ru.skillbox.socialnet.entity.personrelated.FriendShip;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.Tag;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.exception.post.PostCreateException;
 import ru.skillbox.socialnet.exception.post.PostNotFoundException;
 import ru.skillbox.socialnet.mapper.LocalDateTimeConverter;
-import ru.skillbox.socialnet.dto.response.PostRs;
-import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
-import ru.skillbox.socialnet.repository.PostsRepository;
 import ru.skillbox.socialnet.mapper.PostMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
@@ -34,7 +33,9 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -262,7 +263,7 @@ public class PostsService {
     private PostRs postToPostRs(Post post, Long myId) {
         PostRs postRs = postMapper.postToPostRs(post);
 
-        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Post, post.getId()));
+        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.POST, post.getId()));
         postRs.setMyLike(likesRepository.existsByPersonId(myId));
 
         fillAuthor(postRs.getAuthor(), myId);

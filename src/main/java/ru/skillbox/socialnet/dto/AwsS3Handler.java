@@ -1,12 +1,13 @@
 package ru.skillbox.socialnet.dto;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.exception.file.EmptyFileException;
-import ru.skillbox.socialnet.exception.file.FileSizeException;
-import ru.skillbox.socialnet.exception.file.UnsupportedFileTypeException;
+import ru.skillbox.socialnet.exception.EmptyFileException;
+import ru.skillbox.socialnet.exception.FileSizeException;
+import ru.skillbox.socialnet.exception.UnsupportedFileTypeException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import static software.amazon.awssdk.transfer.s3.SizeConstant.MB;
 
+@Slf4j
 @Component
 public class AwsS3Handler implements LogUploader {
 
@@ -101,7 +103,8 @@ public class AwsS3Handler implements LogUploader {
         client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
     }
 
-    private void deleteFilesWithExtension(String bucketName, String fileExtension) {
+    private void deleteFilesWithExtension(String bucketName,
+                                          @SuppressWarnings("SameParameterValue") String fileExtension) {
         deleteFiles(bucketName, fileExtension, deleteFileWithExtension());
     }
 
@@ -139,7 +142,8 @@ public class AwsS3Handler implements LogUploader {
     private TriConsumer<String, S3Object, Object> deleteExpiredFile() {
         return (bucketName, s3Object, expired) -> {
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime lastModified = LocalDateTime.ofInstant(s3Object.lastModified(), ZoneId.of("UTC+3"));
+            LocalDateTime lastModified = LocalDateTime.ofInstant(
+                    s3Object.lastModified(), ZoneId.of("UTC+3"));
 
             if (Duration.between(lastModified, now).compareTo((Duration) expired) > 0) {
                 deleteFile(s3Object.key(), bucketName);
@@ -170,6 +174,24 @@ public class AwsS3Handler implements LogUploader {
                 .forEach(s3Object -> fileNames.add(s3Object.key()));
 
         return fileNames;
+    }
+
+    //TODO remove unused method?
+    private String checkForSameFileName(String generatedFileName) {
+        String fileIdentifier = generatedFileName.split("_", 2)[0];
+
+        List<String> fileNames = getBucketContentNames(logBucketName);
+
+        for (String name : fileNames) {
+            if (name.contains(fileIdentifier)) {
+                generatedFileName = "%s_%s".formatted(generatedFileName, generateSalt());
+                log.warn("File with the same name already exists." +
+                        " New file will be uploaded with name: " +
+                        generatedFileName);
+            }
+        }
+
+        return generatedFileName;
     }
 
     private void checkImageForUpload(MultipartFile file) {
@@ -259,7 +281,6 @@ public class AwsS3Handler implements LogUploader {
                 secretAccessKey);
     }
 
-    // TODO: Удалить?
     private String generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] generatedBytes = new byte[20];
