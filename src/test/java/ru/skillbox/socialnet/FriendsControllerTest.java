@@ -2,6 +2,7 @@ package ru.skillbox.socialnet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -53,13 +54,16 @@ class FriendsControllerTest {
             .withPassword("root");
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Value("${aws.secret-access-key}")
+        private String awsSecretAccessKey;
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues.of(
                     "spring.datasource.url=" + postgreSqlContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgreSqlContainer.getUsername(),
                     "spring.datasource.password=" + postgreSqlContainer.getPassword(),
                     "spring.liquibase.enabled=true",
-                    "spring.liquibase.change-log=classpath:db/changelog/v1/001_init_schema.yaml"
+                    "spring.liquibase.change-log=classpath:db/changelog/v1/001_init_schema.yaml",
+                    "aws.secret-access-key=" + awsSecretAccessKey
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }

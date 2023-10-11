@@ -1,4 +1,4 @@
-
+delete from notifications;
 delete from friendships;
 delete from persons;
 delete from person_settings;
