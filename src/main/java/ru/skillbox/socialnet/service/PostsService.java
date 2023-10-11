@@ -263,7 +263,7 @@ public class PostsService {
     private PostRs postToPostRs(Post post, Long myId) {
         PostRs postRs = postMapper.postToPostRs(post);
 
-        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Post, post.getId()));
+        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.POST, post.getId()));
         postRs.setMyLike(likesRepository.existsByPersonId(myId));
 
         fillAuthor(postRs.getAuthor(), myId);
