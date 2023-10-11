@@ -167,8 +167,8 @@ public class FriendShipService {
                 LocalDateTime.now(),
                 FriendShipStatus.FRIEND);
         friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
-                currentPerson.getId(),
                 destinationPerson.getId(),
+                currentPerson.getId(),
                 FriendShipStatus.REQUEST);
         saveFriendshipChanges(
                 friendShip,
