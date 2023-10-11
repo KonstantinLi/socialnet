@@ -9,5 +9,4 @@ class SocialNetAppTests {
   @Test
   void contextLoads() {
   }
-
 }

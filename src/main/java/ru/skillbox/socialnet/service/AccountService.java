@@ -37,7 +37,7 @@ public class AccountService {
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
-    
+
     public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws BadRequestException {
 
         if (!registerRq.getPasswd1().equals(registerRq.getPasswd2())) {
@@ -164,6 +164,11 @@ public class AccountService {
     public RegisterRs<ComplexRs> setEmail(EmailRq emailRq) {
 
         Long userId = jwtTokenUtils.getId(emailRq.getSecret());
+
+        personRepository.findByEmail(emailRq.getEmail()).ifPresent(person -> {
+            throw new EmailAlreadyPresentedException("Пользователь с email: '" + emailRq.getEmail() +
+                    "' уже зарегистрирован");
+        });
 
         Person person = personRepository.findById(userId).orElseThrow(
                 () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));

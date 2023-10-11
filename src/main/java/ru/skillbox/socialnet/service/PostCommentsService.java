@@ -67,7 +67,7 @@ public class PostCommentsService {
         return updatePostComment(
                 fetchPostComment(
                         commentId, id,
-                        commentRq.isDeleted == null ? false : !commentRq.isDeleted
+                        commentRq.isDeleted != null && !commentRq.isDeleted
                 ),
                 commentRq, myId
         );
@@ -193,7 +193,7 @@ public class PostCommentsService {
     private CommentRs postCommentToCommentRs(PostComment postComment, Long myId) {
         CommentRs commentRs = commentMapper.postCommentToCommentRs(postComment);
 
-        commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
+        commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.COMMENT, commentRs.getId()));
         commentRs.setMyLike(likesRepository.existsByPersonId(myId));
 
         fillAuthor(commentRs.getAuthor(), myId);
