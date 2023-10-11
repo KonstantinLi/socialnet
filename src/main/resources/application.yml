@@ -52,7 +52,7 @@ logger:
 aws:
   image-bucket-name: socialnet-bucket
   access-key-id: AKIAV3IS4ZIFYKNKL4MX
-  secret-access-key: ${AWS_SECRET_KEY}
+  secret-access-key: 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
   region: eu-north-1
   max-image-file-size: 5242880
   photo-url-prefix: https://socialnet-bucket.s3.eu-north-1.amazonaws.com/
