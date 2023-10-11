@@ -148,7 +148,7 @@ public class NotificationService {
             Integer offset) {
 
         Long personId = jwtTokenUtils.getId(token);
-        List<Notification> notifications = notificationRepository.findAllByPersonId(personId);
+        List<Notification> notifications = notificationRepository.findAllByPerson_Id(personId);
 
         return getListNotificationResponse(notifications, itemPerPage, offset);
     }
@@ -157,7 +157,7 @@ public class NotificationService {
         List<Notification> notifications = new ArrayList<>();
         if (all) {
             Long personId = jwtTokenUtils.getId(token);
-            notifications.addAll(notificationRepository.findAllByPersonId(personId));
+            notifications.addAll(notificationRepository.findAllByPerson_Id(personId));
         } else {
             notificationRepository.findById(id).ifPresent(notifications::add);
         }
