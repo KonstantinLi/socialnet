@@ -306,6 +306,29 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.data.message").value("Пароль успешно изменен!"));
     }
 
+
+    /**
+     *  - Тест: НЕ успешное изменение пароля пользователя - неверный токен!
+     *  ожидаем статус 401 и соотв. причину
+     * @throws Exception
+     */
+    @Test
+    void wrongTokenTest() throws Exception {
+        Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
+        String token = jwtTokenUtils.generateToken(person) + "1";
+        PasswordSetRq passwordSetRq = new PasswordSetRq();
+        passwordSetRq.setPassword( getDecodedPassword(person.getPassword()) + "1");
+        this.mockMvc.perform(put("/api/v1/account/password/set")
+                        .header("authorization", token)
+                        .content(new ObjectMapper().writeValueAsString(passwordSetRq))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(status().reason("Full authentication is required to access this resource"));
+    }
+
+
     /**
      *  - Тест: попытка изменить пароль пользователя на текущий.
      *  ожидаем статус 400 и соотв. ошибку
