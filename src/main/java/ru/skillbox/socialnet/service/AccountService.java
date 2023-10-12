@@ -27,6 +27,7 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class AccountService {
+    private final PersonService personService;
     private final PersonRepository personRepository;
     private final PersonSettingsRepository personSettingsRepository;
     private final CaptchaRepository captchaRepository;
@@ -71,8 +72,7 @@ public class AccountService {
                 .getAuthentication()
                 .getName().split(",", 2)[0];
 
-        Person person = personRepository.findById(Long.parseLong(userId)).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
+        Person person = personService.getPersonById(Long.parseLong(userId));
 
         if (person.getPassword().equals(getEncodedPassword(passwordSetRq.getPassword()))) {
             throw new PasswordIsNotChangedException("Новый пароль не должен совпадать со старым");
@@ -118,8 +118,7 @@ public class AccountService {
             throw new TokenParseException("Ошибка при сбросе пароля: неверный токен!");
         }
 
-        Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь не найден"));
+        Person person = personService.getPersonById(userId);
 
         String currentPassword = person.getPassword();
         String newPassword = getEncodedPassword(passwordSetRq.getPassword());
@@ -148,8 +147,7 @@ public class AccountService {
             throw new TokenParseException("Ошибка при сбросе почты: неверный токен!");
         }
 
-        Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь не найден"));
+        Person person = personService.getPersonById(userId);
 
         if (!person.getEmail().equals(email)) {
             throw new BadRequestException("Ошибка идетификации пользователя: email не совпадает!");
@@ -165,8 +163,7 @@ public class AccountService {
 
         Long userId = jwtTokenUtils.getId(emailRq.getSecret());
 
-        Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
+        Person person = personService.getPersonById(userId);
 
         if (person.getEmail().equals(emailRq.getEmail())) {
             throw new EmailIsNotChangedException("Новый email не должен совпадать со старым");

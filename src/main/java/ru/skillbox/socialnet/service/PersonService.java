@@ -37,6 +37,11 @@ public class PersonService {
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
+    public Person getPersonById(Long personId) {
+        return personRepository.findById(personId).orElseThrow(
+                () -> new PersonNotFoundException("Пользователь id: " + personId + " не найден"));
+    }
+
     //TODO currentUserdId не используется?
     public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
 
