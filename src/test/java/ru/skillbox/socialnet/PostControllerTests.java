@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 //@TestPropertySource("/application-test.yml")
 @Sql(value = {"/post-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/post-after-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class PostControllerTests {
     @Autowired
     private MockMvc mockMvc;
