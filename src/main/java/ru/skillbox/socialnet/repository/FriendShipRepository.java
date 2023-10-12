@@ -46,23 +46,6 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
     }
 
     /**
-     * Удаляем все связи в таблице friendships между персонами, переданными в параметрах
-     *
-     * @param src_person_id
-     * @param dst_person_id
-     */
-    //TODO long src_person_id и long dst_person_id не должны быть CamelCase?
-    //TODO Наименование метода не соответствует описанию?
-    //TODO Метод не используется, нужен?
-    @Transactional
-    @Modifying
-    @Query(value = "delete from friendships f " +
-            " where (f.src_person_id = :src_person_id and f.dst_person_id = :dst_person_id) " +
-            "   or  (f.src_person_id = :dst_person_id and f.dst_person_id = :src_person_id)", nativeQuery = true)
-    void delRelationsFromPersons(@Param("src_person_id") long src_person_id,
-                                 @Param("dst_person_id") long dst_person_id);
-
-    /**
      * @param sourcePerson      - персона src
      * @param destinationPerson - персона dst
      * @return - запрос вернет значение статуса в таблице friendships между персонами, переданными в параметрах

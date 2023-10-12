@@ -28,8 +28,8 @@ public class OnlineStatusChecker {
      * т.к. аннотация @Around, то возвращается объект метода
      * @throws Throwable
      */
-    @Around(value = "@annotation(ru.skillbox.socialnet.aspect.OnlineStatusUpdate)")
-    public Object setOnllineStatus(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around(value = "@annotation(ru.skillbox.socialnet.annotation.OnlineStatusUpdate)")
+    public Object setOnlineStatus(ProceedingJoinPoint joinPoint) throws Throwable {
         CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
         Object[] args = joinPoint.getArgs();
         String[] paramNames = codeSignature.getParameterNames();

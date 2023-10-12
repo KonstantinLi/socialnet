@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -109,4 +110,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                   @Param("firstName") String firstName,
                                   @Param("lastName") String lastName,
                                   Pageable nextPage);
+
+    List<Person> findAllByBirthDate(LocalDateTime birthDate);
 }

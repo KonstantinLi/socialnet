@@ -4,10 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.dto.request.*;
+import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.PersonSettingsRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.service.AccountService;
+import ru.skillbox.socialnet.service.PersonSettingsService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -16,6 +21,7 @@ import ru.skillbox.socialnet.service.AccountService;
 public class AccountController {
 
     private final AccountService accountService;
+    private final PersonSettingsService personSettingsService;
 
     @PostMapping("/register")
     public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) {
@@ -54,5 +60,18 @@ public class AccountController {
     public RegisterRs<ComplexRs> setNewEmail(@RequestBody EmailRq emailRq) {
 
         return accountService.setEmail(emailRq);
+    }
+
+    @GetMapping("/notifications")
+    public CommonRs<List<PersonSettingsRs>> getSettings(@RequestHeader("Authorization") String token) {
+        return personSettingsService.getPersonSettings(token);
+    }
+
+    @PutMapping("/notifications")
+    public CommonRs<ComplexRs> editSettings(
+            @RequestHeader("Authorization") String token,
+            @RequestBody PersonSettingsRq personSettingsRq) {
+
+        return personSettingsService.editPersonSettings(token, personSettingsRq);
     }
 }

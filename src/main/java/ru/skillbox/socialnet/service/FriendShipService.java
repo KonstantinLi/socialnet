@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
@@ -55,7 +57,6 @@ public class FriendShipService {
     private CommonRs<ComplexRs> generateCommonRsComplexRs() {
 
         CommonRs<ComplexRs> response = new CommonRs<>();
-        //TODO выяснить откуда брать значение полей для класса ComplexRs и переписать создание класса
         ComplexRs complexRs = new ComplexRs();
         response.setData(complexRs);
 
@@ -149,6 +150,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundException - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
      *                                     у принимающей стороны или REQUEST у передающей стороны
      */
+    @Transactional
     public CommonRs<ComplexRs> addFriendById(Long destinationPersonId, String authorization)
             throws PersonNotFoundException, FriendShipNotFoundException {
 
@@ -166,8 +168,8 @@ public class FriendShipService {
                 LocalDateTime.now(),
                 FriendShipStatus.FRIEND);
         friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
-                currentPerson.getId(),
                 destinationPerson.getId(),
+                currentPerson.getId(),
                 FriendShipStatus.REQUEST);
         saveFriendshipChanges(
                 friendShip,
@@ -188,6 +190,7 @@ public class FriendShipService {
      * @throws FriendShipNotFoundException - может быть сгенерировано исключение, если не найден RECEIVED_REQUEST
      *                                     c одной стороны или REQUEST с другой стороны
      */
+    @Transactional
     public CommonRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
             throws PersonNotFoundException, FriendShipNotFoundException {
 
@@ -200,12 +203,11 @@ public class FriendShipService {
 
         //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
         friendShipRepository.delete(friendShip);
-        //TODO friedShip2 не используется
         FriendShip friendShip2 = friendShipRepository.getFriendShipByIdsAndStatusImpl(
                 destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.REQUEST);
 
         //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
-        friendShipRepository.delete(friendShip);
+        friendShipRepository.delete(friendShip2);
 
         return generateCommonRsComplexRs();
     }
@@ -270,6 +272,18 @@ public class FriendShipService {
     }
 
     /**
+     * @param person - пользователь, чьих друзей мы хотим получить
+     * @return - метод возвращает список всех друзей пользователя
+     */
+    public List<Person> getAllFriends(Person person) {
+        return personRepository.findPersonsByFriendship(
+                        person.getId(),
+                        FriendShipStatus.FRIEND.name(),
+                        Pageable.unpaged())
+                .getContent();
+    }
+
+    /**
      * @param personsPage      - выборка персон из запроса (в репозитории)
      * @param friendShipStatus - статус дружбы (строка)
      * @param isBlocked        - параметр блокирована ли запись
@@ -277,7 +291,6 @@ public class FriendShipService {
      */
     private ArrayList<PersonRs> generatePersonsData(Page<Person> personsPage,
                                                     String friendShipStatus,
-                                                    //TODO isBlocked не используется?
                                                     Boolean isBlocked) {
 
         ArrayList<PersonRs> personsData = new ArrayList<>();
