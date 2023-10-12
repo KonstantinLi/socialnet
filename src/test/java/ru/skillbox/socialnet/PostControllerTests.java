@@ -61,7 +61,7 @@ class PostControllerTests {
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues.of(
-                    "pring.datasource.url=" + postgreSqlContainer.getJdbcUrl(),
+                    "spring.datasource.url=" + postgreSqlContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgreSqlContainer.getUsername(),
                     "spring.datasource.password=" + postgreSqlContainer.getPassword(),
                     "spring.liquibase.enabled=true"
