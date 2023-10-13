@@ -7,7 +7,7 @@ import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
+import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.List;

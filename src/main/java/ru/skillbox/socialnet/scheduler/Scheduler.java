@@ -49,7 +49,7 @@ public class Scheduler {
         logUploader.deleteExpiredLogs(expired);
     }
 
-    @Scheduled(cron = "0 0 10 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     private void sendBirthdayNotification() {
         notificationService.sendBirthdayNotification();
     }

@@ -13,7 +13,7 @@ import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.dto.response.PostRs;
-import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
+import ru.skillbox.socialnet.dto.parameters.GetPostsSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.enums.PostType;
