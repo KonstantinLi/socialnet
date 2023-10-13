@@ -165,6 +165,10 @@ public class AccountService {
 
         Long userId = jwtTokenUtils.getId(emailRq.getSecret());
 
+        personRepository.findByEmail(emailRq.getEmail()).ifPresent(person -> {
+            throw new EmailAlreadyPresentedException("Пользователь с email: '" + emailRq.getEmail() +
+                    "' уже зарегистрирован");
+        });
         Person person = personRepository.findById(userId).orElseThrow(
                 () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
 
