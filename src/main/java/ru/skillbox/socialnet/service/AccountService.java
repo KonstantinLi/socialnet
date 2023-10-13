@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.dto.EmailContentManager;
 import ru.skillbox.socialnet.dto.EmailHandler;
 import ru.skillbox.socialnet.dto.request.*;
@@ -26,6 +27,7 @@ import java.util.Date;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Debug
 public class AccountService {
     private final PersonService personService;
     private final PersonRepository personRepository;

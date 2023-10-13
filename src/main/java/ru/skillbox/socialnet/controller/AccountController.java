@@ -2,6 +2,7 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.dto.request.*;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/account")
 @RequiredArgsConstructor
+@Info
 public class AccountController {
 
     private final AccountService accountService;
