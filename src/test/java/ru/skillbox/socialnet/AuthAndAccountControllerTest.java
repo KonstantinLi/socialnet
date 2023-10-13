@@ -517,6 +517,31 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
+     *  - Тест: уникальность email при попытке измениить email
+     *  необходимо убедиться, что с одним email не могут быть зарегистрированы несколько персон.
+     *  Для персоны1 подставляем email принадлежащий персоне2 пытаемся выполнить запрос.
+     *  ожидаем получить статус 400
+     * @throws Exception
+     */
+    @Test
+    void checkUniqueEmailTest() throws Exception {
+        Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
+        Person person2 = personRepository.findByIdImpl(2L);
+        String token = jwtTokenUtils.generateToken(person);
+        EmailRq emailRq = new EmailRq();
+        emailRq.setEmail(person2.getEmail());
+        emailRq.setSecret(token);
+        this.mockMvc.perform(put("/api/v1/account/email")
+                        .header("authorization", token)
+                        .content(new ObjectMapper().writeValueAsString(emailRq))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error_description").value("Пользователь с email: '" + person2.getEmail() + "' уже зарегистрирован"));
+    }
+
+    /**
      *  - Тест: НЕ успешный тест на изменение email. Пытаемся ввести тот же email
      *   ожидаем статус 400 и соответствующее сообщенине
      * @throws Exception
@@ -535,31 +560,7 @@ public class AuthAndAccountControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error_description").value("Новый email не должен совпадать со старым"));
-    }
-
-    /**
-     *  - Тест: уникальность email при попытке измениить email
-     *  необходимо убедиться, что с одним email не могут быть зарегистрированы несколько персон.
-     *  Для персоны1 подставляем email принадлежащий персоне2 пытаемся выполнить запрос.
-     *  ожидаем получить статус 400
-     * @throws Exception
-     */
-    @Test
-    void setUniqueEmailTest() throws Exception {
-        Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
-        Person person2 = personRepository.findByIdImpl(2L);
-        String token = jwtTokenUtils.generateToken(person);
-        EmailRq emailRq = new EmailRq();
-        emailRq.setEmail(person2.getEmail());
-        emailRq.setSecret(token);
-        this.mockMvc.perform(put("/api/v1/account/email")
-                        .header("authorization", token)
-                        .content(new ObjectMapper().writeValueAsString(emailRq))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(jsonPath("$.error_description").value("Пользователь с email: '" + person.getEmail() + "' уже зарегистрирован"));
     }
 }
 
