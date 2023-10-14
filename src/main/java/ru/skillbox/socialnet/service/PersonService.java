@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
+import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Debug
 public class PersonService {
 
     private final PersonRepository personRepository;
@@ -36,6 +38,11 @@ public class PersonService {
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
+
+    public Person getPersonById(Long personId) {
+        return personRepository.findById(personId).orElseThrow(
+                () -> new PersonNotFoundException("Пользователь id: " + personId + " не найден"));
+    }
 
     //TODO currentUserdId не используется?
     public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {

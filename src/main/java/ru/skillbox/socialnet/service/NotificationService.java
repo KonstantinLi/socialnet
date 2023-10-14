@@ -27,9 +27,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final PersonRepository personRepository;
 
-    private final NotificationListMapper notificationListMapper;
-    private final NotificationMapper notificationMapper;
-
     private final SimpMessagingTemplate messagingTemplate;
     private final JwtTokenUtils jwtTokenUtils;
 
@@ -129,7 +126,7 @@ public class NotificationService {
 
         Notification notification = save(
                 contact,
-                NotificationType.COMMENT_LIKE,
+                NotificationType.POST_LIKE,
                 destinationPerson);
 
         sendNotification(notification);
@@ -137,7 +134,7 @@ public class NotificationService {
 
     private void sendNotification(Notification notification) {
         Long personId = notification.getPerson().getId();
-        NotificationRs notificationRs = notificationMapper.notificationToNotificationRs(notification);
+        NotificationRs notificationRs = NotificationMapper.INSTANCE.notificationToNotificationRs(notification);
 
         messagingTemplate.convertAndSendToUser(
                 personId.toString(),
@@ -151,7 +148,7 @@ public class NotificationService {
             Integer offset) {
 
         Long personId = jwtTokenUtils.getId(token);
-        List<Notification> notifications = notificationRepository.findAllByPersonId(personId);
+        List<Notification> notifications = notificationRepository.findAllByPerson_Id(personId);
 
         return getListNotificationResponse(notifications, itemPerPage, offset);
     }
@@ -160,7 +157,7 @@ public class NotificationService {
         List<Notification> notifications = new ArrayList<>();
         if (all) {
             Long personId = jwtTokenUtils.getId(token);
-            notifications.addAll(notificationRepository.findAllByPersonId(personId));
+            notifications.addAll(notificationRepository.findAllByPerson_Id(personId));
         } else {
             notificationRepository.findById(id).ifPresent(notifications::add);
         }
@@ -182,7 +179,7 @@ public class NotificationService {
             Integer itemPerPage,
             Integer offset) {
 
-        List<NotificationRs> notificationRsList = notificationListMapper.toNotificationRsList(notifications);
+        List<NotificationRs> notificationRsList = NotificationListMapper.INSTANCE.toNotificationRsList(notifications);
         CommonRs<List<NotificationRs>> commonRs = new CommonRs<>();
 
         commonRs.setTotal((long) notificationRsList.size());

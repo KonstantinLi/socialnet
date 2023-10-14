@@ -23,7 +23,7 @@ public class PersonSettings {
     private boolean friendBirthday;
 
     @Column(name = "friend_request")
-    private boolean friend_request;
+    private boolean friendRequest;
 
     @Column(name = "post_like")
     private boolean postLike;

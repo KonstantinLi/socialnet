@@ -2,7 +2,7 @@ package ru.skillbox.socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.aspect.OnlineStatusUpdate;
+import ru.skillbox.socialnet.annotation.OnlineStatusUpdate;
 import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.response.CommentRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
