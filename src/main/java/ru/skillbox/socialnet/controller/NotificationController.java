@@ -1,13 +1,16 @@
 package ru.skillbox.socialnet.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.NotificationRs;
 import ru.skillbox.socialnet.service.NotificationService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -19,7 +22,7 @@ public class NotificationController {
     public CommonRs<List<NotificationRs>> getAllNotifications(
             @RequestParam(defaultValue = "10") Integer itemPerPage,
             @RequestParam(defaultValue = "0") Integer offset,
-            @Header("Authorization") String token) {
+            @RequestHeader(name = "authorization") String token) {
 
         return notificationService.getAllNotifications(token, itemPerPage, offset);
     }
@@ -28,7 +31,7 @@ public class NotificationController {
     public CommonRs<List<NotificationRs>> readNotification(
             @RequestParam Long id,
             @RequestParam(defaultValue = "true") Boolean all,
-            @Header("Authorization") String token) {
+            @RequestHeader(name = "authorization") String token) {
 
         return notificationService.readNotifications(token, id, all);
     }

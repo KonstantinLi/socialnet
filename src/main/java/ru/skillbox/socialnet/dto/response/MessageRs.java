@@ -15,7 +15,7 @@ public class MessageRs {
   private Boolean isSentByMe;
   private PersonRs recipient;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
   private LocalDateTime time;
 
   @JsonProperty("author_id")
