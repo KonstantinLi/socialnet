@@ -71,3 +71,8 @@ email:
   smtp-ssl-trust: true
   recovery-base-url: http://localhost:8080/
   recovery-email-blueprint: emailBlueprint.html
+
+# swagger-ui custom path
+springdoc:
+  swagger-ui:
+    path: /swagger-ui

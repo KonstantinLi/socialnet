@@ -27,6 +27,7 @@
     <jsonwebtoken.version>0.9.1</jsonwebtoken.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <cage.version>1.0</cage.version>
+    <springdoc-webmvc.version>2.2.0</springdoc-webmvc.version>
     <testcontainers.version>1.17.6</testcontainers.version>
   </properties>
 
@@ -188,6 +189,14 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-aop</artifactId>
     </dependency>
+
+    <!-- Swagger -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc-webmvc.version}</version>
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
