@@ -3,7 +3,7 @@ server:
 
 client:
   local: http://localhost:8080
-  remote: 217.107.219.242:8080
+  remote: http://217.107.219.242:8080
 
 spring:
   profiles:
