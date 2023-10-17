@@ -29,53 +29,17 @@ import java.util.List;
 public class FriendsController {
 
     private final FriendShipService friendShipService;
-    private static final String COMMONRS_COMPLEXRS_EXAMPLE = "{\n" +
-            "  \"data\": {\n" +
-            "    \"count\": 0,\n" +
-            "    \"id\": 0,\n" +
-            "    \"message\": \"string\",\n" +
-            "    \"message_id\": 0\n" +
-            "  },\n" +
-            "  \"itemPerPage\": 20,\n" +
-            "  \"offset\": 0,\n" +
-            "  \"perPage\": 20,\n" +
-            "  \"timestamp\": 1670773804,\n" +
-            "  \"total\": 500\n" +
-            "}";
-    private static final String PERSONNOTFOUND_ERR_EXAMPLE = "{\n" +
-            "  \"error\": \"PersonNotFoundException\",\n" +
-            "  \"timestamp\": 12432857239,\n" +
-            "  \"error_description\": \"Запись о профиле не найдена\"\n" +
-            "}";
-
-    private static final String FRIENDSHIPNOTFOUND_ERR_EXAMPLE = "{\n" +
-            "  \"error\": \"FriendShipNotFoundException\",\n" +
-            "  \"timestamp\": 12432857239,\n" +
-            "  \"error_description\": \"Запись о дружбе не найдена\"\n" +
-            "}";
-
-    private static final String COMMONRS_LIST_PERSONRS_EXAMPLE = "{\n" +
-            "  \"data\": \"Collection of objects or just object any type\",\n" +
-            "  \"itemPerPage\": 20,\n" +
-            "  \"offset\": 0,\n" +
-            "  \"perPage\": 20,\n" +
-            "  \"timestamp\": 1670773804,\n" +
-            "  \"total\": 500\n" +
-            "}";
-
-    private class CommonRsComplexRs extends CommonRs<ComplexRs> {};
 
     @Operation(summary = "send friendship request by id of another user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = {@ExampleObject(value = COMMONRS_COMPLEXRS_EXAMPLE)},
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsComplexRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsComplexRs")
+                            )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                             content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content)})
@@ -93,13 +57,17 @@ public class FriendsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_COMPLEXRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsComplexRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsComplexRs")
+                                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = {@ExampleObject(value = FRIENDSHIPNOTFOUND_ERR_EXAMPLE)},
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"error\": \"FriendShipNotFoundException\",\n" +
+                                    "  \"timestamp\": 12432857239,\n" +
+                                    "  \"error_description\": \"Запись о дружбе не найдена\"\n" +
+                                    "}"),
                             schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content)})
@@ -117,13 +85,12 @@ public class FriendsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_COMPLEXRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsComplexRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsComplexRs")
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content)})
@@ -141,13 +108,12 @@ public class FriendsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_COMPLEXRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsComplexRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsComplexRs")
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = {@ExampleObject(value = FRIENDSHIPNOTFOUND_ERR_EXAMPLE)},
                             schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content)})
@@ -161,9 +127,7 @@ public class FriendsController {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
-    @Operation(
-            summary = "block or unblock (if user in block) user by user id"
-    )
+    @Operation( summary = "block or unblock (if user in block) user by user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "/",
@@ -171,7 +135,6 @@ public class FriendsController {
                             ))}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response",
                                     implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
@@ -186,18 +149,16 @@ public class FriendsController {
         friendShipService.blockOrUnblockUserByUser(id, authorization);
     }
 
-    private class CommonRsListPersonRs extends CommonRs<List<PersonRs>>{};
     @Operation(summary = "get friends of current user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_LIST_PERSONRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsListPersonRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsListPersonRs")
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response",
                                     implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
@@ -219,13 +180,12 @@ public class FriendsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_LIST_PERSONRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsListPersonRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsListPersonRs")
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response",
                                     implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
@@ -245,13 +205,12 @@ public class FriendsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_LIST_PERSONRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsListPersonRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsListPersonRs")
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response",
                                     implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
@@ -268,13 +227,12 @@ public class FriendsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = COMMONRS_LIST_PERSONRS_EXAMPLE),
-                            schema = @Schema(description = "default response from server",
-                                    implementation = CommonRsListPersonRs.class
-                            ))}),
+                            schema = @Schema(
+                                    description = "default response from server",
+                                    ref = "#/components/schemas/CommonRsListPersonRs")
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = PERSONNOTFOUND_ERR_EXAMPLE),
                             schema = @Schema(description = "common error response",
                                     implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
