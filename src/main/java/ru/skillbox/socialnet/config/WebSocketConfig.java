@@ -1,5 +1,6 @@
 package ru.skillbox.socialnet.config;
 
+import com.sun.security.auth.UserPrincipal;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/v1/ws").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/api/v1/ws").setAllowedOriginPatterns("*").withSockJS();
     }
 
     @Override
@@ -42,7 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (accessor != null && accessor.getCommand() == StompCommand.CONNECT) {
                     String token = accessor.getFirstNativeHeader("token");
-                    accessor.setUser(jwtTokenUtils.getPrincipal(token));
+                    accessor.setUser(new UserPrincipal(jwtTokenUtils.getEmail(token)));
                 }
                 return message;
             }

@@ -48,10 +48,6 @@ public class JwtTokenUtils {
         );
     }
 
-    public Principal getPrincipal(String token) {
-        return (Principal) getAuthentication(token).getPrincipal();
-    }
-
     public boolean validateAccessToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);

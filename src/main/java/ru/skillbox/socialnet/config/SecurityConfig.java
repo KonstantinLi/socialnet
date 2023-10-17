@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/account/password/recovery").permitAll()
                                 .requestMatchers("/api/v1/account/password/reset").permitAll()
                                 .requestMatchers("/api/v1/account/email").permitAll()
+                                .requestMatchers("/api/v1/ws/**").permitAll()
                                 .requestMatchers("/api/v1/**").authenticated()
                                 .anyRequest().permitAll())
                 .sessionManagement(manager ->
