@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.dto.service;
+package ru.skillbox.socialnet.dto.parameters;
 
 import lombok.Builder;
 import lombok.Data;
