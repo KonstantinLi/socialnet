@@ -28,6 +28,8 @@
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <cage.version>1.0</cage.version>
     <testcontainers.version>1.17.6</testcontainers.version>
+    <actuator.version>3.1.2</actuator.version>
+    <prometheus.version>1.11.2</prometheus.version>
   </properties>
 
   <profiles>
@@ -76,6 +78,10 @@
           <artifactId>spring-boot-starter-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -199,10 +205,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <groupId>com.github.cage</groupId>
+      <artifactId>cage</artifactId>
+      <version>${cage.version}</version>
     </dependency>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
+      </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -216,10 +227,16 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Metrics -->
     <dependency>
-      <groupId>com.github.cage</groupId>
-      <artifactId>cage</artifactId>
-      <version>${cage.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+      <version>${actuator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>${prometheus.version}</version>
     </dependency>
   </dependencies>
 
@@ -228,6 +245,21 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build-info</goal>
+            </goals>
+            <configuration>
+              <additionalProperties>
+                <encoding.source>UTF-8</encoding.source>
+                <encoding.reporting>UTF-8</encoding.reporting>
+                <java.source>${maven.compiler.source}</java.source>
+                <java.target>${maven.compiler.target}</java.target>
+              </additionalProperties>
+            </configuration>
+          </execution>
+        </executions>
         <configuration>
           <excludes>
             <exclude>

@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import ru.skillbox.socialnet.dto.LogUploader;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
+import ru.skillbox.socialnet.service.NotificationService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @Async
 @RequiredArgsConstructor
 public class Scheduler {
+    private final NotificationService notificationService;
     private final CaptchaRepository captchaRepository;
     private final LogUploader logUploader;
 
@@ -45,5 +47,10 @@ public class Scheduler {
     @Scheduled(fixedDelayString = "PT24H")
     private void deleteOldLogs() {
         logUploader.deleteExpiredLogs(expired);
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    private void sendBirthdayNotification() {
+        notificationService.sendBirthdayNotification();
     }
 }

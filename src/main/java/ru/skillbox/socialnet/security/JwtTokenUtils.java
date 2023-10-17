@@ -1,15 +1,23 @@
 package ru.skillbox.socialnet.security;
 
-import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import ru.skillbox.socialnet.config.JwtProperties;
-import ru.skillbox.socialnet.entity.personrelated.Person;
-
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+import ru.skillbox.socialnet.config.JwtProperties;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +40,18 @@ public class JwtTokenUtils {
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret())
                 .compact();
     }
+
+    public Authentication getAuthentication(String token) {
+        return new UsernamePasswordAuthenticationToken(
+                        getSubject(token),
+                        null,
+                        getRoles(token)
+                                .stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .toList()
+        );
+    }
+
 
     public boolean validateAccessToken(String token) {
         try {

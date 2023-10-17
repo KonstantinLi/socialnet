@@ -1,6 +1,7 @@
 package ru.skillbox.socialnet.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/account/password/recovery").permitAll()
                                 .requestMatchers("/api/v1/account/password/reset").permitAll()
                                 .requestMatchers("/api/v1/account/email").permitAll()
+                                .requestMatchers("/api/v1/ws/**").permitAll()
                                 .requestMatchers("/api/v1/statistics/**").permitAll()
                                 .requestMatchers("/api/v1/**").authenticated()
                                 .anyRequest().permitAll())
@@ -66,7 +68,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(clientProperties.getLocal(), clientProperties.getRemote()));
+        configuration.setAllowedOriginPatterns(List.of(clientProperties.getLocal(), clientProperties.getRemote()));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.dto.EmailContentManager;
 import ru.skillbox.socialnet.dto.EmailHandler;
 import ru.skillbox.socialnet.dto.request.*;
@@ -26,7 +27,9 @@ import java.util.Date;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Debug
 public class AccountService {
+    private final PersonService personService;
     private final PersonRepository personRepository;
     private final PersonSettingsRepository personSettingsRepository;
     private final CaptchaRepository captchaRepository;
@@ -71,8 +74,7 @@ public class AccountService {
                 .getAuthentication()
                 .getName().split(",", 2)[0];
 
-        Person person = personRepository.findById(Long.parseLong(userId)).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
+        Person person = personService.getPersonById(Long.parseLong(userId));
 
         if (person.getPassword().equals(getEncodedPassword(passwordSetRq.getPassword()))) {
             throw new PasswordIsNotChangedException("Новый пароль не должен совпадать со старым");
@@ -118,8 +120,7 @@ public class AccountService {
             throw new TokenParseException("Ошибка при сбросе пароля: неверный токен!");
         }
 
-        Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь не найден"));
+        Person person = personService.getPersonById(userId);
 
         String currentPassword = person.getPassword();
         String newPassword = getEncodedPassword(passwordSetRq.getPassword());
@@ -148,8 +149,7 @@ public class AccountService {
             throw new TokenParseException("Ошибка при сбросе почты: неверный токен!");
         }
 
-        Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь не найден"));
+        Person person = personService.getPersonById(userId);
 
         if (!person.getEmail().equals(email)) {
             throw new BadRequestException("Ошибка идетификации пользователя: email не совпадает!");
@@ -165,8 +165,12 @@ public class AccountService {
 
         Long userId = jwtTokenUtils.getId(emailRq.getSecret());
 
-        Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
+        personRepository.findByEmail(emailRq.getEmail()).ifPresent(person -> {
+            throw new EmailAlreadyPresentedException("Пользователь с email: '" + emailRq.getEmail() +
+                    "' уже зарегистрирован");
+        });
+
+        Person person = personService.getPersonById(userId);
 
         if (person.getEmail().equals(emailRq.getEmail())) {
             throw new EmailIsNotChangedException("Новый email не должен совпадать со старым");
@@ -196,6 +200,8 @@ public class AccountService {
         PersonSettings personSettings = new PersonSettings();
         personSettingsRepository.save(personSettings);
         person.setPersonSettings(personSettings);
+        person.setMessagePermissions(MessagePermission.ALL);
+        person.setOnlineStatus(true);
         person.setPhoto(defaultPhotoUrl);
 
         return person;
