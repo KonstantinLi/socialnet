@@ -27,6 +27,7 @@
     <jsonwebtoken.version>0.9.1</jsonwebtoken.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
     <cage.version>1.0</cage.version>
+    <testcontainers.version>1.17.6</testcontainers.version>
   </properties>
 
   <profiles>
@@ -187,6 +188,18 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
 

@@ -1,14 +1,22 @@
 package ru.skillbox.socialnet;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.repository.*;
 
@@ -16,12 +24,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
+@RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@Testcontainers
+@ContextConfiguration(initializers = {StatisticsControllerTest.Initializer.class})
+//@Sql(value = {"/StatisticsController-before-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//@Sql(value = {"/StatisticsController-after-test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @DisplayName("Statistics API Test")
-class StatisticsTest {
+class StatisticsControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -42,6 +54,25 @@ class StatisticsTest {
     private CountriesRepository countriesRepository;
     @Autowired
     private CitiesRepository citiesRepository;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSqlContainer = new PostgreSQLContainer<>("postgres:15.1")
+            .withDatabaseName("socialnet_test")
+            .withUsername("root")
+            .withPassword("root");
+
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSqlContainer.getJdbcUrl(),
+                    "spring.datasource.username=" + postgreSqlContainer.getUsername(),
+                    "spring.datasource.password=" + postgreSqlContainer.getPassword(),
+                    "spring.liquibase.enabled=true"
+            ).applyTo(configurableApplicationContext.getEnvironment());
+
+            log.info(configurableApplicationContext.getEnvironment().getProperty("spring.datasource.url"));
+        }
+    }
 
     @Test
     @DisplayName("Users Statistics")
