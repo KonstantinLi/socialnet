@@ -9,9 +9,6 @@ public class LoggingPointcuts {
             "within(@org.springframework.stereotype.Service *)")
     public void springBeanPointcut() {}
 
-    @Pointcut("(within(ru.skillbox.socialnet.security..*) && !within(ru.skillbox.socialnet.security.JwtRequestFilter)) || " +
-            "within(ru.skillbox.socialnet.repository..*) || " +
-            "within(ru.skillbox.socialnet.controller..*) || " +
-            "within(ru.skillbox.socialnet.service..*)")
+    @Pointcut("within(ru.skillbox.socialnet..*) && !within(ru.skillbox.socialnet.security.JwtRequestFilter)")
     public void applicationPackagePointcut() {}
 }
