@@ -88,3 +88,8 @@ management:
     distribution:
       percentiles-histogram:
         "[http.server.requests]": true
+
+# swagger-ui custom path
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
