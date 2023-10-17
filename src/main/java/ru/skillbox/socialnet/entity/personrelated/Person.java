@@ -147,7 +147,7 @@ public class Person {
     @Column(name = "message_permissions")
     private MessagePermission messagePermissions;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "person_settings_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_person_settings"))
     private PersonSettings personSettings;
 

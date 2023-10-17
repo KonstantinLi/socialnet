@@ -38,7 +38,7 @@ public class Dialog {
           nullable = false,
           referencedColumnName = "id",
           foreignKey = @ForeignKey(name = "fk_dialog_second_person"))
-  private Person secondPersonId;
+  private Person secondPerson;
 
   /** Дата и время последнего общения */
   @Column(name = "last_active_time")

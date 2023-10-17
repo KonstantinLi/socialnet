@@ -7,7 +7,7 @@ client:
 
 spring:
   profiles:
-    active: "@spring.profiles.active@"
+    active: '@spring.profiles.active@'
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -47,7 +47,7 @@ logger:
   path: logs
   expired: PT168H
   console:
-    thresholdFilter: "@logger.console.thresholdFilter@"
+    thresholdFilter: '@logger.console.thresholdFilter@'
 
 aws:
   image-bucket-name: socialnet-bucket
@@ -71,3 +71,25 @@ email:
   smtp-ssl-trust: true
   recovery-base-url: http://localhost:8080/
   recovery-email-blueprint: emailBlueprint.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
+# swagger-ui custom path
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
