@@ -3,11 +3,11 @@ server:
 
 client:
   local: http://localhost:8080
-  remote: 217.107.219.242:8080
+  remote: http://217.107.219.242:8080
 
 spring:
   profiles:
-    active: @spring.profiles.active@
+    active: "@spring.profiles.active@"
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -47,7 +47,7 @@ logger:
   path: logs
   expired: PT168H
   console:
-    thresholdFilter: @logger.console.thresholdFilter@
+    thresholdFilter: "@logger.console.thresholdFilter@"
 
 aws:
   image-bucket-name: socialnet-bucket
