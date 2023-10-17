@@ -8,8 +8,8 @@ import ru.skillbox.socialnet.dto.response.ErrorRs;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({BadRequestException.class})
-    public ResponseEntity<ErrorRs> handleCommonExceptions(BadRequestException exception) {
+    @ExceptionHandler({CommonException.class})
+    public ResponseEntity<ErrorRs> handleCommonExceptions(CommonException exception) {
 
         return ResponseEntity.badRequest().body(new ErrorRs(exception));
     }
