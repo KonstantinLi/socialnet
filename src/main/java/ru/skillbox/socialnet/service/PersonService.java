@@ -24,7 +24,6 @@ import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,26 +47,17 @@ public class PersonService {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);
-        if (personOptional.isEmpty()) {
-            throw new PersonNotFoundException("Пользователь id: " + otherUserId + " не найден");
-        }
         Person person = personOptional.get();
 
-        Optional<FriendShipStatus> friendShipStatus = Optional.empty();
-        if (!Objects.equals(currentUserId, otherUserId)) {
-            friendShipStatus =
+        Optional<FriendShipStatus> friendShipStatus =
                     friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
-        }
-
-
-        boolean isBlockedByCurrentUser = friendShipStatus.map(
-                shipStatus -> shipStatus.equals(FriendShipStatus.BLOCKED)).orElse(false);
-
         if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
             person.setPhoto(defaultPhotoUrl);
         }
 
         PersonRs personRs = personMapper.personToPersonRs(person);
+        personRs.setFriendStatus((friendShipStatus.isEmpty()
+                ? FriendShipStatus.UNKNOWN.toString() : friendShipStatus.get().toString()));
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
 
