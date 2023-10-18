@@ -69,6 +69,9 @@ public class LoggingAspect {
     private String argsText(Object[] args) {
         StringJoiner joiner = new StringJoiner(", ");
         for (Object arg : args) {
+            if (arg == null) {
+                return "";
+            }
             joiner.add(arg.toString());
         }
         return joiner.toString();

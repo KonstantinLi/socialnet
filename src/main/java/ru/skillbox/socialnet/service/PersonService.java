@@ -44,12 +44,13 @@ public class PersonService {
                 () -> new PersonNotFoundException("Пользователь id: " + personId + " не найден"));
     }
 
-    //TODO currentUserdId не используется?
-    public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
+    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) throws BadRequestException {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);
-        //noinspection OptionalGetWithoutIsPresent
+        if (personOptional.isEmpty()) {
+            throw new PersonNotFoundException("Пользователь id: " + otherUserId + " не найден");
+        }
         Person person = personOptional.get();
 
         Optional<FriendShipStatus> friendShipStatus = Optional.empty();
@@ -62,7 +63,6 @@ public class PersonService {
         boolean isBlockedByCurrentUser = friendShipStatus.map(
                 shipStatus -> shipStatus.equals(FriendShipStatus.BLOCKED)).orElse(false);
 
-        //TODO убрать при обновлении базы
         if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
             person.setPhoto(defaultPhotoUrl);
         }
