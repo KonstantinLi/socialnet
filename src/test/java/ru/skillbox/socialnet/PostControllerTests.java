@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.controller.PostsController;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.entity.personrelated.Person;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
 //@TestPropertySource("/application-test.yml")
 @Sql(value = {"/post-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/post-after-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
