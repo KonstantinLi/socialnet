@@ -12,6 +12,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,10 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SuppressWarnings("ALL")
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
+@ContextConfiguration(initializers = {PostControllerTests.Initializer.class})
 @Testcontainers
+@AutoConfigureMockMvc
 //@TestPropertySource("/application-test.yml")
 @Sql(value = {"/post-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/post-after-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
