@@ -30,6 +30,7 @@
     <testcontainers.version>1.17.6</testcontainers.version>
     <actuator.version>3.1.2</actuator.version>
     <prometheus.version>1.11.2</prometheus.version>
+    <springdoc-webmvc.version>2.2.0</springdoc-webmvc.version>
   </properties>
 
   <profiles>
