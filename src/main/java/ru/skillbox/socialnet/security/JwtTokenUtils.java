@@ -52,7 +52,6 @@ public class JwtTokenUtils {
         );
     }
 
-
     public boolean validateAccessToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtProperties.getSecret()).parseClaimsJws(token);
