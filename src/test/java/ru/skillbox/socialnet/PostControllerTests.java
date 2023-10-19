@@ -12,12 +12,14 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.controller.PostsController;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.entity.personrelated.Person;
@@ -33,8 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SuppressWarnings("ALL")
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
+@ContextConfiguration(initializers = {PostControllerTests.Initializer.class})
+@Testcontainers
 @AutoConfigureMockMvc
 //@TestPropertySource("/application-test.yml")
 @Sql(value = {"/post-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
