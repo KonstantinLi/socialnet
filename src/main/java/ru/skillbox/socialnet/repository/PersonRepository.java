@@ -95,6 +95,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             select *
             from persons
             where id != :currentPersonId
+            and (is_blocked is null or not is_blocked)
+            and (is_deleted is null or not is_deleted)
             and case when :ageFrom = 0 then true else date_part('year', age(current_date, birth_date)) >= :ageFrom end
             and case when :ageTo = 0 then true else date_part('year', age(current_date, birth_date)) <= :ageTo end
             and case when cast(:city as varchar) is null then true else city ilike :city end
