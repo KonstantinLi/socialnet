@@ -24,7 +24,6 @@ import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -44,30 +43,21 @@ public class PersonService {
                 () -> new PersonNotFoundException("Пользователь id: " + personId + " не найден"));
     }
 
-    //TODO currentUserdId не используется?
-    public CommonRs<PersonRs> getUserById(Long otherUserId, Long currentUserId) throws BadRequestException {
+    public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) throws BadRequestException {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
         checkAvailability(personOptional);
-        //noinspection OptionalGetWithoutIsPresent
         Person person = personOptional.get();
 
-        Optional<FriendShipStatus> friendShipStatus = Optional.empty();
-        if (!Objects.equals(currentUserId, otherUserId)) {
-            friendShipStatus =
+        Optional<FriendShipStatus> friendShipStatus =
                     friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
-        }
-
-
-        boolean isBlockedByCurrentUser = friendShipStatus.map(
-                shipStatus -> shipStatus.equals(FriendShipStatus.BLOCKED)).orElse(false);
-
-        //TODO убрать при обновлении базы
         if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
             person.setPhoto(defaultPhotoUrl);
         }
 
         PersonRs personRs = personMapper.personToPersonRs(person);
+        personRs.setFriendStatus((friendShipStatus.isEmpty()
+                ? FriendShipStatus.UNKNOWN.toString() : friendShipStatus.get().toString()));
         CommonRs<PersonRs> result = new CommonRs<>();
         result.setData(personRs);
 
