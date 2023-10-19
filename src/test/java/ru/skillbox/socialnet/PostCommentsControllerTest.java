@@ -2,31 +2,35 @@ package ru.skillbox.socialnet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.dto.request.LikeRq;
 import ru.skillbox.socialnet.dto.response.CommentRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.entity.postrelated.PostComment;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.PersonRepository;
+import ru.skillbox.socialnet.repository.PersonSettingsRepository;
+import ru.skillbox.socialnet.repository.PostCommentsRepository;
+import ru.skillbox.socialnet.repository.PostsRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
 import ru.skillbox.socialnet.service.PostCommentsService;
 
@@ -35,18 +39,26 @@ import java.util.HashSet;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings({"OptionalGetWithoutIsPresent", "unused"})
+@SuppressWarnings("ALL")
 @Slf4j
-@RunWith(SpringRunner.class)
+@ContextConfiguration(initializers = {PostCommentsControllerTest.Initializer.class})
+@Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(value = {"/likes-test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//@Sql(value = {"/tests-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class PostCommentsControllerTest {
+    @Autowired
+    private PostsRepository postsRepository;
+    @Autowired
+    private PersonSettingsRepository personSettingsRepository;
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private PersonRepository personRepository;
 
@@ -62,50 +74,64 @@ public class PostCommentsControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @SuppressWarnings("resource")
+    @Autowired
+    private PostCommentsRepository postCommentsRepository;
     @Container
-    private static PostgreSQLContainer<?> postgreSQLContainer =
-            new PostgreSQLContainer<>("postgres:15.1")
-                    .withDatabaseName("socialnet-likes-test")
-                    .withUsername("test")
-                    .withPassword("test");
+    private static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15.1")
+            .withDatabaseName("socialnet-post-comments-test")
+            .withUsername("root")
+            .withPassword("root");
 
-    @SuppressWarnings("unused")
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues.of(
-                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+            TestPropertyValues.of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgreSQLContainer.getUsername(),
                     "spring.datasource.password=" + postgreSQLContainer.getPassword(),
-                    "spring.liquibase.enabled=true"
+                    "spring.liquibase.enabled=true",
+                    "spring.liquibase.change-log=classpath:db/changelog/v1/001_init_schema.yaml"
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }
 
     @Test
-    public void contextLoads() {
+    public void contextLoads() throws JsonProcessingException {
+        List<Person> all = personRepository.findAll();
+        for (Person person : all) {
+            log.info("person: {}", person.getEmail());
+        }
+
+        personSettingsRepository.findAll().forEach(personSettings ->
+                log.info("personSettings: {}", personSettings.getId()));
     }
 
     @Test
     public void getComments() throws Exception {
+        postsRepository.findAll().forEach(post ->
+                log.info("post: {}", post.getId()));
+
         Person person = personRepository.findById(1L).get();
         String token = jwtTokenUtils.generateToken(person);
 
-        long postId = 10L;
+        long postId = 12L;
 
-        CommonRs<List<CommentRs>> expectedResult = createExpectedGetCommentsResponse(postId);
+        long parentCommentId = 104L;
+        long parentCommentAuthorId = 3L;
+        String parentCommentText = "Parent comment text";
 
-        MvcResult mocRequestResult = this.mockMvc.perform(get("/api/v1/post/" + postId + "/comments")
-                        .header("authorization", token))
-                .andExpect(status().isOk()).andReturn();
-        String actualResultAsString = mocRequestResult.getResponse().getContentAsString();
+        long subCommentId = 106L;
+        long subCommentAuthorId = 2L;
+        String subCommentText = "Sub comment text";
 
-        //noinspection unchecked
-        CommonRs<List<CommentRs>> actualResult = objectMapper.readValue(actualResultAsString, CommonRs.class);
-
-        //TODO assert сделан неправильно, нужно переделать
-        assert expectedResult.getTotal().equals(actualResult.getTotal());
-        assert expectedResult.getData().equals(actualResult.getData());
+        mockMvc.perform(get("/api/v1/post/{id}/comments", postId)
+                        .header("Authorization", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").value(parentCommentId))
+                .andExpect(jsonPath("$.data[0].author.id").value(parentCommentAuthorId))
+                .andExpect(jsonPath("$.data[0].comment_text").value(parentCommentText))
+                .andExpect(jsonPath("$.data[0].sub_comments[0].id").value(subCommentId))
+                .andExpect(jsonPath("$.data[0].sub_comments[0].author.id").value(subCommentAuthorId))
+                .andExpect(jsonPath("$.data[0].sub_comments[0].comment_text").value(subCommentText))
+                .andExpect(jsonPath("$.data[1].id").value(subCommentId));
     }
 
     private CommonRs<List<CommentRs>> createExpectedGetCommentsResponse(long postId) {
@@ -152,8 +178,7 @@ public class PostCommentsControllerTest {
 
 
     //TODO move to distinct utils class
-    private JSONArray convertToJSONArray(List<Long> values)
-            throws ParseException, JsonProcessingException {
+    private JSONArray convertToJSONArray(List<Long> values) throws JsonProcessingException, ParseException {
 
         JSONParser jsonParser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
         ObjectMapper objectMapper = new ObjectMapper();
