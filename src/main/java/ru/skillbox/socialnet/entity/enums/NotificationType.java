@@ -1,8 +1,10 @@
 package ru.skillbox.socialnet.entity.enums;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Schema(description = "Types of notifications")
 @AllArgsConstructor
 @Getter
 public enum NotificationType {
