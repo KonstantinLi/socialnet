@@ -34,6 +34,7 @@ public class MessageService {
   private final MessageRepository messageRepository;
   private final PersonRepository personRepository; 
   private final DialogRepository dialogRepository;
+  private final MessageMapper messageMapper;
 
 
   public CommonRs<List<MessageRs>> getMessagesByDialog(String authorization, Long dialogId, int offset, int perPage) {
@@ -41,7 +42,7 @@ public class MessageService {
     PageRequest pageable = PageRequest.of(offset, perPage);
     Page<Message> messages = messageRepository.getMessagesByDialogId(dialogId, pageable);
     List<MessageRs> data = messages.map(m -> {
-                                    MessageRs messageRs = MessageMapper.INSTANCE.messageToMessageRs(m);
+                                    MessageRs messageRs = messageMapper.messageToMessageRs(m);
                                     messageRs.setIsSentByMe(messageRs.getAuthorId().equals(userId));
                                     return messageRs;
                                       }).toList();
@@ -93,7 +94,7 @@ public class MessageService {
     var savedMessage = messageRepository.save(message);
     this.updateDialogLastMessage(dialogId, savedMessage);
 
-    return MessageMapper.INSTANCE.messageToMessageWs(savedMessage, messageWs.getToken());
+    return messageMapper.messageToMessageWs(savedMessage, messageWs.getToken());
   }
 
   public Long editMessage(MessageCommonWs messageCommonWs) {
