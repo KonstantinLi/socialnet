@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 
+import java.util.Collection;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -112,4 +114,24 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                   Pageable nextPage);
 
     List<Person> findAllByBirthDate(LocalDateTime birthDate);
+
+    long countByIsDeleted(boolean isDeleted);
+    long countByCountryAndIsDeleted(String country, boolean isDeleted);
+    long countByCityAndIsDeleted(String city, boolean isDeleted);
+
+    @Query(value = "SELECT country AS region, COUNT(country) AS countUsers"
+            + " FROM persons"
+            + " GROUP BY country"
+            + " ORDER BY country ASC"
+            , nativeQuery = true
+    )
+    Collection<RegionStatisticsRs> countCountryStatistics();
+
+    @Query(value = "SELECT city AS region, COUNT(city) AS countUsers"
+            + " FROM persons"
+            + " GROUP BY city"
+            + " ORDER BY city ASC"
+            , nativeQuery = true
+    )
+    Collection<RegionStatisticsRs> countCityStatistics();
 }

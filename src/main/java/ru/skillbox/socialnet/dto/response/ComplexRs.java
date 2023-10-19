@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ComplexRs {
-
     private Long count;
     @Schema(description = "object id", example = "1")
     private Long id;
