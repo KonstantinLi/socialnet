@@ -59,14 +59,14 @@ public class LikesService {
         }
 
         switch (likeRq.getType()) {
-            case POST -> {
+            case Post -> {
                 Optional<Post> optionalPost = postsRepository.findById(likeRq.getItemId());
 
                 if (optionalPost.isEmpty()) {
                     throw new PostNotFoundException(likeRq.getItemId());
                 }
             }
-            case COMMENT -> {
+            case Comment -> {
                 Optional<PostComment> optionalPostComment = postCommentsRepository.findById(likeRq.getItemId());
 
                 if (optionalPostComment.isEmpty()) {

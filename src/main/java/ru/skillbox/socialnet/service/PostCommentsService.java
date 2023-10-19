@@ -34,6 +34,7 @@ public class PostCommentsService {
     private final LikesRepository likesRepository;
     private final FriendShipRepository friendShipRepository;
     private final WeatherRepository weatherRepository;
+    private final PersonRepository personRepository;
 
     private final JwtTokenUtils jwtTokenUtils;
     private final CommentMapper commentMapper;
@@ -52,7 +53,7 @@ public class PostCommentsService {
         PostComment postComment = new PostComment();
 
         postComment.setPost(post);
-        postComment.setAuthor(post.getAuthor());
+        postComment.setAuthor(personRepository.findById(myId).orElseThrow());
         postComment.setTime(LocalDateTime.now());
         postComment.setIsBlocked(false);
         postComment.setIsDeleted(false);
@@ -193,8 +194,8 @@ public class PostCommentsService {
     private CommentRs postCommentToCommentRs(PostComment postComment, Long myId) {
         CommentRs commentRs = commentMapper.postCommentToCommentRs(postComment);
 
-        commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.COMMENT, commentRs.getId()));
-        commentRs.setMyLike(likesRepository.existsByPersonId(myId));
+        commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
+        commentRs.setMyLike(likesRepository.existsByTypeAndEntityIdAndPersonId(LikeType.Comment, commentRs.getId(), myId));
 
         fillAuthor(commentRs.getAuthor(), myId);
 

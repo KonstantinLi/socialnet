@@ -181,13 +181,13 @@ class StatisticsControllerTest {
                 )));
 
         this.mockMvc.perform(get("/api/v1/statistics/like/entity")
-                        .queryParam("type", "POST")
+                        .queryParam("type", "Post")
                         .queryParam("entityId", "1")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(String.valueOf(
-                        likesRepository.countByTypeAndEntityId(LikeType.POST, 1)
+                        likesRepository.countByTypeAndEntityId(LikeType.Post, 1)
                 )));
     }
 
