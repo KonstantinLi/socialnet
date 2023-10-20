@@ -9,7 +9,9 @@ import ru.skillbox.socialnet.exception.person.PersonIsDeletedException;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 import ru.skillbox.socialnet.repository.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -79,28 +81,24 @@ public class StatisticsService {
         }
 
         map.put(
-                new StringBuilder()
-                        .append(firstUser.getFirstName())
-                        .append("_")
-                        .append(firstUser.getLastName())
-                        .append("->")
-                        .append(secondUser.getFirstName())
-                        .append("_")
-                        .append(secondUser.getLastName())
-                        .toString(),
+                firstUser.getFirstName() +
+                        "_" +
+                        firstUser.getLastName() +
+                        "->" +
+                        secondUser.getFirstName() +
+                        "_" +
+                        secondUser.getLastName(),
                 messagesRepository.countByAuthorIdAndRecipientId(firstUserId, secondUserId)
         );
 
         map.put(
-                new StringBuilder()
-                        .append(secondUser.getFirstName())
-                        .append("_")
-                        .append(secondUser.getLastName())
-                        .append("->")
-                        .append(firstUser.getFirstName())
-                        .append("_")
-                        .append(firstUser.getLastName())
-                        .toString(),
+                secondUser.getFirstName() +
+                        "_" +
+                        secondUser.getLastName() +
+                        "->" +
+                        firstUser.getFirstName() +
+                        "_" +
+                        firstUser.getLastName(),
                 messagesRepository.countByAuthorIdAndRecipientId(secondUserId, firstUserId)
         );
 

@@ -9,15 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skillbox.socialnet.dto.parameters.GetPostsSearchPs;
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.dto.response.PostRs;
-import ru.skillbox.socialnet.dto.parameters.GetPostsSearchPs;
-import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.dto.response.PostRs;
-import ru.skillbox.socialnet.dto.service.GetPostsSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.enums.PostType;
@@ -93,7 +89,7 @@ public class PostsService {
         return updatePost(
                 fetchPost(
                         id,
-                        postRq.isDeleted == null ? false : !postRq.isDeleted
+                        postRq.isDeleted != null && !postRq.isDeleted
                 ),
                 postRq, myId
         );
@@ -273,9 +269,9 @@ public class PostsService {
         fillAuthor(postRs.getAuthor(), myId);
 
         postRs.setType(String.valueOf(
-                post.getIsDeleted()
-                        ? PostType.DELETED
-                        : post.getTime().isAfter(LocalDateTime.now())
+                        post.getIsDeleted()
+                                ? PostType.DELETED
+                                : post.getTime().isAfter(LocalDateTime.now())
                                 ? PostType.QUEUED
                                 : PostType.POSTED
                 )
@@ -312,7 +308,7 @@ public class PostsService {
 
     private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
         Optional<FriendShip> optionalFriendship = friendShipRepository
-                    .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
+                .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
 
         if (optionalFriendship.isEmpty()) {
             return FriendShipStatus.UNKNOWN;

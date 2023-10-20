@@ -37,9 +37,9 @@ public class FriendsController {
                             schema = @Schema(
                                     description = "default response from server",
                                     ref = "#/components/schemas/CommonRsComplexRs")
-                            )}),
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
-                            content = {@Content(mediaType = "application/json",
+                    content = {@Content(mediaType = "application/json",
                             schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content)})
@@ -60,7 +60,7 @@ public class FriendsController {
                             schema = @Schema(
                                     description = "default response from server",
                                     ref = "#/components/schemas/CommonRsComplexRs")
-                                    )}),
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
@@ -127,7 +127,7 @@ public class FriendsController {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
-    @Operation( summary = "block or unblock (if user in block) user by user id")
+    @Operation(summary = "block or unblock (if user in block) user by user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "/",

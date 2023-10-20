@@ -10,8 +10,8 @@ import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
 
-import java.util.Collection;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -88,7 +88,9 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     Optional<Person> findByEmail(String email);
 
     Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
+
     Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
+
     Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
@@ -118,7 +120,9 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findAllByBirthDate(LocalDateTime birthDate);
 
     long countByIsDeleted(boolean isDeleted);
+
     long countByCountryAndIsDeleted(String country, boolean isDeleted);
+
     long countByCityAndIsDeleted(String city, boolean isDeleted);
 
     @Query(value = "SELECT country AS region, COUNT(country) AS countUsers"

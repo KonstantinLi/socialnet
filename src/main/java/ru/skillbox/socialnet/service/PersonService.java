@@ -7,12 +7,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.annotation.Debug;
+import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
-import ru.skillbox.socialnet.dto.service.GetUsersSearchPs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.personrelated.Person;
@@ -25,8 +24,6 @@ import ru.skillbox.socialnet.repository.PersonRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -53,7 +50,7 @@ public class PersonService {
         Person person = personOptional.get();
 
         Optional<FriendShipStatus> friendShipStatus =
-                    friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
+                friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
         if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
             person.setPhoto(defaultPhotoUrl);
         }

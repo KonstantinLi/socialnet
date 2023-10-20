@@ -91,3 +91,6 @@ drop table if exists post_comments cascade;
         values (100, 'Parent comment text', false, false, '2023-04-19 08:42:27', 2, 10);
     insert into post_comments (id, comment_text, is_blocked, is_deleted, time, author_id, post_id, parent_id)
         values (101, 'Sub comment text', false, false, '2023-04-19 10:42:27', 3, 10, 100);
+    insert into post_comments (id, comment_text, is_blocked, is_deleted, time, author_id, post_id)
+        values (102, 'Deleted comment', false, true, '2023-04-19 10:42:27', 1, 10);
+

@@ -1,7 +1,5 @@
 package ru.skillbox.socialnet.dto.response;
 
-import lombok.Data;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,8 +23,4 @@ public class ErrorRs {
         this.errorDescription = exception.getLocalizedMessage();
         this.timestamp = new Date().getTime();
     }
-
-    private String error;
-    private Long timestamp = new Date().getTime();
-    private String errorDescription;
 }

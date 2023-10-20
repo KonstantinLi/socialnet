@@ -6,11 +6,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.request.CommentRq;
-import ru.skillbox.socialnet.dto.response.*;
-import ru.skillbox.socialnet.entity.personrelated.FriendShip;
+import ru.skillbox.socialnet.dto.response.CommentRs;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
+import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.entity.postrelated.PostComment;
 import ru.skillbox.socialnet.exception.post.PostCommentCreateException;
@@ -44,6 +46,7 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
+            //TODO exception message is in eng, should be rus
             throw new PostCommentCreateException("Comment text is absent");
         }
 
@@ -152,7 +155,7 @@ public class PostCommentsService {
             );
 
             if (parentPostComment.getParentId() != null) {
-                throw new PostCommentCreateException("Subcomment of subcomment is not allowed");
+                throw new PostCommentCreateException("Sub-comment of sub-comment is not allowed");
             }
         }
 
@@ -203,7 +206,7 @@ public class PostCommentsService {
 
     private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
         Optional<FriendShip> optionalFriendShip = friendShipRepository
-                    .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
+                .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
 
         if (optionalFriendShip.isEmpty()) {
             return FriendShipStatus.UNKNOWN;

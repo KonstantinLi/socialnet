@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.dto.EmailContentManager;
 import ru.skillbox.socialnet.dto.EmailHandler;
-import ru.skillbox.socialnet.dto.request.PasswordRecoveryRq;
-import ru.skillbox.socialnet.dto.request.RegisterRq;
+import ru.skillbox.socialnet.dto.request.*;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
@@ -30,13 +29,14 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Debug
 public class AccountService {
-    private final PersonService personService;
     private final PersonRepository personRepository;
     private final PersonSettingsRepository personSettingsRepository;
     private final CaptchaRepository captchaRepository;
     private final JwtTokenUtils jwtTokenUtils;
     private final EmailHandler emailHandler;
     private final EmailContentManager contentManager;
+
+    private static final String USER_NOT_FOUND_MESSAGE_BLUEPRINT = "Пользователь %s не найден";
 
 
     @Value("${aws.default-photo-url}")
@@ -76,7 +76,8 @@ public class AccountService {
                 .getName().split(",", 2)[0];
 
         Person person = personRepository.findById(Long.parseLong(userId)).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
+                () -> new PersonNotFoundException(
+                        String.format(USER_NOT_FOUND_MESSAGE_BLUEPRINT, userId)));
 
         if (person.getPassword().equals(getEncodedPassword(passwordSetRq.getPassword()))) {
             throw new PasswordIsNotChangedException("Новый пароль не должен совпадать со старым");
@@ -97,12 +98,14 @@ public class AccountService {
     public void passwordRecovery(PasswordRecoveryRq passwordRecoveryRq) {
 
         String email = passwordRecoveryRq.getEmail();
+
         Person person = personRepository.findByEmail(email).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь " + email + " не найден"));
+                () -> new PersonNotFoundException(
+                        String.format(USER_NOT_FOUND_MESSAGE_BLUEPRINT, email)));
         if (Boolean.TRUE.equals(person.getIsDeleted())) {
             throw new PersonIsBlockedException("Пользователь " + email + " удален");
         } else if (Boolean.TRUE.equals(person.getIsBlocked())) {
-            throw new PersonNotFoundException("Пользователь " + email + " не найден");
+            throw new PersonNotFoundException("Пользователь " + email + " заблокирован");
         }
 
         String token = jwtTokenUtils.generateToken(person);
@@ -110,7 +113,7 @@ public class AccountService {
         String emailContent = contentManager.getRecoveryEmailContent(
                 EmailContentManager.EmailType.PASSWORD_RECOVERY, token);
 
-        emailHandler.sendEmail(email, "Password recovery", emailContent);
+        emailHandler.sendEmail(email, "Восстановление пароля", emailContent);
     }
 
     public RegisterRs<ComplexRs> resetPassword(PasswordRq passwordSetRq) {
@@ -123,7 +126,7 @@ public class AccountService {
         }
 
         Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь не найден"));
+                () -> new PersonNotFoundException(String.format(USER_NOT_FOUND_MESSAGE_BLUEPRINT, userId)));
 
         String currentPassword = person.getPassword();
         String newPassword = getEncodedPassword(passwordSetRq.getPassword());
@@ -153,16 +156,17 @@ public class AccountService {
         }
 
         Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь не найден"));
+                () -> new PersonNotFoundException(
+                        String.format(USER_NOT_FOUND_MESSAGE_BLUEPRINT, userId)));
 
         if (!person.getEmail().equals(email)) {
-            throw new BadRequestException("Ошибка идетификации пользователя: email не совпадает!");
+            throw new BadRequestException("Ошибка идентификации пользователя: email не совпадает!");
         }
 
         String emailContent = contentManager.getRecoveryEmailContent(
                 EmailContentManager.EmailType.EMAIL_RECOVERY, token);
 
-        emailHandler.sendEmail(email, "Email recovery", emailContent);
+        emailHandler.sendEmail(email, "Восстановить email", emailContent);
     }
 
     public RegisterRs<ComplexRs> setEmail(EmailRq emailRq) {
@@ -175,7 +179,8 @@ public class AccountService {
         });
 
         Person person = personRepository.findById(userId).orElseThrow(
-                () -> new PersonNotFoundException("Пользователь id: " + userId + " не найден"));
+                () -> new PersonNotFoundException(
+                        String.format(USER_NOT_FOUND_MESSAGE_BLUEPRINT, userId)));
 
         if (person.getEmail().equals(emailRq.getEmail())) {
             throw new EmailIsNotChangedException("Новый email не должен совпадать со старым");

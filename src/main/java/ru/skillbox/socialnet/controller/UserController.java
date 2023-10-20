@@ -3,12 +3,12 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.annotation.Info;
+import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.List;

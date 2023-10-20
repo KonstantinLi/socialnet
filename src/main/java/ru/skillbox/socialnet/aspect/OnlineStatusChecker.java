@@ -3,12 +3,14 @@ package ru.skillbox.socialnet.aspect;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.CodeSignature;
 import org.springframework.stereotype.Component;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
+
 import java.time.LocalDateTime;
 
 
@@ -22,8 +24,7 @@ public class OnlineStatusChecker {
     private final JwtTokenUtils jwtTokenUtils;
 
     /**
-     *
-     * @param joinPoint  - срез, точка присоединения
+     * @param joinPoint - срез, точка присоединения
      * @return в теле метода сохраняется OnlineStatus и LastOnlineTime пользователя
      * т.к. аннотация @Around, то возвращается объект метода
      * @throws Throwable
