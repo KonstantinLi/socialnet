@@ -1,6 +1,4 @@
-package ru.skillbox.socialnet.exception.post;
-
-import ru.skillbox.socialnet.exception.BadRequestException;
+package ru.skillbox.socialnet.exception;
 
 public class PostCommentNotFoundException extends BadRequestException {
     public PostCommentNotFoundException(Long commentId) {

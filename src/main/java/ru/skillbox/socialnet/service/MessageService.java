@@ -15,7 +15,7 @@ import ru.skillbox.socialnet.entity.dialogrelated.Message;
 import ru.skillbox.socialnet.entity.enums.ReadStatus;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.MessageException;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.MessageMapper;
 import ru.skillbox.socialnet.repository.DialogRepository;
 import ru.skillbox.socialnet.repository.MessageRepository;

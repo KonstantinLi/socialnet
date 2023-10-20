@@ -1,6 +1,6 @@
 package ru.skillbox.socialnet.exception;
 
-public class MessageException extends CommonException {
+public class MessageException extends BadRequestException {
 
     public MessageException(String message) {
         super(message);

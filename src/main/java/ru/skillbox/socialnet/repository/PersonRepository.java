@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

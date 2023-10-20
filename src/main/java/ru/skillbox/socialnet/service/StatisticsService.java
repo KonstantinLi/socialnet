@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.person.PersonIsDeletedException;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.PersonIsDeletedException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.repository.*;
 
 import java.util.Collection;
