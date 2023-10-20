@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.dto.EmailContentManager;
 import ru.skillbox.socialnet.dto.EmailHandler;
-import ru.skillbox.socialnet.dto.request.*;
+import ru.skillbox.socialnet.dto.request.PasswordRecoveryRq;
+import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
@@ -26,7 +28,9 @@ import java.util.Date;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Debug
 public class AccountService {
+    private final PersonService personService;
     private final PersonRepository personRepository;
     private final PersonSettingsRepository personSettingsRepository;
     private final CaptchaRepository captchaRepository;
@@ -38,7 +42,7 @@ public class AccountService {
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
 
-    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) throws BadRequestException {
+    public RegisterRs<ComplexRs> registration(RegisterRq registerRq) {
 
         if (!registerRq.getPasswd1().equals(registerRq.getPasswd2())) {
             throw new AuthException("Пароли не совпадают");
@@ -201,6 +205,8 @@ public class AccountService {
         PersonSettings personSettings = new PersonSettings();
         personSettingsRepository.save(personSettings);
         person.setPersonSettings(personSettings);
+        person.setMessagePermissions(MessagePermission.ALL);
+        person.setOnlineStatus(true);
         person.setPhoto(defaultPhotoUrl);
 
         return person;
