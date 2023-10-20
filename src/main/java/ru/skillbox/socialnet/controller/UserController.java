@@ -51,12 +51,9 @@ public class UserController {
     }
 
     @PostMapping("/me/recover")
-    public CommonRs<PersonRs> recoverUserInfo(@RequestHeader("authorization") String token) {
-        //TODO later
-        CommonRs<PersonRs> response = new CommonRs<>();
-        response.setData(new PersonRs());
+    public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization") String token) {
 
-        return response;
+        return personService.recoverUserInfo(jwtTokenUtils.getId(token));
     }
 
     @GetMapping("/search")

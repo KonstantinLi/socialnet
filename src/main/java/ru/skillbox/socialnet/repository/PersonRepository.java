@@ -87,6 +87,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     Optional<Person> findByEmail(String email);
 
+    //TODO 3 unused methods
     Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
 
     Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
@@ -140,4 +141,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             , nativeQuery = true
     )
     Collection<RegionStatisticsRs> countCityStatistics();
+
+    @Query(value = "select * from persons p where p.deleted_time > :timeParam", nativeQuery = true)
+    Optional<List<Person>> findAllInactiveUsersByDeletedTime(@Param("timeParam") LocalDateTime timeParam);
 }

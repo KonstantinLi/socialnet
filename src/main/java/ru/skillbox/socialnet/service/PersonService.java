@@ -46,8 +46,7 @@ public class PersonService {
     public CommonRs<PersonRs> getUserById(Long currentUserId, Long otherUserId) throws BadRequestException {
 
         Optional<Person> personOptional = personRepository.findById(otherUserId);
-        checkAvailability(personOptional);
-        Person person = personOptional.get();
+        Person person = checkAvailability(personOptional);
 
         Optional<FriendShipStatus> friendShipStatus =
                 friendShipRepository.getFriendShipStatusBetweenTwoPersons(currentUserId, otherUserId);
@@ -90,9 +89,7 @@ public class PersonService {
     public CommonRs<PersonRs> updateUserInfo(Long userId, UserRq userData) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-        checkAvailability(personOptional);
-        //noinspection OptionalGetWithoutIsPresent
-        Person person = personOptional.get();
+        Person person = checkAvailability(personOptional);
 
         updatePersonInfo(person, userData);
         Person savedPerson = personRepository.save(person);
@@ -107,9 +104,7 @@ public class PersonService {
     public void updateUserPhoto(Long userId, String url) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-        checkAvailability(personOptional);
-        //noinspection OptionalGetWithoutIsPresent
-        Person person = personOptional.get();
+        Person person = checkAvailability(personOptional);
 
         person.setPhoto(url);
         Person savedPerson = personRepository.save(person);
@@ -122,9 +117,10 @@ public class PersonService {
     public CommonRs<ComplexRs> deletePersonById(Long userId) {
 
         Optional<Person> personOptional = personRepository.findById(userId);
-        checkAvailability(personOptional);
-        //noinspection OptionalGetWithoutIsPresent
-        personRepository.delete(personOptional.get());
+        Person person = checkAvailability(personOptional);
+        person.setIsDeleted(true);
+        person.setDeletedTime(LocalDateTime.now());
+        personRepository.save(person);
 
         ComplexRs successMessage = new ComplexRs();
         successMessage.setMessage("Ваша страница удалена :(");
@@ -135,23 +131,49 @@ public class PersonService {
         return result;
     }
 
+    public CommonRs<ComplexRs> recoverUserInfo(Long userId) {
+
+        Optional<Person> personOptional = personRepository.findById(userId);
+        Person person = personOptional.orElseThrow(
+                () -> new PersonNotFoundException(
+                        String.format("Пользователь id %s не найден :(", userId))
+        );
+        if (Boolean.TRUE.equals(person.getIsBlocked())) {
+            throw new PersonIsBlockedException(
+                    String.format("Пользователь id %s заблокирован :(", userId));
+        }
+
+        person.setIsDeleted(false);
+        person.setDeletedTime(null);
+        personRepository.save(person);
+
+        ComplexRs complexRs = new ComplexRs();
+        complexRs.setMessage("Ваша страница восстановлена, с возвращением! :)");
+        CommonRs<ComplexRs> response = new CommonRs<>();
+        response.setData(complexRs);
+
+        return response;
+    }
+
     /**
      * Method checks if user is present and not blocked or deleted
      *
-     * @param person - user to check
-     *               <p>
-     *               throws exceptions if user is not presented, blocked or deleted
+     * @param personOptional - user to check
+     *                       <p>
+     *                       throws exceptions if user is not presented, blocked or deleted
      */
-    private void checkAvailability(
-            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> person)
+    private Person checkAvailability(
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> personOptional)
             throws PersonNotFoundException, PersonIsBlockedException {
-        if (person.isEmpty()) {
-            throw new PersonNotFoundException("Пользователь с указанным id не найден");
-        } else if (Boolean.TRUE.equals(person.get().getIsBlocked())) {
+        Person person = personOptional.orElseThrow(
+                () -> new PersonNotFoundException("Пользователь с указанным id не найден"));
+        if (Boolean.TRUE.equals(person.getIsBlocked())) {
             throw new PersonIsBlockedException("Пользователь заблокирован");
-        } else if (Boolean.TRUE.equals(person.get().getIsDeleted())) {
+        } else if (Boolean.TRUE.equals(person.getIsDeleted())) {
             throw new PersonNotFoundException("Пользователь удален");
         }
+
+        return person;
     }
 
     private void updatePersonInfo(Person person, UserRq userData) {
@@ -188,5 +210,12 @@ public class PersonService {
         if (userData.getPhotoId() != null) {
             person.setPhoto(userData.getPhotoId());
         }
+    }
+
+    public void deleteInactiveUsers() {
+        Optional<List<Person>> inactiveUsers = personRepository.findAllInactiveUsersByDeletedTime(
+                LocalDateTime.now().minusMonths(1));
+
+        inactiveUsers.ifPresent(persons -> persons.forEach(personRepository::delete));
     }
 }
