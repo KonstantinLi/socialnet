@@ -43,9 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (accessor != null && accessor.getCommand() == StompCommand.CONNECT) {
                     String token = accessor.getFirstNativeHeader("token");
-
-                     var principal = new UserPrincipal(jwtTokenUtils.getEmail(token));
-                    accessor.setUser(principal);
+                    accessor.setUser(new UserPrincipal(jwtTokenUtils.getEmail(token)));
                 }
                 return message;
             }

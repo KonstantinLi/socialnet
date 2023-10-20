@@ -27,6 +27,9 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final PersonRepository personRepository;
 
+    private final NotificationListMapper notificationListMapper;
+    private final NotificationMapper notificationMapper;
+
     private final SimpMessagingTemplate messagingTemplate;
     private final JwtTokenUtils jwtTokenUtils;
 
@@ -134,7 +137,7 @@ public class NotificationService {
 
     private void sendNotification(Notification notification) {
         Long personId = notification.getPerson().getId();
-        NotificationRs notificationRs = NotificationMapper.INSTANCE.notificationToNotificationRs(notification);
+        NotificationRs notificationRs = notificationMapper.notificationToNotificationRs(notification);
 
         messagingTemplate.convertAndSendToUser(
                 personId.toString(),
@@ -179,7 +182,7 @@ public class NotificationService {
             Integer itemPerPage,
             Integer offset) {
 
-        List<NotificationRs> notificationRsList = NotificationListMapper.INSTANCE.toNotificationRsList(notifications);
+        List<NotificationRs> notificationRsList = notificationListMapper.toNotificationRsList(notifications);
         CommonRs<List<NotificationRs>> commonRs = new CommonRs<>();
 
         commonRs.setTotal((long) notificationRsList.size());

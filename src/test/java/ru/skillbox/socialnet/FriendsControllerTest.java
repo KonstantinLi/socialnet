@@ -79,12 +79,12 @@ class FriendsControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-/*    @Test
+    @Test
     void sendFriendshipRequestTest() throws Exception {
         this.mockMvc.perform(post("/api/v1/friends/2").header("authorization", getToken(1L)))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }*/
+    }
     @Test
     void sendFriendshipRequestFailTest() throws Exception {
         this.mockMvc.perform(post("/api/v1/friends/10").header("authorization", getToken(1L)))

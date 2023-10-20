@@ -21,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.skillbox.socialnet.security.JwtRequestFilter;
 import ru.skillbox.socialnet.security.UserDetailsServiceImpl;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -46,6 +48,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/account/password/reset").permitAll()
                                 .requestMatchers("/api/v1/account/email").permitAll()
                                 .requestMatchers("/api/v1/ws/**").permitAll()
+                                .requestMatchers("/api/v1/statistics/**").permitAll()
                                 .requestMatchers("/api/v1/**").authenticated()
                                 .anyRequest().permitAll())
                 .sessionManagement(manager ->
