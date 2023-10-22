@@ -11,11 +11,11 @@ import java.util.Date;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ErrorRs {
 
-    @Schema(example = "PersonNotFoundException")
+    @Schema(description = "name of error", example = "PersonNotFoundException")
     private String error;
-    @Schema(example = "12432857239")
+    @Schema(description = "error time in timestamp", example = "12432857239")
     private Long timestamp;
-    @Schema(example = "Запись о профиле не найдена")
+    @Schema(description = "description of error", example = "Запись о профиле не найдена")
     private String errorDescription;
 
     public ErrorRs(RuntimeException exception) {

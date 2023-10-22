@@ -46,7 +46,7 @@ public class FriendsController {
     @OnlineStatusUpdate
     @PostMapping("/{id}")
     public CommonRs<ComplexRs> sendFriendshipRequest(
-            @RequestHeader(name = "authorization") @Parameter(description = "Access Token", example = "JWT Tokenn",
+            @RequestHeader(name = "authorization") @Parameter(description = "Access Token", example = "JWT Token",
                     required = true) String authorization,
             @PathVariable(name = "id") @Parameter(description = "id", example = "1", required = true) Long id)
             throws PersonNotFoundException {

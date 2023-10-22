@@ -1,5 +1,6 @@
 package ru.skillbox.socialnet.entity.other;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "storage")
+@Schema(description = "Entity Storage information")
 public class Storage {
 
     @Id

@@ -116,9 +116,9 @@ public class AccountService {
         emailHandler.sendEmail(email, "Восстановление пароля", emailContent);
     }
 
-    public RegisterRs<ComplexRs> resetPassword(PasswordRq passwordSetRq) {
+    public RegisterRs<ComplexRs> resetPassword(PasswordResetRq passwordResetRq) {
 
-        String token = passwordSetRq.getSecret();
+        String token = passwordResetRq.getSecret();
         Long userId = jwtTokenUtils.getId(token);
 
         if (userId == null) {
@@ -129,7 +129,7 @@ public class AccountService {
                 () -> new PersonNotFoundException(String.format(USER_NOT_FOUND_MESSAGE_BLUEPRINT, userId)));
 
         String currentPassword = person.getPassword();
-        String newPassword = getEncodedPassword(passwordSetRq.getPassword());
+        String newPassword = getEncodedPassword(passwordResetRq.getPassword());
 
         if (currentPassword.equals(newPassword)) {
             throw new PasswordIsNotChangedException("Новый пароль не должен совпадать со старым");

@@ -114,6 +114,7 @@ class PostCommentsControllerTest {
                         .header("Authorization", getToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(101))
+                .andExpect(jsonPath("$.data.parent_id").value(100))
                 .andExpect(jsonPath("$.data.is_deleted").value(true));
     }
 

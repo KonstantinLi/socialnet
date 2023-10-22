@@ -305,7 +305,7 @@ public class AuthAndAccountControllerTest {
     void successChangePasswordTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordSetRq passwordSetRq = new PasswordSetRq();
+        PasswordResetRq passwordSetRq = new PasswordResetRq();
         passwordSetRq.setPassword(getDecodedPassword(person.getPassword()) + "1");
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
@@ -328,7 +328,7 @@ public class AuthAndAccountControllerTest {
     void wrongTokenTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person) + "1";
-        PasswordSetRq passwordSetRq = new PasswordSetRq();
+        PasswordResetRq passwordSetRq = new PasswordResetRq();
         passwordSetRq.setPassword(getDecodedPassword(person.getPassword()) + "1");
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
@@ -351,7 +351,7 @@ public class AuthAndAccountControllerTest {
     void trySamePasswordChangeTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordSetRq passwordSetRq = new PasswordSetRq();
+        PasswordResetRq passwordSetRq = new PasswordResetRq();
         passwordSetRq.setPassword(getDecodedPassword(person.getPassword()));
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
@@ -446,12 +446,12 @@ public class AuthAndAccountControllerTest {
     void successPasswordResetTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordRq passwordRq = new PasswordRq();
-        passwordRq.setPassword(UUID.randomUUID().toString());
-        passwordRq.setSecret(token);
+        PasswordResetRq passwordResetRq = new PasswordResetRq();
+        passwordResetRq.setPassword(UUID.randomUUID().toString());
+        passwordResetRq.setSecret(token);
         this.mockMvc.perform(put("/api/v1/account/password/reset")
                         .header("authorization", token)
-                        .content(new ObjectMapper().writeValueAsString(passwordRq))
+                        .content(new ObjectMapper().writeValueAsString(passwordResetRq))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -469,12 +469,12 @@ public class AuthAndAccountControllerTest {
     void wrongPasswordResetTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordRq passwordRq = new PasswordRq();
-        passwordRq.setPassword(getDecodedPassword(person.getPassword()));
-        passwordRq.setSecret(token);
+        PasswordResetRq passwordResetRq = new PasswordResetRq();
+        passwordResetRq.setPassword(getDecodedPassword(person.getPassword()));
+        passwordResetRq.setSecret(token);
         this.mockMvc.perform(put("/api/v1/account/password/reset")
                         .header("authorization", token)
-                        .content(new ObjectMapper().writeValueAsString(passwordRq))
+                        .content(new ObjectMapper().writeValueAsString(passwordResetRq))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
