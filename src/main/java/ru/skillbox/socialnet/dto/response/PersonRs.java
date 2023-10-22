@@ -11,7 +11,6 @@ import ru.skillbox.socialnet.entity.enums.MessagePermission;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonRs {
-
     private String about;
     @Schema(example = "Moscow")
     private String city;

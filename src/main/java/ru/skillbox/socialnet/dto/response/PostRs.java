@@ -15,7 +15,7 @@ public class PostRs {
     private PersonRs author;
     private Set<CommentRs> comments;
     private Long id;
-    private Integer likes;
+    private Long likes;
     private Set<String> tags;
     private String time;
     private String title;

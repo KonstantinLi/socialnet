@@ -31,7 +31,7 @@ public class DialogsController {
     @PutMapping("/{dialogId}/read")
     public CommonRs<ComplexRs> setReadDialog(@RequestHeader(name = "authorization") String authorization,
                                                @PathVariable Long dialogId) {
-        return dialogService.setReadDialog(dialogId);
+        return dialogService.setReadDialog(authorization, dialogId);
     }
 
     @GetMapping("")

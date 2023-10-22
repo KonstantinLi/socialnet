@@ -1,5 +1,6 @@
 package ru.skillbox.socialnet.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
   @Query(" select count(m) from Message m where m.dialog.id = :dialogId and m.readStatus = 'UNREAD' " )
   long countUnreadMessagesByDialogId(Long dialogId);
+
+  @Query(" select m from Message m where m.dialog.id = :dialogId and m.recipient.id = :userId and m.readStatus = 'UNREAD' " )
+  List<Message> getUnreadMessagesByDialogIdAndUserId(Long dialogId, Long userId);
+
 }
