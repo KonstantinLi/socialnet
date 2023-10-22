@@ -72,6 +72,10 @@ email:
   recovery-base-url: http://localhost:8080/
   recovery-email-blueprint: emailBlueprint.html
 
+vk:
+  key: ${VK_SERVICE_KEY:service-key}
+
+
 management:
   endpoints:
     web:

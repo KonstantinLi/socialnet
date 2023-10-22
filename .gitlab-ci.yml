@@ -82,7 +82,9 @@ build-docker-image:
     - socialnet_runner
 
   script:
+    - echo ${ENV_FILE}
+    - cat ${ENV_FILE}
     - (docker ps -a --format {{.Names}} | grep java-backend-app -w) && docker stop java-backend-app && docker rm java-backend-app || echo "Doesn't exist"
     - docker build -t java-pro41-backend:latest .
-    - docker run --name java-backend-app -d -p 8086:8086 -e AWS_SECRET_KEY=${AWS_SECRET_KEY} -e POSTGRESQL_HOST=${POSTGRESQL_HOST} -e POSTGRESQL_PORT=${POSTGRESQL_PORT} -t java-pro41-backend:latest
+    - docker run --name java-backend-app -d -p 8086:8086 --env-file ${ENV_FILE} -t java-pro41-backend:latest
     - docker system prune -a -f
