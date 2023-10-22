@@ -30,7 +30,7 @@ public class AccountController {
     private final AccountService accountService;
     private final PersonSettingsService personSettingsService;
 
-    @OkAPIResponseDescription(summary = "register new user", value = "RegisterRsComplexRs")
+    @OkAPIResponseDescription(endpointDescription = "register new user", value = "RegisterRsComplexRs")
     @PostMapping("/register")
     public RegisterRs<ComplexRs> register(
             @RequestBody @ParameterDescription(description = "register request", implementation = RegisterRq.class)
@@ -39,7 +39,7 @@ public class AccountController {
         return accountService.registration(registerRq);
     }
 
-    @Operation(summary = "set/change user's password")
+    /*@Operation(summary = "set/change user's password")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
@@ -54,16 +54,14 @@ public class AccountController {
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content)})
+                    content = @Content)})*/
+    @OkAPIResponseDescription(endpointDescription = "set/change user's password",
+            value = "RegisterRsComplexRs")
     @PutMapping("/password/set")
-//TODO should there be authorization token also?
     public RegisterRs<ComplexRs> setPassword(
-            @RequestBody @Parameter(
-                    description = "password set request",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(description = "new password",
-                                    implementation = PasswordSetRq.class))
-            ) PasswordSetRq passwordSetRq)
+            @RequestBody @ParameterDescription(description = "password set request",
+                    implementation = PasswordSetRq.class)
+                    PasswordSetRq passwordSetRq)
             throws BadRequestException {
 
         return accountService.setPassword(passwordSetRq);

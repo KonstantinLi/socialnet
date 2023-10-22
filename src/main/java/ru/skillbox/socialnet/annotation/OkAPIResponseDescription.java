@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Schema(description = "default response from server")
 public @interface OkAPIResponseDescription {
     @AliasFor(annotation = Operation.class, attribute = "summary")
-    String summary();
+    String endpointDescription();
     @AliasFor(annotation = Schema.class, attribute = "ref")
     String value();
 }
