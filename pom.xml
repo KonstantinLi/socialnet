@@ -149,7 +149,9 @@
       <groupId>org.eclipse.angus</groupId>
       <artifactId>angus-mail</artifactId>
       <version>2.0.1</version>
-    </dependency>    <!-- Other -->
+    </dependency>
+
+    <!-- Other -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -201,13 +203,14 @@
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.1.0</version>
+      <version>${springdoc-webmvc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-common</artifactId>
       <version>1.7.0</version>
     </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

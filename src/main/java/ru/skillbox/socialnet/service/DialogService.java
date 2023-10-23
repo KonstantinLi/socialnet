@@ -26,9 +26,13 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 @RequiredArgsConstructor
 public class DialogService {
 
+  private static final String CREATE_DIALOG = "Создан диалог";
+
   private final JwtTokenUtils jwtTokenUtils;
   private final DialogRepository dialogRepository;
   private final MessageRepository messageRepository;
+  private final DialogMapper dialogMapper;
+  private final MessageMapper messageMapper;
 
 
   @Transactional
@@ -46,7 +50,7 @@ public class DialogService {
   }
 
   private DialogRs getDialogRs(String authorization, Dialog dialog) {
-    var dialogRs = DialogMapper.INSTANCE.dialogToDialogRs(dialog);
+    var dialogRs = dialogMapper.dialogToDialogRs(dialog);
 
     if (dialog.getLastMessageId() != null) {
       var lastMessage = this.getMessageById(authorization, dialog.getLastMessageId());
@@ -89,7 +93,7 @@ public class DialogService {
     dialog.setSecondPerson(secondPerson);
     Dialog savedDialog = dialogRepository.save(dialog);
     var lastMessage =
-        this.createMessage(savedDialog.getId(), firstPerson.getId(), secondPerson.getId(), "Создан диалог");
+        this.createMessage(savedDialog.getId(), firstPerson.getId(), secondPerson.getId());
     savedDialog.setLastMessageId(lastMessage.getId());
     savedDialog.setLastActiveTime(lastMessage.getTime());
     dialogRepository.save(savedDialog);
@@ -98,9 +102,9 @@ public class DialogService {
   }
 
   @Transactional
-  public CommonRs<ComplexRs> setReadDialog(Long dialogId) {
-    Dialog dialog = dialogRepository.getReferenceById(dialogId);
-    this.setReadMessage(dialog.getLastMessageId());
+  public CommonRs<ComplexRs> setReadDialog(String authorization, Long dialogId) {
+    Long userId = jwtTokenUtils.getId(authorization);
+    dialogRepository.findById(dialogId).ifPresent(dialog -> this.setReadMessageByDialog(dialogId, userId));
 
     var result = new CommonRs<ComplexRs>();
     ComplexRs complexRs = new ComplexRs();
@@ -115,21 +119,22 @@ public class DialogService {
     Optional<Message> messageOpt = messageRepository.findById(messageId);
     if (messageOpt.isEmpty()) throw MessageException.messageNotFound(messageId);
 
-    MessageRs message = MessageMapper.INSTANCE.messageToMessageRs(messageOpt.get());
+    MessageRs message = messageMapper.messageToMessageRs(messageOpt.get());
     message.setIsSentByMe(message.getAuthorId().equals(userId));
     return message;
   }
 
-  private void setReadMessage(Long messageId){
-    if (messageId == null) return;
+  private void setReadMessageByDialog(Long dialogId, Long userId){
+    if (dialogId == null) return;
 
-    messageRepository.findById(messageId).ifPresent(message -> {
+    messageRepository.getUnreadMessagesByDialogIdAndUserId(dialogId, userId).forEach(message -> {
       message.setReadStatus(ReadStatus.READ);
       messageRepository.save(message);
     });
+
   }
 
-  private Message createMessage(Long dialogId, Long authorId, Long recipientId,  String messageText){
+  private Message createMessage(Long dialogId, Long authorId, Long recipientId){
     Message message = new Message();
     Person author = new Person();
     author.setId(authorId);
@@ -143,7 +148,7 @@ public class DialogService {
     message.setRecipient(recipient);
     message.setReadStatus(ReadStatus.UNREAD);
     message.setTime(LocalDateTime.now());
-    message.setMessageText(messageText);
+    message.setMessageText(CREATE_DIALOG);
 
     return messageRepository.save(message);
   }
