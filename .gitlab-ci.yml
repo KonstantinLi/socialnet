@@ -66,8 +66,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-#      - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b844042-Dsonar.host.url=http://localhost:9000/-Dsonar.login=sqp_42db3245134c38e3ddbce55ea84d31215297d3b7
-      - mvn verify sonar:sonar Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b844042-Dsonar.host.url=http://127.0.0.1:9000/-Dsonar.login=sqp_1eaf83d5d7311c83dfe0bb68bd8c48191beada5c
+      - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b84404 -Dsonar.projectName='JavaproTeams41Backend'
   allow_failure: true
   only:
     - dev
