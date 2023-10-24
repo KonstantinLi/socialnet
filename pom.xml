@@ -145,6 +145,13 @@
       <version>2.0.1</version>
     </dependency>
 
+    <!-- eMail -->
+    <dependency>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+
     <!-- Other -->
     <dependency>
       <groupId>org.projectlombok</groupId>

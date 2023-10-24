@@ -1,7 +1,6 @@
-package ru.skillbox.socialnet.exception.like;
+package ru.skillbox.socialnet.exception;
 
 import ru.skillbox.socialnet.entity.enums.LikeType;
-import ru.skillbox.socialnet.exception.BadRequestException;
 
 public class LikeAlreadyExistsException extends BadRequestException {
     public LikeAlreadyExistsException(Long personId, LikeType likeType, Long itemId) {
