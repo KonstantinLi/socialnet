@@ -1,9 +1,8 @@
-package ru.skillbox.socialnet.exception.person;
+package ru.skillbox.socialnet.exception;
 
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
-import ru.skillbox.socialnet.exception.CommonException;
 
-public class FriendShipNotFoundException extends CommonException {
+public class FriendShipNotFoundException extends RuntimeException {
     private final FriendShipStatus status;
 
     public FriendShipNotFoundException(FriendShipStatus status) {

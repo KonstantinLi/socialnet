@@ -1,6 +1,4 @@
-package ru.skillbox.socialnet.exception.post;
-
-import ru.skillbox.socialnet.exception.BadRequestException;
+package ru.skillbox.socialnet.exception;
 
 public class PostCreateException extends BadRequestException {
     public PostCreateException(String message) {

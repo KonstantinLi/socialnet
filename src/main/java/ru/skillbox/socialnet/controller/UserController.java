@@ -3,12 +3,12 @@ package ru.skillbox.socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.annotation.Info;
+import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.List;
@@ -51,12 +51,9 @@ public class UserController {
     }
 
     @PostMapping("/me/recover")
-    public CommonRs<PersonRs> recoverUserInfo(@RequestHeader("authorization") String token) {
-        //TODO later
-        CommonRs<PersonRs> response = new CommonRs<>();
-        response.setData(new PersonRs());
+    public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization") String token) {
 
-        return response;
+        return personService.recoverUserInfo(jwtTokenUtils.getId(token));
     }
 
     @GetMapping("/search")

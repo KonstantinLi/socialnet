@@ -9,6 +9,7 @@ import ru.skillbox.socialnet.dto.LogUploader;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.service.NotificationService;
+import ru.skillbox.socialnet.service.PersonService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class Scheduler {
     private final NotificationService notificationService;
     private final CaptchaRepository captchaRepository;
     private final LogUploader logUploader;
+    private final PersonService personService;
 
     @Value("${logger.path}")
     private String logPath;
@@ -52,5 +54,10 @@ public class Scheduler {
     @Scheduled(cron = "0 0 0 * * *")
     private void sendBirthdayNotification() {
         notificationService.sendBirthdayNotification();
+    }
+
+    @Scheduled(fixedDelayString = "PT24H")
+    private void deleteInactiveUsers() {
+        personService.deleteInactiveUsers();
     }
 }
