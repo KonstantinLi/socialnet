@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -85,14 +87,19 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     Optional<Person> findByEmail(String email);
 
+    //TODO 3 unused methods
     Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
+
     Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
+
     Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
             select *
             from persons
             where id != :currentPersonId
+            and (is_blocked is null or not is_blocked)
+            and (is_deleted is null or not is_deleted)
             and case when :ageFrom = 0 then true else date_part('year', age(current_date, birth_date)) >= :ageFrom end
             and case when :ageTo = 0 then true else date_part('year', age(current_date, birth_date)) <= :ageTo end
             and case when cast(:city as varchar) is null then true else city ilike :city end
@@ -112,4 +119,29 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                   Pageable nextPage);
 
     List<Person> findAllByBirthDate(LocalDateTime birthDate);
+
+    long countByIsDeleted(boolean isDeleted);
+
+    long countByCountryAndIsDeleted(String country, boolean isDeleted);
+
+    long countByCityAndIsDeleted(String city, boolean isDeleted);
+
+    @Query(value = "SELECT country AS region, COUNT(country) AS countUsers"
+            + " FROM persons"
+            + " GROUP BY country"
+            + " ORDER BY country ASC"
+            , nativeQuery = true
+    )
+    Collection<RegionStatisticsRs> countCountryStatistics();
+
+    @Query(value = "SELECT city AS region, COUNT(city) AS countUsers"
+            + " FROM persons"
+            + " GROUP BY city"
+            + " ORDER BY city ASC"
+            , nativeQuery = true
+    )
+    Collection<RegionStatisticsRs> countCityStatistics();
+
+    @Query(value = "select * from persons p where p.deleted_time > :timeParam", nativeQuery = true)
+    Optional<List<Person>> findAllInactiveUsersByDeletedTime(@Param("timeParam") LocalDateTime timeParam);
 }

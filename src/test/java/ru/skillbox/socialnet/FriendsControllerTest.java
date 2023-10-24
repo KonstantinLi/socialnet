@@ -1,14 +1,5 @@
 package ru.skillbox.socialnet;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,6 +19,14 @@ import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {FriendsControllerTest.Initializer.class})
@@ -79,12 +78,13 @@ class FriendsControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-/*    @Test
+    @Test
     void sendFriendshipRequestTest() throws Exception {
         this.mockMvc.perform(post("/api/v1/friends/2").header("authorization", getToken(1L)))
                 .andDo(print())
                 .andExpect(status().isOk());
-    }*/
+    }
+
     @Test
     void sendFriendshipRequestFailTest() throws Exception {
         this.mockMvc.perform(post("/api/v1/friends/10").header("authorization", getToken(1L)))

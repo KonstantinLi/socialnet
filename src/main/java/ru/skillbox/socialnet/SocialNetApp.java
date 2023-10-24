@@ -23,15 +23,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 )
         )
 )
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @ConfigurationPropertiesScan
 @EnableScheduling
 @Configuration
 @EnableAspectJAutoProxy
 public class SocialNetApp {
 
-  public static void main(String[] args) {
-    SpringApplication.run(SocialNetApp.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(SocialNetApp.class, args);
+    }
 
 }

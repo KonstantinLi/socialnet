@@ -8,21 +8,21 @@ import ru.skillbox.socialnet.entity.enums.ReadStatus;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DialogRs {
-  private Long id;
+    private Long id;
 
-  @JsonProperty("author_id")
-  private Long authorId;
+    @JsonProperty("author_id")
+    private Long authorId;
 
-  @JsonProperty("last_message")
-  private MessageRs lastMessage;
+    @JsonProperty("last_message")
+    private MessageRs lastMessage;
 
-  @JsonProperty("read_status")
-  private ReadStatus readStatus;
+    @JsonProperty("read_status")
+    private ReadStatus readStatus;
 
-  @JsonProperty("recipient_id")
-  private Long recipientId;
+    @JsonProperty("recipient_id")
+    private Long recipientId;
 
-  @JsonProperty("unread_count")
-  private Long unreadCount;
+    @JsonProperty("unread_count")
+    private Long unreadCount;
 
 }

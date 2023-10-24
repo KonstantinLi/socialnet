@@ -8,14 +8,13 @@ import java.util.Set;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-
 public class CommentRs {
     private PersonRs author;
     private String commentText;
     private Long id;
     private Boolean isBlocked;
     private Boolean isDeleted;
-    private Integer likes;
+    private Long likes;
     private Boolean myLike;
     private Long parentId;
     private Long postId;

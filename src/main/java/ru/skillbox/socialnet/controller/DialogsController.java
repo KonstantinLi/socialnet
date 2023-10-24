@@ -1,16 +1,7 @@
 package ru.skillbox.socialnet.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.dto.request.DialogUserShortListRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
@@ -18,6 +9,8 @@ import ru.skillbox.socialnet.dto.response.DialogRs;
 import ru.skillbox.socialnet.dto.response.MessageRs;
 import ru.skillbox.socialnet.service.DialogService;
 import ru.skillbox.socialnet.service.MessageService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +23,8 @@ public class DialogsController {
 
     @PutMapping("/{dialogId}/read")
     public CommonRs<ComplexRs> setReadDialog(@RequestHeader(name = "authorization") String authorization,
-                                               @PathVariable Long dialogId) {
-        return dialogService.setReadDialog(dialogId);
+                                             @PathVariable Long dialogId) {
+        return dialogService.setReadDialog(authorization, dialogId);
     }
 
     @GetMapping("")
@@ -41,7 +34,7 @@ public class DialogsController {
 
     @PostMapping("")
     public CommonRs<ComplexRs> startDialog(@RequestHeader(name = "authorization") String authorization,
-                                                @RequestBody DialogUserShortListRq dialogUserShortListDto) {
+                                           @RequestBody DialogUserShortListRq dialogUserShortListDto) {
         return dialogService.startDialog(authorization, dialogUserShortListDto);
     }
 
@@ -53,9 +46,9 @@ public class DialogsController {
 
     @GetMapping("/{dialogId}/messages")
     public CommonRs<List<MessageRs>> getMessageFromDialog(@RequestHeader(name = "authorization") String authorization,
-        @PathVariable Long dialogId,
-        @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
-        @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
+                                                          @PathVariable Long dialogId,
+                                                          @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
+                                                          @RequestParam(name = "perPage", required = false, defaultValue = "20") int perPage) {
 
         return messageService.getMessagesByDialog(authorization, dialogId, offset, perPage);
     }

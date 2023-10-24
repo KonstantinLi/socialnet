@@ -12,13 +12,13 @@ import java.util.Optional;
 public interface WeatherRepository extends JpaRepository<Weather, Long> {
 
     @Query(nativeQuery = true, value = """
-        select
-            *
-        from weather
-        where city = :city
-        order by date desc
-        limit 1
-        """)
+            select
+                *
+            from weather
+            where city = :city
+            order by date desc
+            limit 1
+            """)
     Weather findLastByCity(@Param("city") String city);
 
     Optional<Weather> findByCity(String city);

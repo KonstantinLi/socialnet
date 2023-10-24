@@ -65,6 +65,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     long countByAuthorIdAndIsDeleted(
             long authorId, boolean isDeleted
     );
+
     List<Post> findAllByAuthorIdAndIsDeleted(
             long authorId, boolean isDeleted, Pageable pageable
     );
@@ -72,7 +73,10 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     long countByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time
     );
+
     List<Post> findAllByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time, Pageable pageable
     );
+
+    long countByIsDeleted(boolean isDeleted);
 }

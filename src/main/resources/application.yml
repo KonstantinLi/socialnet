@@ -11,7 +11,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRESQL_HOST:217.107.219.242}:${POSTGRESQL_PORT:5432}/socialnet
+    url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/socialnet
     username: root
     password: root
 
@@ -71,6 +71,10 @@ email:
   smtp-ssl-trust: true
   recovery-base-url: http://localhost:8080/
   recovery-email-blueprint: emailBlueprint.html
+
+vk:
+  key: ${VK_SERVICE_KEY:service-key}
+
 
 management:
   endpoints:
