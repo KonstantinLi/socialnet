@@ -1,6 +1,4 @@
-package ru.skillbox.socialnet.exception.like;
-
-import ru.skillbox.socialnet.exception.BadRequestException;
+package ru.skillbox.socialnet.exception;
 
 public class LikeTargetNotProvidedException extends BadRequestException {
     public LikeTargetNotProvidedException() {

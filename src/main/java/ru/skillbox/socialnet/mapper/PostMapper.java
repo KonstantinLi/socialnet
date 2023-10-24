@@ -1,10 +1,8 @@
 package ru.skillbox.socialnet.mapper;
 
 import org.mapstruct.*;
-
 import ru.skillbox.socialnet.dto.request.PostRq;
 import ru.skillbox.socialnet.dto.response.PostRs;
-
 import ru.skillbox.socialnet.entity.postrelated.Post;
 
 import java.util.List;
