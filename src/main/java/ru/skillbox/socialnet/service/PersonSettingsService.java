@@ -116,6 +116,6 @@ public class PersonSettingsService {
             case MESSAGE -> personSettings.setMessage(enabled);
             case POST_COMMENT -> personSettings.setPostComment(enabled);
             case POST -> personSettings.setPost(enabled);
-        };
+        }
     }
 }

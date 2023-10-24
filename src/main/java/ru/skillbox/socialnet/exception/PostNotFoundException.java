@@ -1,6 +1,4 @@
-package ru.skillbox.socialnet.exception.post;
-
-import ru.skillbox.socialnet.exception.BadRequestException;
+package ru.skillbox.socialnet.exception;
 
 public class PostNotFoundException extends BadRequestException {
     public PostNotFoundException(Long postId) {

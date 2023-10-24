@@ -1,6 +1,4 @@
-package ru.skillbox.socialnet.exception.person;
-
-import ru.skillbox.socialnet.exception.BadRequestException;
+package ru.skillbox.socialnet.exception;
 
 public class PersonIsDeletedException extends BadRequestException {
 
