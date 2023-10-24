@@ -16,8 +16,8 @@ import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.exception.person.FriendShipNotFoundException;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.service.FriendShipService;
 
 import java.util.List;
@@ -37,16 +37,16 @@ public class FriendsController {
                             schema = @Schema(
                                     description = "default response from server",
                                     ref = "#/components/schemas/CommonRsComplexRs")
-                            )}),
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
-                            content = {@Content(mediaType = "application/json",
+                    content = {@Content(mediaType = "application/json",
                             schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content)})
     @OnlineStatusUpdate
     @PostMapping("/{id}")
     public CommonRs<ComplexRs> sendFriendshipRequest(
-            @RequestHeader(name = "authorization") @Parameter(description = "Access Token", example = "JWT Tokenn",
+            @RequestHeader(name = "authorization") @Parameter(description = "Access Token", example = "JWT Token",
                     required = true) String authorization,
             @PathVariable(name = "id") @Parameter(description = "id", example = "1", required = true) Long id)
             throws PersonNotFoundException {
@@ -60,7 +60,7 @@ public class FriendsController {
                             schema = @Schema(
                                     description = "default response from server",
                                     ref = "#/components/schemas/CommonRsComplexRs")
-                                    )}),
+                    )}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
@@ -127,7 +127,7 @@ public class FriendsController {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
-    @Operation( summary = "block or unblock (if user in block) user by user id")
+    @Operation(summary = "block or unblock (if user in block) user by user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "/",

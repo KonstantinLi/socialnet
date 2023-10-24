@@ -8,8 +8,8 @@ import ru.skillbox.socialnet.entity.dialogrelated.Dialog;
 @Mapper(componentModel = "spring")
 public interface DialogMapper {
 
-  @Mapping(target = "authorId", source = "firstPerson.id")
-  @Mapping(target = "recipientId", source = "secondPerson.id")
-  DialogRs dialogToDialogRs(Dialog dialog);
+    @Mapping(target = "authorId", source = "firstPerson.id")
+    @Mapping(target = "recipientId", source = "secondPerson.id")
+    DialogRs dialogToDialogRs(Dialog dialog);
 
 }
