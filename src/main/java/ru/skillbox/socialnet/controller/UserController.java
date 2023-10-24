@@ -11,13 +11,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.annotation.Info;
+import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.service.PersonService;
 
 import java.util.List;
@@ -125,7 +125,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(ref = "#/components/schemas/CommonRsPersonRs"))}),
+                            schema = @Schema(ref = "#/components/schemas/CommonRsComplexRs"))}),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorRs.class))}),
@@ -133,14 +133,9 @@ public class UserController {
             @ApiResponse(responseCode = "403", description =  "Forbidden", content = @Content)
     })
     @PostMapping("/me/recover")
-    public CommonRs<PersonRs> recoverUserInfo(@RequestHeader("authorization")
-                                              @Parameter(description = "Access Token", example = "JWT Token")
-                                              String token) {
-        //TODO later
-        CommonRs<PersonRs> response = new CommonRs<>();
-        response.setData(new PersonRs());
+    public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization") String token) {
 
-        return response;
+        return personService.recoverUserInfo(jwtTokenUtils.getId(token));
     }
 
     @Operation(summary = "search users by query")
