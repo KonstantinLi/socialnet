@@ -18,8 +18,8 @@ spring:
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: validate
+    #hibernate:
+      #ddl-auto: validate
 
     open-in-view: false
     show-sql: true

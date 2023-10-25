@@ -64,12 +64,11 @@ public class AccountController {
         return accountService.resetPassword(passwordResetRq);
     }
 
-    @FullSwaggerDescription(summary = "set user name")
-    @PutMapping(value = "/email/recovery", consumes = "application/json", produces = "application/json")
+    @FullSwaggerDescription(summary = "change user email")
+    @PutMapping(value = "/email/recovery", consumes = "text/plain", produces = "application/json")
     public void emailRecovery(
             @RequestHeader("authorization") @Token String token,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "user address to send recovery link")
-            @Parameter(example = "obivan.k@rmail.com")
+            @RequestBody @Parameter(description = "user email to send recovery link"/*, example = "obivan.k@rmail.com"*/)
             String email) {
 
         accountService.emailRecovery(token, email);
