@@ -65,7 +65,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-      - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b84404 -Dsonar.projectName='JavaproTeams41Backend'
+    - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b84405 -Dsonar.projectName='javaPro41Backend'
   allow_failure: true
   only:
     - dev
