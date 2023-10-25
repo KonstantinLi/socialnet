@@ -3,7 +3,6 @@ package ru.skillbox.socialnet.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,10 +10,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.annotation.ErrorAPIResponsesDescription;
+import ru.skillbox.socialnet.annotation.OkAPIResponseDescription;
 import ru.skillbox.socialnet.annotation.OnlineStatusUpdate;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
-import ru.skillbox.socialnet.dto.response.ErrorRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
@@ -25,24 +25,13 @@ import java.util.List;
 @Tag(name = "FriendsController", description = "Get recommended or potential friends. Add, delete, get friends. Send, delete friendship request")
 @RestController
 @RequiredArgsConstructor
+@ErrorAPIResponsesDescription
 @RequestMapping("/api/v1/friends")
 public class FriendsController {
 
     private final FriendShipService friendShipService;
 
-    @Operation(summary = "send friendship request by id of another user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsComplexRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "send friendship request by id of another user", value = "CommonRsComplexRs")
     @OnlineStatusUpdate
     @PostMapping("/{id}")
     public CommonRs<ComplexRs> sendFriendshipRequest(
@@ -53,24 +42,7 @@ public class FriendsController {
         return friendShipService.sendFriendshipRequest(id, authorization);
     }
 
-    @Operation(summary = "delete friend by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsComplexRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n" +
-                                    "  \"error\": \"FriendShipNotFoundException\",\n" +
-                                    "  \"timestamp\": 12432857239,\n" +
-                                    "  \"error_description\": \"Запись о дружбе не найдена\"\n" +
-                                    "}"),
-                            schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "delete friend by id", value = "CommonRsComplexRs")
     @OnlineStatusUpdate
     @DeleteMapping("/{id}")
     public CommonRs<ComplexRs> deleteFriendById(
@@ -81,19 +53,7 @@ public class FriendsController {
         return friendShipService.deleteFriendById(id, authorization);
     }
 
-    @Operation(summary = "add friend by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsComplexRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "add friend by id", value = "CommonRsComplexRs")
     @OnlineStatusUpdate
     @PostMapping("/request/{id}")
     public CommonRs<ComplexRs> addFriendById(
@@ -104,19 +64,7 @@ public class FriendsController {
         return friendShipService.addFriendById(id, authorization);
     }
 
-    @Operation(summary = "decline friendship request by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsComplexRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response", implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "decline friendship request by id", value = "CommonRsComplexRs")
     @OnlineStatusUpdate
     @DeleteMapping("/request/{id}")
     public CommonRs<ComplexRs> declineFriendshipRequestById(
@@ -127,18 +75,13 @@ public class FriendsController {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
+//        @OkAPIResponseDescription(endpointDescription = "block or unblock (if user in block) user by user id", value = "HttpStatus")
     @Operation(summary = "block or unblock (if user in block) user by user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "/",
                             schema = @Schema(implementation = HttpStatus.class
-                            ))}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response",
-                                    implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+                            ))})})
     @OnlineStatusUpdate
     @PostMapping("/block_unblock/{id}")
     public void blockOrUnblockUserByUser(
@@ -149,20 +92,7 @@ public class FriendsController {
         friendShipService.blockOrUnblockUserByUser(id, authorization);
     }
 
-    @Operation(summary = "get friends of current user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsListPersonRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response",
-                                    implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "get friends of current user", value = "CommonRsListPersonRs")
     @OnlineStatusUpdate
     @GetMapping("")
     public CommonRs<List<PersonRs>> getFriendsOfCurrentUser(
@@ -176,20 +106,7 @@ public class FriendsController {
         return friendShipService.getFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
-    @Operation(summary = "get potential friends of current user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsListPersonRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response",
-                                    implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "get potential friends of current user", value = "CommonRsListPersonRs")
     @OnlineStatusUpdate
     @GetMapping("/request")
     public CommonRs<List<PersonRs>> getPotentialFriendsOfCurrentUser(
@@ -201,20 +118,7 @@ public class FriendsController {
         return friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
-    @Operation(summary = "get recommendation friends")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsListPersonRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response",
-                                    implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "get recommendation friends", value = "CommonRsListPersonRs")
     @OnlineStatusUpdate
     @GetMapping("/recommendations")
     public CommonRs<List<PersonRs>> getRecommendationFriends(
@@ -223,20 +127,15 @@ public class FriendsController {
         return friendShipService.getRecommendationFriends(authorization);
     }
 
-    @Operation(summary = "get outgoing requests by user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(
-                                    description = "default response from server",
-                                    ref = "#/components/schemas/CommonRsListPersonRs")
-                    )}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(description = "common error response",
-                                    implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)})
+    @OkAPIResponseDescription(endpointDescription = "get outgoing requests by user", value = "CommonRsListPersonRs")
+//    @Operation(summary = "get outgoing requests by user")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "OK",
+//                    content = {@Content(mediaType = "application/json",
+//                            schema = @Schema(
+//                                    description = "default response from server",
+//                                    ref = "#/components/schemas/CommonRsListPersonRs")
+//                    )})})
     @OnlineStatusUpdate
     @GetMapping("/outgoing_requests")
     public CommonRs<List<PersonRs>> getOutgoingRequestsByUser(
