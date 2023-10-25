@@ -2,6 +2,7 @@ package ru.skillbox.socialnet.controller;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/storage")
 @RequiredArgsConstructor
+@Tag(name = "StorageController", description = "Upload users profile image")
 public class StorageController {
 
     private final StorageService storageService;

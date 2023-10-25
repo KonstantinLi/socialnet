@@ -3,6 +3,7 @@ package ru.skillbox.socialnet.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.annotation.BadRequestResponseDescription;
@@ -24,13 +25,15 @@ import java.util.List;
 @RequestMapping("/api/v1/account")
 @RequiredArgsConstructor
 @Info
+@Tag(name = "AccountController",
+        description = "User registration, password reset/recovery, email change, notifications settings")
 @ApiResponse(responseCode = "200")
 public class AccountController {
 
     private final AccountService accountService;
     private final PersonSettingsService personSettingsService;
 
-    @BadRequestResponseDescription
+    @BadRequestResponseDescription(summary = "register new user")
     @PostMapping(value = "/register", produces = "application/json", consumes = "application/json")
     public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) {
 
@@ -89,7 +92,7 @@ public class AccountController {
 
     @FullSwaggerDescription(summary = "edit user's notifications settings")
     @PutMapping(value = "/notifications", consumes = "application/json", produces = "application/json")
-    public CommonRs<ComplexRs> editSettings(@RequestHeader("Authorization") @Token String token,
+    public CommonRs<ComplexRs> editSettings(@RequestHeader("authorization") @Token String token,
                                             @RequestBody PersonSettingsRq personSettingsRq) {
 
         return personSettingsService.editPersonSettings(token, personSettingsRq);
