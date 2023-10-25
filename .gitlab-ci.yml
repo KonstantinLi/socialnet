@@ -70,7 +70,6 @@ sonarqube-check:
   only:
     - dev
 
-
 package:
   stage: package
   only:
