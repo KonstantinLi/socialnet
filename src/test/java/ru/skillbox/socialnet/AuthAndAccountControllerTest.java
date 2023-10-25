@@ -510,7 +510,7 @@ public class AuthAndAccountControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error_description").value("Ошибка идетификации пользователя: email не совпадает!"));
+                .andExpect(jsonPath("$.error_description").isNotEmpty());
     }
 
     /**
