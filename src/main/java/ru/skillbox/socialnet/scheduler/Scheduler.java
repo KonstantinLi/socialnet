@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import ru.skillbox.socialnet.dto.LogUploader;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
+import ru.skillbox.socialnet.service.CoursesService;
 import ru.skillbox.socialnet.service.NotificationService;
 import ru.skillbox.socialnet.service.PersonService;
 
@@ -16,10 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-//TODO Две закомментированные аннотации?
 @Configuration
-//@EnableScheduling
-//@ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 @Async
 @RequiredArgsConstructor
 public class Scheduler {
@@ -27,6 +25,7 @@ public class Scheduler {
     private final CaptchaRepository captchaRepository;
     private final LogUploader logUploader;
     private final PersonService personService;
+    private final CoursesService coursesService;
 
     @Value("${logger.path}")
     private String logPath;
@@ -59,5 +58,10 @@ public class Scheduler {
     @Scheduled(fixedDelayString = "PT24H")
     private void deleteInactiveUsers() {
         personService.deleteInactiveUsers();
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    private void downloadCourses() throws Exception {
+        coursesService.downloadCourses();
     }
 }
