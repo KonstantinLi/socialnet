@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.skillbox.socialnet.annotation.AuthRequired;
 import ru.skillbox.socialnet.annotation.FullSwaggerDescription;
 import ru.skillbox.socialnet.annotation.Info;
+import ru.skillbox.socialnet.annotation.Token;
 import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
@@ -35,7 +36,7 @@ public class UserController {
     public CommonRs<PersonRs> getUserById(@PathVariable(value = "id")
                                           @Parameter(description = "id", example = "1", required = true)
                                           Long id,
-                                          @RequestHeader("authorization")
+                                          @Token
                                           @Parameter(description = "Access Token", example = "JWT Token")
                                           String token) {
 
@@ -45,7 +46,7 @@ public class UserController {
     @FullSwaggerDescription(summary = "get information about me")
     @GetMapping(value = "/me", consumes = "application/json", produces = "application/json")
     public CommonRs<PersonRs> getMyInfo(@RequestHeader(value = "authorization")
-                                        @Parameter(description = "Access Token", example = "JWT Token")
+                                        @Token
                                         String token) {
 
         return getUserById(jwtTokenUtils.getId(token), token);
@@ -55,7 +56,7 @@ public class UserController {
     @AuthRequired(summary = "update information about me")
     @PutMapping(value = "/me", produces = "application/json", consumes = "application/json")
     public CommonRs<PersonRs> updateMyInfo(@RequestHeader("authorization")
-                                           @Parameter(description = "Access Token", example = "JWT Token")
+                                           @Token
                                            String token,
                                            @RequestBody @Parameter(description = "user data",
                                                    examples = @ExampleObject(value = """
@@ -80,7 +81,7 @@ public class UserController {
     @AuthRequired(summary = "delete information about me")
     @DeleteMapping(value = "/me", produces = "application/json", consumes = "application/json")
     public CommonRs<ComplexRs> deleteMyInfo(@RequestHeader("authorization")
-                                            @Parameter(description = "Access Token", example = "JWT Token")
+                                            @Token
                                             String token) {
 
         return personService.deletePersonById(jwtTokenUtils.getId(token));
@@ -88,7 +89,9 @@ public class UserController {
 
     @FullSwaggerDescription(summary = "recover information about me")
     @PostMapping(value = "/me/recover", produces = "application/json", consumes = "application/json")
-    public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization") String token) {
+    public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization")
+                                               @Token
+                                               String token) {
 
         return personService.recoverUserInfo(jwtTokenUtils.getId(token));
     }
@@ -97,7 +100,7 @@ public class UserController {
     @AuthRequired(summary = "search users by query")
     @GetMapping(value = "/search", produces = "application/json", consumes = "application/json")
     public CommonRs<List<PersonRs>> findUsers(@RequestHeader("authorization")
-                                              @Parameter(description = "Access Token", example = "JWT Token")
+                                              @Token
                                               String token,
                                               @RequestParam(value = "age_from",
                                                       required = false, defaultValue = "0")
