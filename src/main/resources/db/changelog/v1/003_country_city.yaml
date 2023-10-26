@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id:  003_country_city
+      author:  Nekrasov.VA
+      changes:
+      -  sql:
+           sql:
+               alter table countries add column external_id bigint;
+               alter table cities add column external_id bigint;

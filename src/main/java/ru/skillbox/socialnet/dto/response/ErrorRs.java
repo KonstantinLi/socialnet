@@ -9,13 +9,14 @@ import java.util.Date;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@Schema(description = "Common error response")
 public class ErrorRs {
 
-    @Schema(description = "name of error", example = "PersonNotFoundException")
+    @Schema(description = "name of error", example = "BadRequestException")
     private String error;
     @Schema(description = "error time in timestamp", example = "12432857239")
     private Long timestamp;
-    @Schema(description = "description of error", example = "Запись о профиле не найдена")
+    @Schema(description = "description of error", example = "Введены некорректные данные")
     private String errorDescription;
 
     public ErrorRs(RuntimeException exception) {

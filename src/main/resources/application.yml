@@ -19,7 +19,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 
     open-in-view: false
     show-sql: true
@@ -71,6 +71,10 @@ email:
   smtp-ssl-trust: true
   recovery-base-url: http://localhost:8080/
   recovery-email-blueprint: emailBlueprint.html
+
+vk:
+  key: ${VK_SERVICE_KEY:service-key}
+
 
 management:
   endpoints:
