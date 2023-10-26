@@ -1,5 +1,7 @@
 package ru.skillbox.socialnet.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -15,6 +17,8 @@ import ru.skillbox.socialnet.service.MessageService;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Tag(name = "MessageWsController",
+        description = "message WebSocket")
 public class MessageWsController {
 
     private static final String PATH = "/queue/messages";
@@ -23,6 +27,7 @@ public class MessageWsController {
     private final MessageService messageService;
 
     @MessageMapping("/dialogs/send_message")
+    @Operation(summary = "WebSocket methods: ")
     public void sendMessage(@Header("dialog_id") Long dialogId, @Payload MessageWs message) {
         message = messageService.processMessage(dialogId, message);
         messagingTemplate.convertAndSendToUser(dialogId.toString(), PATH, message);
