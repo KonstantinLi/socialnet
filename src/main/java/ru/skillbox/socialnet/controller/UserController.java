@@ -1,7 +1,6 @@
 package ru.skillbox.socialnet.controller;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ public class UserController {
                                           @Parameter(description = "id", example = "1", required = true)
                                           Long id,
                                           @Token
-                                          @Parameter(description = "Access Token", example = "JWT Token")
                                           String token) {
 
         return personService.getUserById(jwtTokenUtils.getId(token), id);
@@ -58,20 +56,7 @@ public class UserController {
     public CommonRs<PersonRs> updateMyInfo(@RequestHeader("authorization")
                                            @Token
                                            String token,
-                                           @RequestBody @Parameter(description = "user data",
-                                                   examples = @ExampleObject(value = """
-                                                           {
-                                                             "about": "string",
-                                                             "city": "string",
-                                                             "country": "string",
-                                                             "phone": "string",
-                                                             "birth_date": "string",
-                                                             "first_name": "string",
-                                                             "last_name": "string",
-                                                             "messages_permission": "string",
-                                                             "photo_id": "string"
-                                                           }
-                                                           """)) UserRq userData) {
+                                           @RequestBody UserRq userData) {
 
 
         return personService.updateUserInfo(jwtTokenUtils.getId(token), userData);
