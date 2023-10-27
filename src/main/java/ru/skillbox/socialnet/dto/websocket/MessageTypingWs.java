@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class MessageTypingWs {
 
-  private Boolean typing;
+    private Boolean typing;
 
-  @JsonProperty("user_id")
-  private Long userId;
+    @JsonProperty("user_id")
+    private Long userId;
 }

@@ -1,4 +1,3 @@
-
 package ru.skillbox.socialnet.service;
 
 import com.github.cage.GCage;
@@ -11,8 +10,8 @@ import ru.skillbox.socialnet.dto.response.CaptchaRs;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
-import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.entity.other.Captcha;
+import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.AuthException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
@@ -32,7 +31,7 @@ public class AuthService {
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
     private final PersonMapper personMapper;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public CommonRs<ComplexRs> logout() {
         CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();

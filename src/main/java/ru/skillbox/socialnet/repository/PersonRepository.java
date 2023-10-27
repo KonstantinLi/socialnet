@@ -8,10 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.person.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
-import java.util.Collection;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +28,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "(select distinct round(random() * (select max(id) - 1 from persons)) + " +
             "1 as id from generate_series (1, 100)) t " +
             "where p.id = t.id and  t.id not in (:personIds) " +
+            " and p.is_deleted = false and p.is_blocked = false " +
             "fetch first :cnt rows only", nativeQuery = true)
     Iterable<Person> randomGenerateFriendsForPerson(@Param("personIds") List<Long> personIds,
                                                     @Param("cnt") long cnt);
@@ -57,7 +58,9 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "persons p where f.dst_person_id = p.id and f.src_person_id in  " +
             "(select ff.dst_person_id from friendships ff " +
             "where ff.src_person_id = :personId and ff.status_name = 'FRIEND') " +
-            "and f.dst_person_id != :personId", nativeQuery = true)
+            "and f.dst_person_id != :personId " +
+            "and p.is_blocked = false and p.is_deleted = false", nativeQuery = true)
+
     Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
 
     /**
@@ -87,8 +90,11 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     Optional<Person> findByEmail(String email);
 
+    //TODO 3 unused methods
     Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
+
     Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
+
     Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
@@ -118,7 +124,9 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findAllByBirthDate(LocalDateTime birthDate);
 
     long countByIsDeleted(boolean isDeleted);
+
     long countByCountryAndIsDeleted(String country, boolean isDeleted);
+
     long countByCityAndIsDeleted(String city, boolean isDeleted);
 
     @Query(value = "SELECT country AS region, COUNT(country) AS countUsers"
@@ -136,4 +144,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             , nativeQuery = true
     )
     Collection<RegionStatisticsRs> countCityStatistics();
+
+    @Query(value = "select * from persons p where p.deleted_time > :timeParam", nativeQuery = true)
+    Optional<List<Person>> findAllInactiveUsersByDeletedTime(@Param("timeParam") LocalDateTime timeParam);
 }

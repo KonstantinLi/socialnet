@@ -28,7 +28,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 )
         )
 )
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @ConfigurationPropertiesScan
 @EnableScheduling
 @Configuration
@@ -43,8 +43,8 @@ public class SocialNetApp {
         log.info("Data source " + applicationContext.getEnvironment().getProperty("spring.datasource.url"));
     }
 
-  public static void main(String[] args) {
-    SpringApplication.run(SocialNetApp.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(SocialNetApp.class, args);
+    }
 
 }

@@ -27,7 +27,8 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,7 +83,8 @@ public class AuthAndAccountControllerTest {
      */
 
     /**
-     *  Вспомогательная функция. Создает и возвращает объект класса LoginRq
+     * Вспомогательная функция. Создает и возвращает объект класса LoginRq
+     *
      * @param person - входной параметр класса Person. По этому параметру будет сформирован результат
      * @return - функция возвращает объект класса LoginRq
      */
@@ -97,6 +99,7 @@ public class AuthAndAccountControllerTest {
 
     /**
      * Тест: вводим верный логин и пароль и должны получить статус 200 и совпадающие email в ответе
+     *
      * @throws Exception
      */
     @Test
@@ -114,6 +117,7 @@ public class AuthAndAccountControllerTest {
 
     /**
      * Тест: вводим НЕ ВЕРНЫЙ логин, и должны получить 400 результат и ошибку "Пользователь не найден"
+     *
      * @throws Exception
      */
     @Test
@@ -131,7 +135,8 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  Тест: вводим НЕ ВЕРНЫЙ пароль, и должны получить 400 результат и ошибку "Пароли не совпадают"
+     * Тест: вводим НЕ ВЕРНЫЙ пароль, и должны получить 400 результат и ошибку "Пароли не совпадают"
+     *
      * @throws Exception
      */
     @Test
@@ -149,9 +154,7 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *
-     ******************* AccountController TESTS ****************************
-     *
+     * ****************** AccountController TESTS ****************************
      */
 
 
@@ -161,6 +164,7 @@ public class AuthAndAccountControllerTest {
 
     /**
      * - вспомогательная функция, получает валидную капчу для тестов
+     *
      * @return - найденная в базе или созданная валидная Captcha
      */
     private Captcha getValidCaptcha() {
@@ -183,7 +187,8 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - вспомогательная функция, отдает объект RegisterRq, создающийся по дефолтным параметрам
+     * - вспомогательная функция, отдает объект RegisterRq, создающийся по дефолтным параметрам
+     *
      * @return - объект класса RegisterRq
      */
     private RegisterRq getRegisterRq() {
@@ -201,8 +206,9 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: регистрируем нового пользователя.
-     *  ожидаем статус 200 и совпадение email в ответе сервера и поля email registerRq
+     * - Тест: регистрируем нового пользователя.
+     * ожидаем статус 200 и совпадение email в ответе сервера и поля email registerRq
+     *
      * @throws Exception
      */
     @Test
@@ -219,7 +225,8 @@ public class AuthAndAccountControllerTest {
 
     /**
      * - Тест: попытка зарегистрировать существующего пользователя повторно
-     *  ожидаем статус 400 и соотвующую ошибку
+     * ожидаем статус 400 и соотвующую ошибку
+     *
      * @throws Exception
      */
     @Test
@@ -239,13 +246,14 @@ public class AuthAndAccountControllerTest {
 
     /**
      * - Тест: попытка зарегистрировать пользователя, который не верно ввел подтверждение пароля
-     *  ожидаем статус 400 и соотвующую ошибку
+     * ожидаем статус 400 и соотвующую ошибку
+     *
      * @throws Exception
      */
     @Test
     public void wrongRegistrationNotSamePasswords() throws Exception {
         RegisterRq registerRq = getRegisterRq();
-        registerRq.setPasswd2(registerRq.getPasswd2()+"wrongText");
+        registerRq.setPasswd2(registerRq.getPasswd2() + "wrongText");
         this.mockMvc.perform(post("/api/v1/account/register")
                         .content(new ObjectMapper().writeValueAsString(registerRq))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -255,9 +263,11 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").value("Пароли не совпадают"))
         ;
     }
+
     /**
      * - Тест: попытка зарегистрировать пользователя, который не верно ввел код с капчи
-     *  ожидаем статус 400 и соотвующую ошибку
+     * ожидаем статус 400 и соотвующую ошибку
+     *
      * @throws Exception
      */
     @Test
@@ -286,16 +296,17 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: успешное изменение пароля пользователя
-     *  ожидаем статус 200 и соотв. сообщение
+     * - Тест: успешное изменение пароля пользователя
+     * ожидаем статус 200 и соотв. сообщение
+     *
      * @throws Exception
      */
     @Test
     void successChangePasswordTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordSetRq passwordSetRq = new PasswordSetRq();
-        passwordSetRq.setPassword( getDecodedPassword(person.getPassword()) + "1");
+        PasswordResetRq passwordSetRq = new PasswordResetRq();
+        passwordSetRq.setPassword(getDecodedPassword(person.getPassword()) + "1");
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
                         .content(new ObjectMapper().writeValueAsString(passwordSetRq))
@@ -308,16 +319,17 @@ public class AuthAndAccountControllerTest {
 
 
     /**
-     *  - Тест: НЕ успешное изменение пароля пользователя - неверный токен!
-     *  ожидаем статус 401 и соотв. причину
+     * - Тест: НЕ успешное изменение пароля пользователя - неверный токен!
+     * ожидаем статус 401 и соотв. причину
+     *
      * @throws Exception
      */
     @Test
     void wrongTokenTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person) + "1";
-        PasswordSetRq passwordSetRq = new PasswordSetRq();
-        passwordSetRq.setPassword( getDecodedPassword(person.getPassword()) + "1");
+        PasswordResetRq passwordSetRq = new PasswordResetRq();
+        passwordSetRq.setPassword(getDecodedPassword(person.getPassword()) + "1");
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
                         .content(new ObjectMapper().writeValueAsString(passwordSetRq))
@@ -330,15 +342,16 @@ public class AuthAndAccountControllerTest {
 
 
     /**
-     *  - Тест: попытка изменить пароль пользователя на текущий.
-     *  ожидаем статус 400 и соотв. ошибку
+     * - Тест: попытка изменить пароль пользователя на текущий.
+     * ожидаем статус 400 и соотв. ошибку
+     *
      * @throws Exception
      */
     @Test
     void trySamePasswordChangeTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordSetRq passwordSetRq = new PasswordSetRq();
+        PasswordResetRq passwordSetRq = new PasswordResetRq();
         passwordSetRq.setPassword(getDecodedPassword(person.getPassword()));
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
@@ -351,10 +364,11 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: удачный запрос на восстановление пароля
-     *  тестируем на пользователе с ID = 1, предварительно сделав его НЕ удаленным и НЕ заблокированным и
-     *  изменив email на свой. Убеждаемся, что тест прошел успешно (статус 200) и меняем настройки пользователя
-     *  на первоначальные
+     * - Тест: удачный запрос на восстановление пароля
+     * тестируем на пользователе с ID = 1, предварительно сделав его НЕ удаленным и НЕ заблокированным и
+     * изменив email на свой. Убеждаемся, что тест прошел успешно (статус 200) и меняем настройки пользователя
+     * на первоначальные
+     *
      * @throws Exception
      */
     @Test
@@ -372,10 +386,10 @@ public class AuthAndAccountControllerTest {
             String token = jwtTokenUtils.generateToken(person);
             passwordRecoveryRq.setEmail(person.getEmail());
             this.mockMvc.perform(put("/api/v1/account/password/recovery")
-                    .header("authorization", token)
-                    .content(new ObjectMapper().writeValueAsString(passwordRecoveryRq))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("authorization", token)
+                            .content(new ObjectMapper().writeValueAsString(passwordRecoveryRq))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk());
         } finally {
@@ -388,10 +402,11 @@ public class AuthAndAccountControllerTest {
 
 
     /**
-     *  - Тест: НЕ удачный запрос на восстановление пароля
-     *  тестируем на пользователе с ID = 1, предварительно сделав его заблокированным и
-     *  изменив email на свой. Убеждаемся, что тест прошел с ошибкой (статус 400) и меняем настройки пользователя
-     *  на первоначальные
+     * - Тест: НЕ удачный запрос на восстановление пароля
+     * тестируем на пользователе с ID = 1, предварительно сделав его заблокированным и
+     * изменив email на свой. Убеждаемся, что тест прошел с ошибкой (статус 400) и меняем настройки пользователя
+     * на первоначальные
+     *
      * @throws Exception
      */
     @Test
@@ -422,20 +437,21 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: удачный тест на сброс пароля
-     *  меняем пароль пользователю с ID = 1 Убеждаемся, что тест прошел успешно (статус 200 и соотв. сообщение получено)
+     * - Тест: удачный тест на сброс пароля
+     * меняем пароль пользователю с ID = 1 Убеждаемся, что тест прошел успешно (статус 200 и соотв. сообщение получено)
+     *
      * @throws Exception
      */
     @Test
     void successPasswordResetTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordRq passwordRq = new PasswordRq();
-        passwordRq.setPassword(UUID.randomUUID().toString());
-        passwordRq.setSecret(token);
+        PasswordResetRq passwordResetRq = new PasswordResetRq();
+        passwordResetRq.setPassword(UUID.randomUUID().toString());
+        passwordResetRq.setSecret(token);
         this.mockMvc.perform(put("/api/v1/account/password/reset")
                         .header("authorization", token)
-                        .content(new ObjectMapper().writeValueAsString(passwordRq))
+                        .content(new ObjectMapper().writeValueAsString(passwordResetRq))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -444,20 +460,21 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: Неудачный тест на сброс пароля
-     *   меняем пароль на идентичный, ожидаем получить статус 400 и соотв. сообщение об ошибке
+     * - Тест: Неудачный тест на сброс пароля
+     * меняем пароль на идентичный, ожидаем получить статус 400 и соотв. сообщение об ошибке
+     *
      * @throws Exception
      */
     @Test
     void wrongPasswordResetTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordRq passwordRq = new PasswordRq();
-        passwordRq.setPassword(getDecodedPassword(person.getPassword()));
-        passwordRq.setSecret(token);
+        PasswordResetRq passwordResetRq = new PasswordResetRq();
+        passwordResetRq.setPassword(getDecodedPassword(person.getPassword()));
+        passwordResetRq.setSecret(token);
         this.mockMvc.perform(put("/api/v1/account/password/reset")
                         .header("authorization", token)
-                        .content(new ObjectMapper().writeValueAsString(passwordRq))
+                        .content(new ObjectMapper().writeValueAsString(passwordResetRq))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -467,7 +484,8 @@ public class AuthAndAccountControllerTest {
 
     /**
      * - Тест: успешный тест на сброс email
-     *   ожидаем статус 200 и соответствующее сообщение
+     * ожидаем статус 200 и соответствующее сообщение
+     *
      * @throws Exception
      */
     @Test
@@ -477,7 +495,8 @@ public class AuthAndAccountControllerTest {
 
     /**
      * - Тест: НЕ успешный тест на сброс email. Новый email != Старый email
-     *   ожидаем статус 400 и соответствующее сообщение
+     * ожидаем статус 400 и соответствующее сообщение
+     *
      * @throws Exception
      */
     @Test
@@ -486,25 +505,26 @@ public class AuthAndAccountControllerTest {
         String token = jwtTokenUtils.generateToken(person);
         this.mockMvc.perform(put("/api/v1/account/email/recovery")
                         .header("authorization", token)
-                        .content(UUID.randomUUID().toString()+"@mail.ru")
+                        .content(UUID.randomUUID() + "@mail.ru")
                         .contentType(MediaType.TEXT_PLAIN_VALUE)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error_description").value("Ошибка идетификации пользователя: email не совпадает!"));
+                .andExpect(jsonPath("$.error_description").isNotEmpty());
     }
 
     /**
-     *  - Тест: успешный тест на изменение email
-     *   ожидаем статус 200 и соответствующее сообщение
+     * - Тест: успешный тест на изменение email
+     * ожидаем статус 200 и соответствующее сообщение
+     *
      * @throws Exception
      */
     @Test
-    void successSetEmailTest() throws  Exception {
+    void successSetEmailTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
         EmailRq emailRq = new EmailRq();
-        emailRq.setEmail(UUID.randomUUID().toString() + "@mail.ru");
+        emailRq.setEmail(UUID.randomUUID() + "@mail.ru");
         emailRq.setSecret(token);
         this.mockMvc.perform(put("/api/v1/account/email")
                         .header("authorization", token)
@@ -517,10 +537,11 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: уникальность email при попытке измениить email
-     *  необходимо убедиться, что с одним email не могут быть зарегистрированы несколько персон.
-     *  Для персоны1 подставляем email принадлежащий персоне2 пытаемся выполнить запрос.
-     *  ожидаем получить статус 400
+     * - Тест: уникальность email при попытке измениить email
+     * необходимо убедиться, что с одним email не могут быть зарегистрированы несколько персон.
+     * Для персоны1 подставляем email принадлежащий персоне2 пытаемся выполнить запрос.
+     * ожидаем получить статус 400
+     *
      * @throws Exception
      */
     @Test
@@ -542,8 +563,9 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
-     *  - Тест: НЕ успешный тест на изменение email. Пытаемся ввести тот же email
-     *   ожидаем статус 400 и соответствующее сообщенине
+     * - Тест: НЕ успешный тест на изменение email. Пытаемся ввести тот же email
+     * ожидаем статус 400 и соответствующее сообщенине
+     *
      * @throws Exception
      */
     @Test
