@@ -47,10 +47,7 @@ public class CoursesService {
 
     private void saveCourse(String valCode, String value) {
         Optional<Currency> optCurrency = currencyRepository.findByName(valCode);
-        if (optCurrency.isPresent()) {
-            return;
-        }
-        Currency currency = new Currency();
+        Currency currency = optCurrency.orElseGet(Currency::new);
         currency.setName(valCode);
         currency.setPrice(value);
         DateFormat df = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
