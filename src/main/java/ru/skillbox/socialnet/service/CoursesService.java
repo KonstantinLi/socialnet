@@ -14,6 +14,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Optional;
 
 @Service
@@ -27,14 +30,6 @@ public class CoursesService {
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse("http://www.cbr.ru/scripts/XML_daily.asp");
         doc.getDocumentElement().normalize();
-        NodeList nList = doc.getElementsByTagName("ValCurs");
-        Node n = nList.item(0);
-        String date = null;
-        if (n.getNodeType() == Node.ELEMENT_NODE) {
-            Element elem = (Element) n;
-            //Считывание даты
-            date = elem.getAttribute("Date");
-        }
 
         //Считать список валют
         NodeList nodeList = doc.getElementsByTagName("Valute");
@@ -44,21 +39,22 @@ public class CoursesService {
                 Element elem = (Element) node;
                 String valCode = elem.getElementsByTagName("CharCode").item(0).getTextContent();
                 if (valCode.equalsIgnoreCase("usd") || valCode.equalsIgnoreCase("eur")) {
-                    saveCourse(valCode, date, elem.getElementsByTagName("Value").item(0).getTextContent());
+                    saveCourse(valCode, elem.getElementsByTagName("Value").item(0).getTextContent());
                 }
             }
         }
     }
 
-    private void saveCourse(String valCode, String date, String value) {
-        Optional<Currency> optCurrency = currencyRepository.findByNameAndUpdateTime(valCode, date);
+    private void saveCourse(String valCode, String value) {
+        Optional<Currency> optCurrency = currencyRepository.findByName(valCode);
         if (optCurrency.isPresent()) {
             return;
         }
         Currency currency = new Currency();
         currency.setName(valCode);
         currency.setPrice(value);
-        currency.setUpdateTime(date);
+        DateFormat df = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
+        currency.setUpdateTime(df.format(Calendar.getInstance().getTime()));
         currencyRepository.save(currency);
     }
 
