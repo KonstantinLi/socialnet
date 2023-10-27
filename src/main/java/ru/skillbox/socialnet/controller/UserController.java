@@ -31,10 +31,11 @@ public class UserController {
     private final JwtTokenUtils jwtTokenUtils;
 
     @FullSwaggerDescription(summary = "get user by id")
-    @GetMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/{id}")
     public CommonRs<PersonRs> getUserById(@PathVariable(value = "id")
                                           @Parameter(description = "id", example = "1", required = true)
                                           Long id,
+                                          @RequestHeader("authorization")
                                           @Token
                                           String token) {
 
@@ -42,7 +43,7 @@ public class UserController {
     }
 
     @FullSwaggerDescription(summary = "get information about me")
-    @GetMapping(value = "/me", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/me")
     public CommonRs<PersonRs> getMyInfo(@RequestHeader(value = "authorization")
                                         @Token
                                         String token) {
@@ -64,7 +65,7 @@ public class UserController {
 
     @ApiResponse(responseCode = "200")
     @AuthRequired(summary = "delete information about me")
-    @DeleteMapping(value = "/me", produces = "application/json", consumes = "application/json")
+    @DeleteMapping(value = "/me")
     public CommonRs<ComplexRs> deleteMyInfo(@RequestHeader("authorization")
                                             @Token
                                             String token) {
@@ -73,7 +74,7 @@ public class UserController {
     }
 
     @FullSwaggerDescription(summary = "recover information about me")
-    @PostMapping(value = "/me/recover", produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "/me/recover")
     public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization")
                                                @Token
                                                String token) {
@@ -83,7 +84,7 @@ public class UserController {
 
     @ApiResponse(responseCode = "200")
     @AuthRequired(summary = "search users by query")
-    @GetMapping(value = "/search", produces = "application/json", consumes = "application/json")
+    @GetMapping(value = "/search")
     public CommonRs<List<PersonRs>> findUsers(@RequestHeader("authorization")
                                               @Token
                                               String token,
