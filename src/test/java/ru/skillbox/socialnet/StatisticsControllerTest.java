@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Slf4j
-@RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @Testcontainers
 @ContextConfiguration(initializers = {StatisticsControllerTest.Initializer.class})

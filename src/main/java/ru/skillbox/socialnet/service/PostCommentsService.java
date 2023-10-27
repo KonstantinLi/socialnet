@@ -52,7 +52,7 @@ public class PostCommentsService {
 
         PostComment postComment = new PostComment();
 
-        postComment.setPost(post);
+        postComment.setPostId(postId);
         postComment.setAuthor(personRepository.findById(myId).orElseThrow());
         postComment.setTime(LocalDateTime.now());
         postComment.setIsBlocked(false);
@@ -95,20 +95,20 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
         Post post = fetchPost(postId, false);
 
-        List<PostComment> postComments = postCommentsRepository.findAllByPostIdAndIsDeleted(
+        List<PostComment> postComments = postCommentsRepository.findAllByPostIdAndParentId(
                 post.getId(),
-                false,
+                null,
                 PageRequest.of(
                         offset, perPage,
                         Sort.by("time").descending()
                 )
         );
 
-        long total = postCommentsRepository.countByPostIdAndIsDeleted(
-                post.getId(), false
+        long total = postCommentsRepository.countByPostIdAndParentId(
+                post.getId(), null
         );
 
-        return getListPostCommentResponse(postComments, total, myId, offset, perPage);
+        return getListPostCommentResponse(postComments, total, myId, offset, postComments.size());
     }
 
 
@@ -149,15 +149,13 @@ public class PostCommentsService {
     private void savePostComment(PostComment postComment, CommentRq commentRq) {
         if (commentRq.getParentId() != null) {
             PostComment parentPostComment = fetchPostComment(
-                    commentRq.getParentId(), postComment.getPost().getId(), false
+                    commentRq.getParentId(), postComment.getPostId(), false
             );
 
             if (parentPostComment.getParentId() != null) {
                 throw new PostCommentCreateException("Subcomment of subcomment is not allowed");
             }
         }
-
-        postComment.setParentId(null);
 
         commentMapper.commentRqToPostComment(commentRq, postComment);
         postCommentsRepository.save(postComment);
@@ -198,6 +196,13 @@ public class PostCommentsService {
         commentRs.setMyLike(likesRepository.existsByTypeAndEntityIdAndPersonId(LikeType.Comment, commentRs.getId(), myId));
 
         fillAuthor(commentRs.getAuthor(), myId);
+
+        commentRs.getSubComments().forEach(subCommentRs -> {
+            subCommentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, subCommentRs.getId()));
+            subCommentRs.setMyLike(likesRepository.existsByTypeAndEntityIdAndPersonId(LikeType.Comment, subCommentRs.getId(), myId));
+
+            fillAuthor(subCommentRs.getAuthor(), myId);
+        });
 
         return commentRs;
     }

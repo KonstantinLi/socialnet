@@ -19,4 +19,18 @@ public interface PostCommentsRepository extends CrudRepository<PostComment, Long
     List<PostComment> findAllByPostIdAndIsDeleted(
             long postId, boolean isDeleted, Pageable pageable
     );
+
+    long countByPostIdAndIsDeletedAndParentId(
+            long postId, boolean isDeleted, Long parentId
+    );
+    List<PostComment> findAllByPostIdAndIsDeletedAndParentId(
+            long postId, boolean isDeleted, Long parentId, Pageable pageable
+    );
+
+    long countByPostIdAndParentId(
+            long postId, Long parentId
+    );
+    List<PostComment> findAllByPostIdAndParentId(
+            long postId, Long parentId, Pageable pageable
+    );
 }
