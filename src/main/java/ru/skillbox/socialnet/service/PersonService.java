@@ -11,6 +11,7 @@ import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.CurrencyRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
@@ -19,6 +20,7 @@ import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
+import ru.skillbox.socialnet.repository.CurrencyRepository;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 
@@ -34,6 +36,7 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
     private final FriendShipRepository friendShipRepository;
+    private final CurrencyRepository currencyRepository;
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
@@ -53,8 +56,11 @@ public class PersonService {
         if (person.getPhoto() == null || person.getPhoto().isEmpty()) {
             person.setPhoto(defaultPhotoUrl);
         }
-
         PersonRs personRs = personMapper.personToPersonRs(person);
+        CurrencyRs currencyRs = new CurrencyRs();
+        currencyRs.setUsd(currencyRepository.findPriceByName("usd"));
+        currencyRs.setEuro(currencyRepository.findPriceByName("eur"));
+        personRs.setCurrency(currencyRs);
         personRs.setFriendStatus((friendShipStatus.isEmpty()
                 ? FriendShipStatus.UNKNOWN.toString() : friendShipStatus.get().toString()));
         CommonRs<PersonRs> result = new CommonRs<>();
