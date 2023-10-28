@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class CaptchaRs {
 
-    @Schema(example = "78569")
+    @Schema(example = "12345")
     private String code;
 
     @Schema(example = "/some/path")

@@ -24,7 +24,7 @@ public class AuthController {
     private final AuthService authService;
 
     @FullSwaggerDescription(summary = "login by email and password")
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public CommonRs<PersonRs> login(@RequestBody LoginRq loginRq) {
 
         return authService.login(loginRq);
@@ -32,14 +32,14 @@ public class AuthController {
 
     @OnlineStatusUpdate
     @FullSwaggerDescription(summary = "logout current user")
-    @PostMapping("/logout")
+    @PostMapping(value = "/logout", produces = "application/json")
     public CommonRs<ComplexRs> logout(@RequestHeader("authorization") @Token String authorization) {
 
         return authService.logout();
     }
 
     @FullSwaggerDescription(summary = "get captcha secret code and image url")
-    @GetMapping("/captcha")
+    @GetMapping(value = "/captcha", produces = "application/json")
     public CaptchaRs captcha() {
 
         return authService.captcha();
