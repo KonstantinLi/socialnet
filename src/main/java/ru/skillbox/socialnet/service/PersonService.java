@@ -9,20 +9,20 @@ import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
-import ru.skillbox.socialnet.dto.response.CommonRs;
-import ru.skillbox.socialnet.dto.response.ComplexRs;
-import ru.skillbox.socialnet.dto.response.CurrencyRs;
-import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.dto.response.*;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
+import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.BadRequestException;
 import ru.skillbox.socialnet.exception.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
+import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.CurrencyRepository;
 import ru.skillbox.socialnet.repository.FriendShipRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
+import ru.skillbox.socialnet.repository.WeatherRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +37,8 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final FriendShipRepository friendShipRepository;
     private final CurrencyRepository currencyRepository;
+    private final WeatherRepository weatherRepository;
+    private final WeatherMapper weatherMapper;
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
@@ -61,6 +63,9 @@ public class PersonService {
         currencyRs.setUsd(currencyRepository.findPriceByName("usd"));
         currencyRs.setEuro(currencyRepository.findPriceByName("eur"));
         personRs.setCurrency(currencyRs);
+        Optional<Weather> optWeather = weatherRepository.findByCity(personRs.getCity());
+        optWeather.ifPresent(weather -> personRs.setWeather(weatherMapper.weatherToWeatherRs(weather)));
+
         personRs.setFriendStatus((friendShipStatus.isEmpty()
                 ? FriendShipStatus.UNKNOWN.toString() : friendShipStatus.get().toString()));
         CommonRs<PersonRs> result = new CommonRs<>();

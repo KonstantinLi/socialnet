@@ -12,6 +12,7 @@ import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.service.CoursesService;
 import ru.skillbox.socialnet.service.NotificationService;
 import ru.skillbox.socialnet.service.PersonService;
+import ru.skillbox.socialnet.service.WeatherService;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class Scheduler {
     private final LogUploader logUploader;
     private final PersonService personService;
     private final CoursesService coursesService;
+    private final WeatherService weatherService;
 
     @Value("${logger.path}")
     private String logPath;
@@ -66,5 +68,10 @@ public class Scheduler {
     @Scheduled(cron = "${schedule.currency-download}")
     private void downloadCourses() throws ParserConfigurationException, IOException, SAXException {
         coursesService.downloadCourses();
+    }
+
+    @Scheduled(cron = "${schedule.weather-update}")
+    private void updateWeather() {
+        weatherService.updateAllCities();
     }
 }
