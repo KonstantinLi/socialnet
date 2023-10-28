@@ -37,6 +37,8 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
     private final FriendShipRepository friendShipRepository;
+    private final CurrencyRepository currencyRepository;
+    private final ProfileImageManager profileImageManager;
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
