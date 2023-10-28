@@ -5,21 +5,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.xml.sax.SAXException;
 import ru.skillbox.socialnet.dto.LogUploader;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
+import ru.skillbox.socialnet.service.CoursesService;
 import ru.skillbox.socialnet.service.NotificationService;
 import ru.skillbox.socialnet.service.PersonService;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-//TODO Две закомментированные аннотации?
 @Configuration
-//@EnableScheduling
-//@ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 @Async
 @RequiredArgsConstructor
 public class Scheduler {
@@ -27,6 +28,7 @@ public class Scheduler {
     private final CaptchaRepository captchaRepository;
     private final LogUploader logUploader;
     private final PersonService personService;
+    private final CoursesService coursesService;
 
     @Value("${logger.path}")
     private String logPath;
@@ -59,5 +61,10 @@ public class Scheduler {
     @Scheduled(fixedDelayString = "PT24H")
     private void deleteInactiveUsers() {
         personService.deleteInactiveUsers();
+    }
+
+    @Scheduled(cron = "${schedule.currency-download}")
+    private void downloadCourses() throws ParserConfigurationException, IOException, SAXException {
+        coursesService.downloadCourses();
     }
 }

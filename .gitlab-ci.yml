@@ -56,7 +56,7 @@ test:
       - ./.m2
 
 sonarqube-check:
-#  image: maven:3.6.3-jdk-11
+  stage: sonarqube-check
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project,  required by the analysis task
@@ -65,7 +65,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-      - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b84405 -Dsonar.projectName='javaPro41Backend'
+    - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b84405 -Dsonar.projectName='javaPro41Backend'
   allow_failure: true
   only:
     - dev
