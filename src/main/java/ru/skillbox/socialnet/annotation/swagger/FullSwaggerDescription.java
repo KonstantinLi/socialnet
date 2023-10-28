@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.annotation;
+package ru.skillbox.socialnet.annotation.swagger;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
