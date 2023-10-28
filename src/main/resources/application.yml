@@ -97,3 +97,6 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+
+schedule:
+  currency-download: "0 5 0 * * *"
