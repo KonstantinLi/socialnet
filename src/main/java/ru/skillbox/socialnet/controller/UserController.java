@@ -31,7 +31,7 @@ public class UserController {
     private final JwtTokenUtils jwtTokenUtils;
 
     @FullSwaggerDescription(summary = "get user by id")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public CommonRs<PersonRs> getUserById(@PathVariable(value = "id")
                                           @Parameter(description = "id", example = "1", required = true)
                                           Long id,
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @FullSwaggerDescription(summary = "get information about me")
-    @GetMapping(value = "/me")
+    @GetMapping(value = "/me", produces = "application/json")
     public CommonRs<PersonRs> getMyInfo(@RequestHeader(value = "authorization")
                                         @Token
                                         String token) {
@@ -65,7 +65,7 @@ public class UserController {
 
     @ApiResponse(responseCode = "200")
     @AuthRequired(summary = "delete information about me")
-    @DeleteMapping(value = "/me")
+    @DeleteMapping(value = "/me", produces = "application/json")
     public CommonRs<ComplexRs> deleteMyInfo(@RequestHeader("authorization")
                                             @Token
                                             String token) {
@@ -74,7 +74,7 @@ public class UserController {
     }
 
     @FullSwaggerDescription(summary = "recover information about me")
-    @PostMapping(value = "/me/recover")
+    @PostMapping(value = "/me/recover", produces = "application/json")
     public CommonRs<ComplexRs> recoverUserInfo(@RequestHeader("authorization")
                                                @Token
                                                String token) {
@@ -84,7 +84,7 @@ public class UserController {
 
     @ApiResponse(responseCode = "200")
     @AuthRequired(summary = "search users by query")
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/search", produces = "application/json")
     public CommonRs<List<PersonRs>> findUsers(@RequestHeader("authorization")
                                               @Token
                                               String token,
