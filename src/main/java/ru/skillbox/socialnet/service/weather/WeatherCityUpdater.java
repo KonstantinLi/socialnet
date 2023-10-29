@@ -5,7 +5,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import ru.skillbox.socialnet.annotation.DebugLoggable;
 import ru.skillbox.socialnet.dto.response.openweathermap.OpenWeatherMapRs;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.repository.WeatherRepository;
@@ -56,7 +55,6 @@ public class WeatherCityUpdater extends Thread{
 
     }
 
-    @DebugLoggable
     private OpenWeatherMapRs getWeather(String city) {
         RestTemplate restTemplate = new RestTemplate();
         try {
