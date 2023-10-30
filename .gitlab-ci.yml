@@ -21,9 +21,9 @@ variables:
 stages:          # List of stages for jobs, and their order of execution
   - build
   - test
-  - sonarqube-check
   - package
   - deploy
+  - sonarqube-check
 #  - sonarqube-vulnerability-report
 
 build-job:       # This job runs in the build stage, which runs first.
