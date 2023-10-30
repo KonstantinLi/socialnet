@@ -83,7 +83,7 @@ class LikesControllerTest {
         this.mockMvc.perform(get("/api/v1/likes")
                         .header("authorization", token)
                         .param("item_id", String.valueOf(itemId))
-                        .param("type", "POST"))
+                        .param("type", LikeType.Post.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.likes").value(expectedLikes))
                 .andExpect(jsonPath("$.data.users").value(expectedUsersIdsPost));
@@ -134,7 +134,7 @@ class LikesControllerTest {
 
         LikeRq likeRq = new LikeRq();
         likeRq.setType(LikeType.Post);
-        likeRq.setItemId(10L);
+        likeRq.setItemId(1L);
         String likeRqJSON = objectMapper.writeValueAsString(likeRq);
 
         this.mockMvc.perform(put("/api/v1/likes")
@@ -191,7 +191,7 @@ class LikesControllerTest {
         this.mockMvc.perform(delete("/api/v1/likes")
                         .header("authorization", token)
                         .param("item_id", String.valueOf(itemId))
-                        .param("type", "POST"))
+                        .param("type", LikeType.Post.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.likes").value(expectedLikes))
                 .andExpect(jsonPath("$.data.users").value(expectedUsersIdsPost));
@@ -205,7 +205,7 @@ class LikesControllerTest {
         this.mockMvc.perform(delete("/api/v1/likes")
                         .header("authorization", token)
                         .param("item_id", String.valueOf(itemId))
-                        .param("type", "POST"))
+                        .param("type", LikeType.Post.toString()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_description").isNotEmpty());
     }

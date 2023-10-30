@@ -93,7 +93,7 @@ drop table if exists post_comments cascade;
 
     insert into post_comments (id, comment_text, is_blocked, is_deleted, time, author_id, post_id) values (100, 'Great words!', true, true, '2023-03-30 05:24:19', 2, 10);
 
-    insert into likes (id, entity_id, time, type, person_id) values (1000, 10, '2023-04-19 08:00:27', 'POST', 1);
-    insert into likes (id, entity_id, time, type, person_id) values (1001, 10, '2022-04-19 08:01:27', 'POST', 2);
-    insert into likes (id, entity_id, time, type, person_id) values (1002, 10, '2022-04-19 08:01:27', 'POST', 3);
-    insert into likes (id, entity_id, time, type, person_id) values (1003, 100, '2020-04-19 08:42:27', 'COMMENT', 2);
+    insert into likes (id, entity_id, time, type, person_id) values (1000, 10, '2023-04-19 08:00:27', 'Post', 1);
+    insert into likes (id, entity_id, time, type, person_id) values (1001, 10, '2022-04-19 08:01:27', 'Post', 2);
+    insert into likes (id, entity_id, time, type, person_id) values (1002, 10, '2022-04-19 08:01:27', 'Post', 3);
+    insert into likes (id, entity_id, time, type, person_id) values (1003, 100, '2020-04-19 08:42:27', 'Comment', 2);
