@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.skillbox.socialnet.annotation.Debug;
+import ru.skillbox.socialnet.dto.ProfileImageManager;
 import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
 import ru.skillbox.socialnet.dto.response.CommonRs;
@@ -37,6 +38,7 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final FriendShipRepository friendShipRepository;
     private final CurrencyRepository currencyRepository;
+    private final ProfileImageManager profileImageManager;
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
@@ -222,6 +224,9 @@ public class PersonService {
         Optional<List<Person>> inactiveUsers = personRepository.findAllInactiveUsersByDeletedTime(
                 LocalDateTime.now().minusMonths(1));
 
-        inactiveUsers.ifPresent(persons -> persons.forEach(personRepository::delete));
+        inactiveUsers.ifPresent(persons -> persons.forEach(person -> {
+            personRepository.delete(person);
+            profileImageManager.deleteProfileImage(person.getId());
+        }));
     }
 }

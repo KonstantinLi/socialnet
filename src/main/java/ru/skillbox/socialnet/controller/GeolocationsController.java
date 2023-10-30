@@ -1,6 +1,5 @@
 package ru.skillbox.socialnet.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.GeolocationRs;
 import ru.skillbox.socialnet.service.GeolocationsService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
