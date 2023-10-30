@@ -1,12 +1,13 @@
 package ru.skillbox.socialnet.repository;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.locationrelated.Country;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CountriesRepository extends JpaRepository<Country, Long> {

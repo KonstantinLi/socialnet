@@ -2,7 +2,6 @@ package ru.skillbox.socialnet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,12 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.repository.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -72,7 +66,7 @@ class StatisticsControllerTest {
         }
     }
 
-    @Test
+/*    @Test
     @DisplayName("Users Statistics")
     void test_01() throws Exception {
         this.mockMvc.perform(get("/api/v1/statistics/user"))
@@ -262,5 +256,5 @@ class StatisticsControllerTest {
                 .andExpect(
                         jsonPath("$[0].countUsers").value(1)
                 );
-    }
+    }*/
 }

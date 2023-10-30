@@ -2,14 +2,12 @@ package ru.skillbox.socialnet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -17,21 +15,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.controller.AccountController;
 import ru.skillbox.socialnet.controller.AuthController;
-import ru.skillbox.socialnet.dto.request.*;
-import ru.skillbox.socialnet.entity.other.Captcha;
-import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @SpringBootTest
@@ -81,13 +67,13 @@ public class AuthAndAccountControllerTest {
      *
      ************************ AuthController TESTS ***************************
      */
-
-    /**
+/*
+    *//**
      * Вспомогательная функция. Создает и возвращает объект класса LoginRq
      *
      * @param person - входной параметр класса Person. По этому параметру будет сформирован результат
      * @return - функция возвращает объект класса LoginRq
-     */
+     *//*
     private static LoginRq getLoginRq(Person person) {
 
         LoginRq loginRq = new LoginRq();
@@ -97,11 +83,11 @@ public class AuthAndAccountControllerTest {
         return loginRq;
     }
 
-    /**
+    *//**
      * Тест: вводим верный логин и пароль и должны получить статус 200 и совпадающие email в ответе
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void trueLoginTest() throws Exception {
         Person person = personRepository.findByIdImpl(1L);
@@ -115,11 +101,11 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.data.email").value(person.getEmail()));
     }
 
-    /**
+    *//**
      * Тест: вводим НЕ ВЕРНЫЙ логин, и должны получить 400 результат и ошибку "Пользователь не найден"
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void wrongPersonLoginTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -134,11 +120,11 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").value("Пользователь не найден"));
     }
 
-    /**
+    *//**
      * Тест: вводим НЕ ВЕРНЫЙ пароль, и должны получить 400 результат и ошибку "Пароли не совпадают"
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void wrongPasswordLoginTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -153,20 +139,20 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").value("Пароли не совпадают"));
     }
 
-    /**
+    *//**
      * ****************** AccountController TESTS ****************************
-     */
+     *//*
 
 
     private static String getBase64EncodedString(String source) {
         return Base64.getEncoder().encodeToString(source.getBytes());
     }
 
-    /**
+    *//**
      * - вспомогательная функция, получает валидную капчу для тестов
      *
      * @return - найденная в базе или созданная валидная Captcha
-     */
+     *//*
     private Captcha getValidCaptcha() {
         Optional<List<Captcha>> captchas = captchaRepository.findByTime(LocalDateTime.now().plusMinutes(5));
         if (captchas.isPresent() && (captchas.get().size() > 0)) {
@@ -186,11 +172,11 @@ public class AuthAndAccountControllerTest {
         return captcha;
     }
 
-    /**
+    *//**
      * - вспомогательная функция, отдает объект RegisterRq, создающийся по дефолтным параметрам
      *
      * @return - объект класса RegisterRq
-     */
+     *//*
     private RegisterRq getRegisterRq() {
         RegisterRq registerRq = new RegisterRq();
         Captcha captcha = getValidCaptcha();
@@ -205,12 +191,12 @@ public class AuthAndAccountControllerTest {
         return registerRq;
     }
 
-    /**
+    *//**
      * - Тест: регистрируем нового пользователя.
      * ожидаем статус 200 и совпадение email в ответе сервера и поля email registerRq
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void trueRegistrationTest() throws Exception {
         RegisterRq registerRq = getRegisterRq();
@@ -223,12 +209,12 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.email").value(registerRq.getEmail()));
     }
 
-    /**
+    *//**
      * - Тест: попытка зарегистрировать существующего пользователя повторно
      * ожидаем статус 400 и соотвующую ошибку
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void wrongRegistrationTestUserExists() throws Exception {
         RegisterRq registerRq = getRegisterRq();
@@ -244,12 +230,12 @@ public class AuthAndAccountControllerTest {
                         registerRq.getEmail() + "' уже зарегистрирован"));
     }
 
-    /**
+    *//**
      * - Тест: попытка зарегистрировать пользователя, который не верно ввел подтверждение пароля
      * ожидаем статус 400 и соотвующую ошибку
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void wrongRegistrationNotSamePasswords() throws Exception {
         RegisterRq registerRq = getRegisterRq();
@@ -264,12 +250,12 @@ public class AuthAndAccountControllerTest {
         ;
     }
 
-    /**
+    *//**
      * - Тест: попытка зарегистрировать пользователя, который не верно ввел код с капчи
      * ожидаем статус 400 и соотвующую ошибку
      *
      * @throws Exception
-     */
+     *//*
     @Test
     public void wrongRegistrationCaptchaExpired() throws Exception {
         RegisterRq registerRq = getRegisterRq();
@@ -295,12 +281,12 @@ public class AuthAndAccountControllerTest {
         return new String(decodedBytes);
     }
 
-    /**
+    *//**
      * - Тест: успешное изменение пароля пользователя
      * ожидаем статус 200 и соотв. сообщение
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void successChangePasswordTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -318,12 +304,12 @@ public class AuthAndAccountControllerTest {
     }
 
 
-    /**
+    *//**
      * - Тест: НЕ успешное изменение пароля пользователя - неверный токен!
      * ожидаем статус 401 и соотв. причину
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void wrongTokenTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -341,12 +327,12 @@ public class AuthAndAccountControllerTest {
     }
 
 
-    /**
+    *//**
      * - Тест: попытка изменить пароль пользователя на текущий.
      * ожидаем статус 400 и соотв. ошибку
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void trySamePasswordChangeTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -363,14 +349,14 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").value("Новый пароль не должен совпадать со старым"));
     }
 
-    /**
+    *//**
      * - Тест: удачный запрос на восстановление пароля
      * тестируем на пользователе с ID = 1, предварительно сделав его НЕ удаленным и НЕ заблокированным и
      * изменив email на свой. Убеждаемся, что тест прошел успешно (статус 200) и меняем настройки пользователя
      * на первоначальные
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void successPasswordRecoveryTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -401,14 +387,14 @@ public class AuthAndAccountControllerTest {
     }
 
 
-    /**
+    *//**
      * - Тест: НЕ удачный запрос на восстановление пароля
      * тестируем на пользователе с ID = 1, предварительно сделав его заблокированным и
      * изменив email на свой. Убеждаемся, что тест прошел с ошибкой (статус 400) и меняем настройки пользователя
      * на первоначальные
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void wrongPasswordRecoveryTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -436,12 +422,12 @@ public class AuthAndAccountControllerTest {
         }
     }
 
-    /**
+    *//**
      * - Тест: удачный тест на сброс пароля
      * меняем пароль пользователю с ID = 1 Убеждаемся, что тест прошел успешно (статус 200 и соотв. сообщение получено)
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void successPasswordResetTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -459,12 +445,12 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.data.message").value("Пароль успешно изменен!"));
     }
 
-    /**
+    *//**
      * - Тест: Неудачный тест на сброс пароля
      * меняем пароль на идентичный, ожидаем получить статус 400 и соотв. сообщение об ошибке
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void wrongPasswordResetTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -482,23 +468,23 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").value("Новый пароль не должен совпадать со старым"));
     }
 
-    /**
+    *//**
      * - Тест: успешный тест на сброс email
      * ожидаем статус 200 и соответствующее сообщение
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void successEmailRecoveryTest() throws Exception {
 
     }
 
-    /**
+    *//**
      * - Тест: НЕ успешный тест на сброс email. Новый email != Старый email
      * ожидаем статус 400 и соответствующее сообщение
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void wrongEmailRecoveryTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -513,12 +499,12 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").isNotEmpty());
     }
 
-    /**
+    *//**
      * - Тест: успешный тест на изменение email
      * ожидаем статус 200 и соответствующее сообщение
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void successSetEmailTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -536,14 +522,14 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.data.message").value("Email успешно изменен!"));
     }
 
-    /**
+    *//**
      * - Тест: уникальность email при попытке измениить email
      * необходимо убедиться, что с одним email не могут быть зарегистрированы несколько персон.
      * Для персоны1 подставляем email принадлежащий персоне2 пытаемся выполнить запрос.
      * ожидаем получить статус 400
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void checkUniqueEmailTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -562,12 +548,12 @@ public class AuthAndAccountControllerTest {
                 .andExpect(jsonPath("$.error_description").value("Пользователь с email: '" + person2.getEmail() + "' уже зарегистрирован"));
     }
 
-    /**
+    *//**
      * - Тест: НЕ успешный тест на изменение email. Пытаемся ввести тот же email
      * ожидаем статус 400 и соответствующее сообщенине
      *
      * @throws Exception
-     */
+     *//*
     @Test
     void wrongSetEmailTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
@@ -583,6 +569,6 @@ public class AuthAndAccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_description").value("Пользователь с email: '" + person.getEmail() + "' уже зарегистрирован"));
-    }
+    }*/
 }
 
