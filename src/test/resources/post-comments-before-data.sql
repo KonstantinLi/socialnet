@@ -69,6 +69,17 @@ drop table if exists post_comments cascade;
         primary key (id)
     );
 
+    drop table if exists  weather;
+    create table weather (
+        id bigserial not null,
+        city varchar(255) not null,
+        clouds varchar(255),
+        date timestamp(6) not null,
+        open_weather_ids varchar,
+        temp double precision,
+        unique (city),
+        primary key (id)
+    );
 
     insert into person_settings (comment_comment, friend_birthday, friend_request, post_like, message, post_comment, post) values (false, false, true, false, false, false, true);
     insert into person_settings (comment_comment, friend_birthday, friend_request, post_like, message, post_comment, post) values (true, true, false, false, false, false, true);
