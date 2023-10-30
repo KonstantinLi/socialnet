@@ -19,8 +19,8 @@ public class Weather {
     /**
      * ID
      */
-    @Column(name = "open_weather_id")
-    private Long openWeatherId;
+    @Column(name = "open_weather_ids")
+    private String openWeatherIds;
 
     /**
      * Город
@@ -39,5 +39,11 @@ public class Weather {
      */
     @Column(name = "date")
     private LocalDateTime date;
+
+    /**
+    * Температура
+     */
+    @Column(name = "temp")
+    private Double temp;
 
 }
