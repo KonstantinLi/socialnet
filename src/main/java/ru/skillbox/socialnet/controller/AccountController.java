@@ -33,7 +33,8 @@ public class AccountController {
     private final AccountService accountService;
     private final PersonSettingsService personSettingsService;
 
-    @BadRequestResponseDescription(summary = "register new user")
+    @BadRequestResponseDescription()
+    @FullSwaggerDescription(summary = "user registration")
     @PostMapping(value = "/register", produces = "application/json", consumes = "application/json")
     public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) {
 
