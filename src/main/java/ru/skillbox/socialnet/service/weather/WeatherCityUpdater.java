@@ -41,8 +41,6 @@ public class WeatherCityUpdater extends Thread{
         StringBuilder ids = new StringBuilder();
         for (OpenWeatherMapRs.Weather openWeatherWeather: openWeatherMapRs.getWeather()) {
             clouds.append(clouds.isEmpty() ? "" : ", ")
-                    .append(openWeatherWeather.getMain())
-                    .append(": ")
                     .append(openWeatherWeather.getDescription());
             ids.append(ids.isEmpty() ? "" : ", ")
                     .append(openWeatherWeather.getId());
