@@ -10,6 +10,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -26,8 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @ContextConfiguration(initializers = {StatisticsControllerTest.Initializer.class})
-//@Sql(value = {"/StatisticsController-before-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//@Sql(value = {"/StatisticsController-after-test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = {"/stat-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("Statistics API Test")
 class StatisticsControllerTest {
     @Autowired
@@ -157,15 +157,13 @@ class StatisticsControllerTest {
                         .queryParam("secondUserId", "2")
                 )
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-        // TODO: test contents
-                /*.andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(
-                        jsonPath("$.Adriaens_Whillock->Ailsun_Asbury").value(0)
+                        jsonPath("$.Ella_Chaplin->Adriaens_Whillock").value(0)
                 )
                 .andExpect(
-                        jsonPath("$.Ailsun_Asbury->Adriaens_Whillock").value(0)
-                )*/;
+                        jsonPath("$.Adriaens_Whillock->Ella_Chaplin").value(0)
+                );
     }
 
     @Test
@@ -222,13 +220,12 @@ class StatisticsControllerTest {
         this.mockMvc.perform(get("/api/v1/statistics/country/all"))
                 .andDo(print())
                 .andExpect(status().isOk())
-        // TODO: test contents
-                /*.andExpect(
-                        jsonPath("$[0].region").value("Argentina")
+                .andExpect(
+                        jsonPath("$[0].region").value("Nicaragua")
                 )
                 .andExpect(
                         jsonPath("$[0].countUsers").value(1)
-                )*/;
+                );
     }
 
     @Test
@@ -257,12 +254,11 @@ class StatisticsControllerTest {
         this.mockMvc.perform(get("/api/v1/statistics/city/all"))
                 .andDo(print())
                 .andExpect(status().isOk())
-        // TODO: test contents
-                /*.andExpect(
-                        jsonPath("$[0].region").value("Campos Gerais")
+                .andExpect(
+                        jsonPath("$[0].region").value("Dobczyce")
                 )
                 .andExpect(
                         jsonPath("$[0].countUsers").value(1)
-                )*/;
+                );
     }
 }
