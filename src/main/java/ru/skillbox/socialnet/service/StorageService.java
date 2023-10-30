@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skillbox.socialnet.dto.AwsS3Handler;
+import ru.skillbox.socialnet.dto.ProfileImageManager;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.entity.other.Storage;
 import ru.skillbox.socialnet.exception.FileNotProvidedException;
@@ -25,7 +25,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class StorageService {
 
-    private final AwsS3Handler awsS3Handler;
+    private final ProfileImageManager profileImageManager;
     private final StorageRepository storageRepository;
     private final PersonService personService;
 
@@ -69,7 +69,7 @@ public class StorageService {
         storage.setFileName(photoURLPrefix + generateFileName);
         storage.setFileType(type);
 
-        awsS3Handler.uploadImage(type, file, generateFileName);
+        profileImageManager.uploadProfileImage(type, file, generateFileName);
 
         Storage savedStorage = storageRepository.save(storage);
 
@@ -79,6 +79,10 @@ public class StorageService {
         updateUsersPhotoId(generateFileName, userId);
 
         return response;
+    }
+
+    public void deleteProfileImage (long userId) {
+        profileImageManager.deleteProfileImage(userId);
     }
 
     private void updateUsersPhotoId(String generateFileName, long userId) {
