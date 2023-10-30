@@ -49,13 +49,13 @@ public class DialogsController {
     }
 
     @FullSwaggerDescription(summary = "get count of unread messages")
-    @GetMapping(value = "/unreaded", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/unreaded", produces = "application/json")
     public CommonRs<ComplexRs> getUnreadedDialogs(@RequestHeader(name = "authorization") @Token String authorization) {
         return messageService.getCountUnreadedMessages(authorization);
     }
 
     @FullSwaggerDescription(summary = "get messages from dialog")
-    @GetMapping(value = "/{dialogId}/messages", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/{dialogId}/messages", produces = "application/json")
     public CommonRs<List<MessageRs>> getMessageFromDialog(@RequestHeader(name = "authorization") @Token String authorization,
                                                           @PathVariable Long dialogId,
                                                           @RequestParam(name = "offset", required = false, defaultValue = "0") int offset,
