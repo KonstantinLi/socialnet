@@ -158,6 +158,7 @@ class StatisticsControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
+        // TODO: test contents
                 /*.andExpect(status().isOk())
                 .andExpect(
                         jsonPath("$.Adriaens_Whillock->Ailsun_Asbury").value(0)
@@ -221,6 +222,7 @@ class StatisticsControllerTest {
         this.mockMvc.perform(get("/api/v1/statistics/country/all"))
                 .andDo(print())
                 .andExpect(status().isOk())
+        // TODO: test contents
                 /*.andExpect(
                         jsonPath("$[0].region").value("Argentina")
                 )
@@ -255,6 +257,7 @@ class StatisticsControllerTest {
         this.mockMvc.perform(get("/api/v1/statistics/city/all"))
                 .andDo(print())
                 .andExpect(status().isOk())
+        // TODO: test contents
                 /*.andExpect(
                         jsonPath("$[0].region").value("Campos Gerais")
                 )
