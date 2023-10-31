@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id:  004_notification_sender
+      author:  Linenko.KN
+      changes:
+        -  sql:
+             sql:
+               alter table notifications add column sender_id bigint not null;
+               alter table if exists notifications add constraint fk_notification_sender foreign key (sender_id) references persons;
