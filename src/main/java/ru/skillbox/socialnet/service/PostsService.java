@@ -175,9 +175,8 @@ public class PostsService {
         List<Post> posts;
         long total;
 
-        posts = postsRepository.findAllByIsDeletedAndTimeGreaterThan(
+        posts = postsRepository.findAllByIsDeleted(
                 false,
-                person.getLastOnlineTime(),
                 PageRequest.of(
                         offset, perPage,
                         Sort.by("time").descending()
