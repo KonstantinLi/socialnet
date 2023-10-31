@@ -80,9 +80,12 @@ public class Post {
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(
-            mappedBy = "post",
             cascade = CascadeType.ALL,
             orphanRemoval = true
+    )
+    @JoinColumn(
+            name = "post_id",
+            foreignKey = @ForeignKey(name = "fk_comment_post")
     )
     private Set<PostComment> comments = new HashSet<>();
 

@@ -2,7 +2,7 @@ package ru.skillbox.socialnet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,21 +10,24 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.repository.*;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @Slf4j
-@RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @Testcontainers
 @ContextConfiguration(initializers = {StatisticsControllerTest.Initializer.class})
-//@Sql(value = {"/StatisticsController-before-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//@Sql(value = {"/StatisticsController-after-test.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(value = {"/stat-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("Statistics API Test")
 class StatisticsControllerTest {
     @Autowired
@@ -67,7 +70,7 @@ class StatisticsControllerTest {
         }
     }
 
-/*    @Test
+    @Test
     @DisplayName("Users Statistics")
     void test_01() throws Exception {
         this.mockMvc.perform(get("/api/v1/statistics/user"))
@@ -82,14 +85,14 @@ class StatisticsControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(content().string("0"));
 
         this.mockMvc.perform(get("/api/v1/statistics/user/city")
                         .queryParam("city", "Padova")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(content().string("0"));
     }
 
     @Test
@@ -107,7 +110,7 @@ class StatisticsControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("2"));
+                .andExpect(content().string("0"));
     }
 
     @Test
@@ -150,16 +153,16 @@ class StatisticsControllerTest {
                 )));
 
         this.mockMvc.perform(get("/api/v1/statistics/message/all")
-                        .queryParam("firstUserId", "3")
+                        .queryParam("firstUserId", "1")
                         .queryParam("secondUserId", "2")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
-                        jsonPath("$.Adriaens_Whillock->Ailsun_Asbury").value(0)
+                        jsonPath("$.Ella_Chaplin->Adriaens_Whillock").value(0)
                 )
                 .andExpect(
-                        jsonPath("$.Ailsun_Asbury->Adriaens_Whillock").value(0)
+                        jsonPath("$.Adriaens_Whillock->Ella_Chaplin").value(0)
                 );
     }
 
@@ -174,13 +177,13 @@ class StatisticsControllerTest {
                 )));
 
         this.mockMvc.perform(get("/api/v1/statistics/like/entity")
-                        .queryParam("type", "POST")
+                        .queryParam("type", "Post")
                         .queryParam("entityId", "1")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(String.valueOf(
-                        likesRepository.countByTypeAndEntityId(LikeType.POST, 1)
+                        likesRepository.countByTypeAndEntityId(LikeType.Post, 1)
                 )));
     }
 
@@ -218,7 +221,7 @@ class StatisticsControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
-                        jsonPath("$[0].region").value("Argentina")
+                        jsonPath("$[0].region").value("Nicaragua")
                 )
                 .andExpect(
                         jsonPath("$[0].countUsers").value(1)
@@ -252,10 +255,10 @@ class StatisticsControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
-                        jsonPath("$[0].region").value("Campos Gerais")
+                        jsonPath("$[0].region").value("Dobczyce")
                 )
                 .andExpect(
                         jsonPath("$[0].countUsers").value(1)
                 );
-    }*/
+    }
 }
