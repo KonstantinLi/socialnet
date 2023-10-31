@@ -34,11 +34,11 @@ public class AuthService {
     private final Random random = new Random();
 
     public CommonRs<ComplexRs> logout() {
-        CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
+        CommonRs<ComplexRs> commonRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
-        commonRsComplexRs.setData(complexRs);
+        commonRs.setData(complexRs);
         SecurityContextHolder.clearContext();
-        return commonRsComplexRs;
+        return commonRs;
     }
 
     public CommonRs<PersonRs> login(LoginRq loginRq) {

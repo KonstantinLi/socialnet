@@ -70,6 +70,13 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
             long authorId, boolean isDeleted, Pageable pageable
     );
 
+    long countByAuthorId(
+            long authorId
+    );
+    List<Post> findAllByAuthorId(
+            long authorId, Pageable pageable
+    );
+
     long countByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time
     );

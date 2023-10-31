@@ -1,11 +1,5 @@
 package ru.skillbox.socialnet.service;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,6 +18,9 @@ import ru.skillbox.socialnet.dto.response.VKCountriesRs.VKCountry;
 import ru.skillbox.socialnet.entity.locationrelated.Country;
 import ru.skillbox.socialnet.repository.CitiesRepository;
 import ru.skillbox.socialnet.repository.CountriesRepository;
+
+import java.net.URI;
+import java.util.*;
 
 
 @Service

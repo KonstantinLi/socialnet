@@ -193,22 +193,25 @@ public class FriendShipService {
     @Transactional
     public CommonRs<ComplexRs> declineFriendshipRequestById(Long destinationPersonId, String authorization)
             throws PersonNotFoundException, FriendShipNotFoundException {
-
         Person currentPerson = getAuthorizedUser(authorization);
         Person destinationPerson = personRepository.findByIdImpl(destinationPersonId);
-
-        //ищем приходящий запрос на добавление в друзья у одной стороны и запрос дружбы с другой стороны
-        FriendShip friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
-                currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.RECEIVED_REQUEST);
-
-        //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
+        FriendShip friendShip;
+        try {
+            friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                    currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.RECEIVED_REQUEST);
+        } catch (FriendShipNotFoundException e) {
+            friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                    currentPerson.getId(), destinationPerson.getId(), FriendShipStatus.REQUEST);
+        }
         friendShipRepository.delete(friendShip);
-        FriendShip friendShip2 = friendShipRepository.getFriendShipByIdsAndStatusImpl(
-                destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.REQUEST);
-
-        //если найдены запросы, то удалить их (DECLINE статуса не предусмотрено)
-        friendShipRepository.delete(friendShip2);
-
+        try {
+            friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                    destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.REQUEST);
+        } catch (FriendShipNotFoundException e) {
+            friendShip = friendShipRepository.getFriendShipByIdsAndStatusImpl(
+                    destinationPerson.getId(), currentPerson.getId(), FriendShipStatus.RECEIVED_REQUEST);
+        }
+        friendShipRepository.delete(friendShip);
         return generateCommonRsComplexRs();
     }
 

@@ -219,7 +219,7 @@ class PostControllerTests {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.offset").value("3"))
-                .andExpect(jsonPath("$.perPage").value("9"));
+                .andExpect(jsonPath("$.perPage").value("0"));
     }
 
     @Test

@@ -153,20 +153,18 @@ public class PostsService {
         List<Post> posts;
         long total;
 
-        posts = postsRepository.findAllByAuthorIdAndIsDeleted(
+        posts = postsRepository.findAllByAuthorId(
                 person.getId(),
-                false,
                 PageRequest.of(
                         offset, perPage,
                         Sort.by("time").descending()
                 )
         );
-        total = postsRepository.countByAuthorIdAndIsDeleted(
-                person.getId(),
-                false
+        total = postsRepository.countByAuthorId(
+                person.getId()
         );
 
-        return getListPostResponse(posts, total, myId, offset, perPage);
+        return getListPostResponse(posts, total, myId, offset, posts.size());
     }
 
     @Transactional
@@ -190,7 +188,7 @@ public class PostsService {
                 person.getLastOnlineTime()
         );
 
-        return getListPostResponse(posts, total, myId, offset, perPage);
+        return getListPostResponse(posts, total, myId, offset, posts.size());
     }
 
 
@@ -263,8 +261,8 @@ public class PostsService {
     private PostRs postToPostRs(Post post, Long myId) {
         PostRs postRs = postMapper.postToPostRs(post);
 
-        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.POST, post.getId()));
-        postRs.setMyLike(likesRepository.existsByPersonId(myId));
+        postRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Post, post.getId()));
+        postRs.setMyLike(likesRepository.existsByTypeAndEntityIdAndPersonId(LikeType.Post, post.getId(), myId));
 
         fillAuthor(postRs.getAuthor(), myId);
 
@@ -276,9 +274,34 @@ public class PostsService {
                                 : PostType.POSTED
                 )
         );
+
         postRs.setComments(postRs.getComments().stream()
-                .filter(commentRs -> commentRs.getParentId() == null).collect(Collectors.toSet())
+                .filter(commentRs -> commentRs.getParentId() == null)
+                .collect(Collectors.toSet())
         );
+
+        postRs.getComments().forEach(commentRs -> {
+            commentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, commentRs.getId()));
+            commentRs.setMyLike(likesRepository.existsByTypeAndEntityIdAndPersonId(LikeType.Comment, commentRs.getId(), myId));
+
+            fillAuthor(commentRs.getAuthor(), myId);
+
+            if (commentRs.getIsDeleted()) {
+                commentRs.getSubComments().clear();
+            }
+
+//            commentRs.setSubComments(commentRs.getSubComments().stream()
+//                    .filter(subCommentRs -> ! subCommentRs.getIsDeleted())
+//                    .collect(Collectors.toSet())
+//            );
+
+            commentRs.getSubComments().forEach(subCommentRs -> {
+                subCommentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, subCommentRs.getId()));
+                subCommentRs.setMyLike(likesRepository.existsByTypeAndEntityIdAndPersonId(LikeType.Comment, subCommentRs.getId(), myId));
+
+                fillAuthor(subCommentRs.getAuthor(), myId);
+            });
+        });
 
         return postRs;
     }

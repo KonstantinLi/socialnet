@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id:  004_notification_sender
+      id:  006_notification_sender
       author:  Linenko.KN
       changes:
         -  sql:
