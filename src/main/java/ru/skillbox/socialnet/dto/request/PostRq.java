@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -13,5 +14,6 @@ public class PostRq {
     private String title;
     private String postText;
 
-    public Boolean isDeleted;
+    private Boolean isDeleted;
+    private LocalDateTime timeDelete;
 }
