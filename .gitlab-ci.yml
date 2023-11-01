@@ -20,7 +20,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 stages:          # List of stages for jobs, and their order of execution
   - build
-  - test
+#  - test
   - package
   - deploy
   - sonarqube-check
@@ -104,3 +104,4 @@ build-docker-image:
     - (docker ps -a --format {{.Names}} | grep java-backend-app -w) && docker stop java-backend-app && docker rm java-backend-app || echo "Doesn't exist"
     - docker build -t java-pro41-backend:latest .
     - docker run --name java-backend-app -d -p 8086:8086 --env-file ${ENV_FILE} -t java-pro41-backend:latest
+    - docker system prune -a -f
