@@ -10,5 +10,6 @@
   <include file="v1/003_country_city.yaml" relativeToChangelogFile="true"/>
   <include file="v1/004_create_indexes.yaml" relativeToChangelogFile="true"/>
   <include file="v1/005_weather.yaml" relativeToChangelogFile="true"/>
+  <include file="v1/006_notification_sender.yaml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
