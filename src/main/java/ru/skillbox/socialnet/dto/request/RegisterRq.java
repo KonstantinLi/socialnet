@@ -10,7 +10,7 @@ public class RegisterRq {
     private String code;
     @Schema(description = "captcha decryption secret", example = "12345")
     private String codeSecret;
-    @Schema(description = "user registration email", example = "exampleEmail@gmail.com")
+    @Schema(description = "user registration email", example = "obivan.k@remail.com")
     private String email;
     @Schema(pattern = "[А-Яа-яA-Za-z]", description = "first name of a new user", example = "ObiVan")
     private String firstName;

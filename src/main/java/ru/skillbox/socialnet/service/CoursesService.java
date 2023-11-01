@@ -29,7 +29,14 @@ public class CoursesService {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse("http://www.cbr.ru/scripts/XML_daily.asp");
-        doc.getDocumentElement().normalize();
+        doc.getDocumentElement().normalize();NodeList nList = doc.getElementsByTagName("ValCurs");
+        Node n = nList.item(0);
+        String date = null;
+        if (n.getNodeType() == Node.ELEMENT_NODE) {
+            Element elem = (Element) n;
+            //Считывание даты
+            date = elem.getAttribute("Date");
+        }
 
         //Считать список валют
         NodeList nodeList = doc.getElementsByTagName("Valute");
@@ -39,19 +46,19 @@ public class CoursesService {
                 Element elem = (Element) node;
                 String valCode = elem.getElementsByTagName("CharCode").item(0).getTextContent();
                 if (valCode.equalsIgnoreCase("usd") || valCode.equalsIgnoreCase("eur")) {
-                    saveCourse(valCode, elem.getElementsByTagName("Value").item(0).getTextContent());
+                    saveCourse(valCode, elem.getElementsByTagName("Value").item(0).getTextContent(), date);
                 }
             }
         }
     }
 
-    private void saveCourse(String valCode, String value) {
+    private void saveCourse(String valCode, String value, String date) {
         Optional<Currency> optCurrency = currencyRepository.findByName(valCode);
         Currency currency = optCurrency.orElseGet(Currency::new);
         currency.setName(valCode);
         currency.setPrice(value);
         DateFormat df = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
-        currency.setUpdateTime(df.format(Calendar.getInstance().getTime()));
+        currency.setUpdateTime("date: " + date + ", updated at: " + df.format(Calendar.getInstance().getTime()));
         currencyRepository.save(currency);
     }
 

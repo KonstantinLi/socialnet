@@ -14,6 +14,6 @@ import ru.skillbox.socialnet.entity.other.Notification;
 )
 public interface NotificationMapper {
     @Mapping(target = "info", source = "notification.contact")
-    @Mapping(target = "entityAuthor", source = "notification.person")
+    @Mapping(target = "entityAuthor", source = "notification.sender")
     NotificationRs notificationToNotificationRs(Notification notification);
 }
