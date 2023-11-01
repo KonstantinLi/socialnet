@@ -85,6 +85,14 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
             boolean isDeleted, LocalDateTime time, Pageable pageable
     );
 
+    List<Post> findAllByIsDeletedAndTimeDeleteLessThan(
+            boolean isDeleted, LocalDateTime timeDelete
+    );
+
+    List<Post> findAllByIsDeletedAndTimeDelete(
+            boolean isDeleted, LocalDateTime timeDelete
+    );
+
     List<Post> findAllByIsDeleted(
             boolean isDeleted, Pageable pageable
     );

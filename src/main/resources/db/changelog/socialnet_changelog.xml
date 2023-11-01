@@ -6,9 +6,10 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
   <include file="v1/001_init_schema.yaml" relativeToChangelogFile="true"/>
-<!--  <include file="v1/002_test_data.yaml" relativeToChangelogFile="true"/>-->
+  <!--include file="v1/002_test_data.yaml" relativeToChangelogFile="true"/-->
   <include file="v1/003_country_city.yaml" relativeToChangelogFile="true"/>
   <include file="v1/004_create_indexes.yaml" relativeToChangelogFile="true"/>
   <include file="v1/005_weather.yaml" relativeToChangelogFile="true"/>
+  <include file="v1/006_hibernate_cascade_delete.yaml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

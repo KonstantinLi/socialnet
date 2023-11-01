@@ -89,7 +89,7 @@ public class PostsService {
         return updatePost(
                 fetchPost(
                         id,
-                        postRq.isDeleted != null && !postRq.isDeleted
+                        postRq.getIsDeleted() != null && !postRq.getIsDeleted()
                 ),
                 postRq, myId
         );
@@ -99,6 +99,7 @@ public class PostsService {
     public CommonRs<PostRs> deleteById(String authorization, Long id) {
         PostRq postRq = new PostRq();
         postRq.setIsDeleted(true);
+        postRq.setTimeDelete(LocalDateTime.now());
 
         return updateById(authorization, id, postRq);
     }
@@ -288,11 +289,6 @@ public class PostsService {
             if (commentRs.getIsDeleted()) {
                 commentRs.getSubComments().clear();
             }
-
-//            commentRs.setSubComments(commentRs.getSubComments().stream()
-//                    .filter(subCommentRs -> ! subCommentRs.getIsDeleted())
-//                    .collect(Collectors.toSet())
-//            );
 
             commentRs.getSubComments().forEach(subCommentRs -> {
                 subCommentRs.setLikes(likesRepository.countByTypeAndEntityId(LikeType.Comment, subCommentRs.getId()));
