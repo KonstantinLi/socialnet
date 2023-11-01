@@ -10,9 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.skillbox.socialnet.annotation.ErrorAPIResponsesDescription;
-import ru.skillbox.socialnet.annotation.OkAPIResponseDescription;
 import ru.skillbox.socialnet.annotation.OnlineStatusUpdate;
+import ru.skillbox.socialnet.annotation.swagger.FullSwaggerDescription;
 import ru.skillbox.socialnet.dto.response.CommonRs;
 import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
@@ -23,26 +22,27 @@ import ru.skillbox.socialnet.service.FriendShipService;
 import java.util.List;
 
 @Tag(name = "FriendsController", description = "Get recommended or potential friends. Add, delete, get friends. Send, delete friendship request")
+@ApiResponse(responseCode = "200")
 @RestController
 @RequiredArgsConstructor
-@ErrorAPIResponsesDescription
 @RequestMapping("/api/v1/friends")
 public class FriendsController {
 
     private final FriendShipService friendShipService;
 
-    @OkAPIResponseDescription(endpointDescription = "send friendship request by id of another user", value = "CommonRsComplexRs")
+    @FullSwaggerDescription(summary = "send friendship request by id of another user")
     @OnlineStatusUpdate
     @PostMapping("/{id}")
     public CommonRs<ComplexRs> sendFriendshipRequest(
-            @RequestHeader(name = "authorization") @Parameter(description = "Access Token", example = "JWT Token",
-                    required = true) String authorization,
-            @PathVariable(name = "id") @Parameter(description = "id", example = "1", required = true) Long id)
+            @RequestHeader(name = "authorization")
+            @Parameter(description = "Access Token", example = "JWT Token", required = true)  String authorization,
+            @PathVariable(name = "id")
+            @Parameter(description = "id", example = "1", required = true)  Long id)
             throws PersonNotFoundException {
         return friendShipService.sendFriendshipRequest(id, authorization);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "delete friend by id", value = "CommonRsComplexRs")
+    @FullSwaggerDescription(summary = "delete friend by id")
     @OnlineStatusUpdate
     @DeleteMapping("/{id}")
     public CommonRs<ComplexRs> deleteFriendById(
@@ -53,7 +53,7 @@ public class FriendsController {
         return friendShipService.deleteFriendById(id, authorization);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "add friend by id", value = "CommonRsComplexRs")
+    @FullSwaggerDescription(summary = "add friend by id")
     @OnlineStatusUpdate
     @PostMapping("/request/{id}")
     public CommonRs<ComplexRs> addFriendById(
@@ -64,7 +64,7 @@ public class FriendsController {
         return friendShipService.addFriendById(id, authorization);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "decline friendship request by id", value = "CommonRsComplexRs")
+    @FullSwaggerDescription(summary = "decline friendship request by id")
     @OnlineStatusUpdate
     @DeleteMapping("/request/{id}")
     public CommonRs<ComplexRs> declineFriendshipRequestById(
@@ -75,7 +75,7 @@ public class FriendsController {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
-//        @OkAPIResponseDescription(endpointDescription = "block or unblock (if user in block) user by user id", value = "HttpStatus")
+//    @FullSwaggerDescription(summary = "block or unblock (if user in block) user by user id")
     @Operation(summary = "block or unblock (if user in block) user by user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
@@ -92,7 +92,7 @@ public class FriendsController {
         friendShipService.blockOrUnblockUserByUser(id, authorization);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "get friends of current user", value = "CommonRsListPersonRs")
+    @FullSwaggerDescription(summary = "get friends of current user")
     @OnlineStatusUpdate
     @GetMapping("")
     public CommonRs<List<PersonRs>> getFriendsOfCurrentUser(
@@ -106,7 +106,7 @@ public class FriendsController {
         return friendShipService.getFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "get potential friends of current user", value = "CommonRsListPersonRs")
+    @FullSwaggerDescription(summary = "get potential friends of current user")
     @OnlineStatusUpdate
     @GetMapping("/request")
     public CommonRs<List<PersonRs>> getPotentialFriendsOfCurrentUser(
@@ -118,7 +118,7 @@ public class FriendsController {
         return friendShipService.getPotentialFriendsOfCurrentUser(authorization, offset, perPage);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "get recommendation friends", value = "CommonRsListPersonRs")
+    @FullSwaggerDescription(summary = "get recommendation friends")
     @OnlineStatusUpdate
     @GetMapping("/recommendations")
     public CommonRs<List<PersonRs>> getRecommendationFriends(
@@ -127,15 +127,7 @@ public class FriendsController {
         return friendShipService.getRecommendationFriends(authorization);
     }
 
-    @OkAPIResponseDescription(endpointDescription = "get outgoing requests by user", value = "CommonRsListPersonRs")
-//    @Operation(summary = "get outgoing requests by user")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "OK",
-//                    content = {@Content(mediaType = "application/json",
-//                            schema = @Schema(
-//                                    description = "default response from server",
-//                                    ref = "#/components/schemas/CommonRsListPersonRs")
-//                    )})})
+    @FullSwaggerDescription(summary = "get outgoing requests by user")
     @OnlineStatusUpdate
     @GetMapping("/outgoing_requests")
     public CommonRs<List<PersonRs>> getOutgoingRequestsByUser(
