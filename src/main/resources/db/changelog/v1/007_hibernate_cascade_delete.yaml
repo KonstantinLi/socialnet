@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id:  006_hibernate_cascade_delete
+      id:  007_hibernate_cascade_delete
       author:  Kotov.SA
       changes:
       -  sql:
@@ -24,6 +24,7 @@ databaseChangeLog:
              ALTER TABLE messages ALTER COLUMN recipient_id DROP NOT NULL;
              
              ALTER TABLE notifications ALTER COLUMN person_id DROP NOT NULL;
+             ALTER TABLE notifications ALTER COLUMN sender_id DROP NOT NULL;
              
              ALTER TABLE persons ALTER COLUMN person_settings_id DROP NOT NULL;
              

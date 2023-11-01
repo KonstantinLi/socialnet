@@ -11,6 +11,6 @@
   <include file="v1/004_create_indexes.yaml" relativeToChangelogFile="true"/>
   <include file="v1/005_weather.yaml" relativeToChangelogFile="true"/>
   <include file="v1/006_notification_sender.yaml" relativeToChangelogFile="true"/>
-  <include file="v1/006_hibernate_cascade_delete.yaml" relativeToChangelogFile="true"/>
+  <include file="v1/007_hibernate_cascade_delete.yaml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
