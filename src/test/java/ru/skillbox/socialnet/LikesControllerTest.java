@@ -65,8 +65,7 @@ class LikesControllerTest {
                     "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgreSQLContainer.getUsername(),
                     "spring.datasource.password=" + postgreSQLContainer.getPassword(),
-                    "spring.liquibase.enabled=true",
-                    "spring.liquibase.change-log=classpath:db/changelog/v1/001_init_schema.yaml"
+                    "spring.liquibase.enabled=true"
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }

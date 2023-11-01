@@ -56,8 +56,7 @@ class FriendsControllerTest {
                     "spring.datasource.url=" + postgreSqlContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgreSqlContainer.getUsername(),
                     "spring.datasource.password=" + postgreSqlContainer.getPassword(),
-                    "spring.liquibase.enabled=true",
-                    "spring.liquibase.change-log=classpath:db/changelog/v1/001_init_schema.yaml"
+                    "spring.liquibase.enabled=true"
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }
@@ -210,8 +209,8 @@ class FriendsControllerTest {
         this.mockMvc.perform(get("/api/v1/friends/request").header("authorization", getToken(1L)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].first_name").value("Kerr"))
-                .andExpect(jsonPath("$.data[1].last_name").value("Bartlet"));
+                .andExpect(jsonPath("$.data[0].first_name").value("Thaxter"))
+                .andExpect(jsonPath("$.data[1].last_name").value("Morena"));
     }
 
     @Test
