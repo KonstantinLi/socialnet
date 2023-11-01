@@ -20,7 +20,7 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 stages:          # List of stages for jobs, and their order of execution
   - build
-#  - test
+  - test
   - package
   - deploy
   - sonarqube-check
