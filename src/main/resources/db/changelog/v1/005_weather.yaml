@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id:  005_weather
+      author:  Shushakov.SV
+      changes:
+      -  sql:
+           sql:
+               alter table weather add column temp double precision;
+               
+               alter table weather
+                rename column open_weather_id to open_weather_ids;
+  
+               alter table weather
+                alter column open_weather_ids type varchar using open_weather_ids::varchar;
+

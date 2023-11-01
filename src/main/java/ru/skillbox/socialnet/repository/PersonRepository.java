@@ -11,10 +11,7 @@ import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
@@ -147,4 +144,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     @Query(value = "select * from persons p where p.deleted_time > :timeParam", nativeQuery = true)
     Optional<List<Person>> findAllInactiveUsersByDeletedTime(@Param("timeParam") LocalDateTime timeParam);
+
+    @Query(nativeQuery = true, value = "select distinct city from persons")
+    ArrayList<String> findDistinctCity();
 }

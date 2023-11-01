@@ -19,7 +19,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 
     open-in-view: false
     show-sql: true
@@ -97,3 +97,11 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+
+schedule:
+  currency-download: "0 5 0 * * *"
+  weather-update: "0 */10 * * * *"
+  remove-deleted-posts-in: "PT1H"
+
+openweathermap:
+  api_key: ${OPENWEATHERMAP_API_KEY:api-key}

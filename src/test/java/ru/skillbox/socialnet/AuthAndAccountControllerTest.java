@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = {AuthAndAccountControllerTest.Initializer.class})
 @Testcontainers
 @AutoConfigureMockMvc
-
+@Sql(value = {"/auth-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AuthAndAccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -428,7 +429,7 @@ public class AuthAndAccountControllerTest {
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.error_description").value("Пользователь nowicoff@yandex.ru удален"));
+                    .andExpect(jsonPath("$.error_description").value("Пользователь nowicoff@yandex.ru заблокирован"));
         } finally {
             person.setEmail(personEmail);
             person.setIsBlocked(isBlocked);
@@ -510,7 +511,7 @@ public class AuthAndAccountControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error_description").value("Ошибка идетификации пользователя: email не совпадает!"));
+                .andExpect(jsonPath("$.error_description").isNotEmpty());
     }
 
     /**

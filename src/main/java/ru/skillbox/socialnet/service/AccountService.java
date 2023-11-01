@@ -207,6 +207,10 @@ public class AccountService {
         person.setLastName(registrationInfo.getLastName());
         person.setMessagePermissions(MessagePermission.ALL);
         person.setOnlineStatus(true);
+        person.setIsDeleted(false);
+        person.setIsBlocked(false);
+        person.setIsApproved(false);
+
         PersonSettings personSettings = new PersonSettings();
         personSettingsRepository.save(personSettings);
         person.setPersonSettings(personSettings);

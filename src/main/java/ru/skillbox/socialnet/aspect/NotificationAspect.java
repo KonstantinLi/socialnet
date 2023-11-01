@@ -91,7 +91,7 @@ public class NotificationAspect {
         Person destinationPerson;
 
         LikeRq likeRq = (LikeRq) args[1];
-        if (likeRq.getType() == LikeType.POST) {
+        if (likeRq.getType() == LikeType.Post) {
             destinationPerson = postsRepository.findById(likeRq.getItemId())
                     .orElseThrow()
                     .getAuthor();

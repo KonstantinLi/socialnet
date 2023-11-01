@@ -1,4 +1,4 @@
-package ru.skillbox.socialnet.annotation;
+package ru.skillbox.socialnet.annotation.swagger;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
