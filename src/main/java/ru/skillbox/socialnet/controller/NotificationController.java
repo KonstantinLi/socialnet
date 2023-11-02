@@ -40,6 +40,8 @@ public class NotificationController {
                     content = @Content)})
     @GetMapping("/notifications")
     public CommonRs<List<NotificationRs>> getAllNotifications(
+            @RequestParam(defaultValue = "false") @Parameter(description = "isRead", example = "false")
+            Boolean isRead,
             @RequestParam(defaultValue = "10") @Parameter(description = "itemPerPage", example = "10")
             Integer itemPerPage,
             @RequestParam(defaultValue = "0") @Parameter(description = "offset", example = "0")
@@ -47,7 +49,7 @@ public class NotificationController {
             @RequestHeader(name = "authorization") @Parameter(description = "Access Token", example = "JWT Token",
                     required = true) String token) {
 
-        return notificationService.getAllNotifications(token, itemPerPage, offset);
+        return notificationService.getAllNotifications(token, itemPerPage, offset, isRead);
     }
 
     @Operation(summary = "read notification")
