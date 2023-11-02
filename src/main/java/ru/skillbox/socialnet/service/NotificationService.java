@@ -45,7 +45,8 @@ public class NotificationService {
             List<Person> friends = friendShipService.getAllFriends(person);
 
             friends.forEach(friend -> {
-                Notification notification = save(contact, NotificationType.FRIEND_BIRTHDAY, friend);
+                Notification notification =
+                        save(contact, NotificationType.FRIEND_BIRTHDAY, friend, person);
                 sendNotification(notification);
             });
         }
@@ -60,7 +61,8 @@ public class NotificationService {
         List<Person> friends = friendShipService.getAllFriends(currentPerson);
 
         friends.forEach(friend -> {
-            Notification notification = save(contact, NotificationType.POST, friend);
+            Notification notification =
+                    save(contact, NotificationType.POST, friend, currentPerson);
             sendNotification(notification);
         });
     }
@@ -74,7 +76,8 @@ public class NotificationService {
         Notification notification = save(
                 contact,
                 NotificationType.FRIEND_REQUEST,
-                destinationPerson);
+                destinationPerson,
+                currentPerson);
 
         sendNotification(notification);
     }
@@ -88,7 +91,8 @@ public class NotificationService {
         Notification notification = save(
                 contact,
                 NotificationType.POST_COMMENT,
-                destinationPerson);
+                destinationPerson,
+                currentPerson);
 
         sendNotification(notification);
     }
@@ -102,7 +106,8 @@ public class NotificationService {
         Notification notification = save(
                 contact,
                 NotificationType.COMMENT_COMMENT,
-                destinationPerson);
+                destinationPerson,
+                currentPerson);
 
         sendNotification(notification);
     }
@@ -116,7 +121,8 @@ public class NotificationService {
         Notification notification = save(
                 contact,
                 NotificationType.POST_LIKE,
-                destinationPerson);
+                destinationPerson,
+                currentPerson);
 
         sendNotification(notification);
     }
@@ -130,7 +136,8 @@ public class NotificationService {
         Notification notification = save(
                 contact,
                 NotificationType.POST_LIKE,
-                destinationPerson);
+                destinationPerson,
+                currentPerson);
 
         sendNotification(notification);
     }
@@ -195,7 +202,7 @@ public class NotificationService {
         return commonRs;
     }
 
-    private Notification save(String contact, NotificationType type, Person person) {
+    private Notification save(String contact, NotificationType type, Person person, Person sender) {
         Notification notification = new Notification();
 
         notification.setSentTime(LocalDateTime.now());
@@ -203,6 +210,7 @@ public class NotificationService {
         notification.setNotificationType(type);
         notification.setContact(contact);
         notification.setPerson(person);
+        notification.setSender(sender);
 
         return notificationRepository.save(notification);
     }

@@ -53,4 +53,10 @@ public class Notification {
     @JoinColumn(name = "person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_notification_person"))
     private Person person;
 
+    /**
+     * От кого уведомление
+     */
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_notification_sender"))
+    private Person sender;
 }
