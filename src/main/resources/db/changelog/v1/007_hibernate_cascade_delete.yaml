@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id:  007_hibernate_cascade_delete
+      author:  Kotov.SA
+      changes:
+      -  sql:
+           sql:
+             ALTER TABLE block_history ALTER COLUMN author_id DROP NOT NULL;
+             ALTER TABLE block_history ALTER COLUMN comment_id DROP NOT NULL;
+             ALTER TABLE block_history ALTER COLUMN post_id DROP NOT NULL;
+             
+             ALTER TABLE cities ALTER COLUMN country_id DROP NOT NULL;
+             
+             ALTER TABLE dialogs ALTER COLUMN first_person_id DROP NOT NULL;
+             ALTER TABLE dialogs ALTER COLUMN second_person_id DROP NOT NULL;
+             
+             ALTER TABLE friendships ALTER COLUMN dst_person_id DROP NOT NULL;
+             ALTER TABLE friendships ALTER COLUMN src_person_id DROP NOT NULL;
+             
+             ALTER TABLE likes ALTER COLUMN person_id DROP NOT NULL;
+             
+             ALTER TABLE messages ALTER COLUMN author_id DROP NOT NULL;
+             ALTER TABLE messages ALTER COLUMN dialog_id DROP NOT NULL;
+             ALTER TABLE messages ALTER COLUMN recipient_id DROP NOT NULL;
+             
+             ALTER TABLE notifications ALTER COLUMN person_id DROP NOT NULL;
+             ALTER TABLE notifications ALTER COLUMN sender_id DROP NOT NULL;
+             
+             ALTER TABLE persons ALTER COLUMN person_settings_id DROP NOT NULL;
+             
+             ALTER TABLE post2tag ALTER COLUMN post_id DROP NOT NULL;
+             ALTER TABLE post2tag ALTER COLUMN tag_id DROP NOT NULL;
+             
+             ALTER TABLE post_comments ALTER COLUMN author_id DROP NOT NULL;
+             ALTER TABLE post_comments ALTER COLUMN post_id DROP NOT NULL;
+             ALTER TABLE post_comments ALTER COLUMN parent_id DROP NOT NULL;
+             
+             ALTER TABLE post_files ALTER COLUMN post_id DROP NOT NULL;
+             
+             ALTER TABLE posts ALTER COLUMN author_id DROP NOT NULL;
+
+
