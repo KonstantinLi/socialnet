@@ -68,12 +68,15 @@ public class PostComment {
     /**
      * Пост
      */
-    @ManyToOne
-    @JoinColumn(
-            name = "post_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_comment_post")
-    )
-    private Post post;
+//    @ManyToOne
+//    @JoinColumn(
+//            name = "post_id",
+//            nullable = false,
+//            referencedColumnName = "id",
+//            foreignKey = @ForeignKey(name = "fk_comment_post")
+//    )
+//    private Post post;
+
+    @Column(name = "post_id")
+    private Long postId;
 }

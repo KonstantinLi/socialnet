@@ -57,8 +57,7 @@ class PostCommentsControllerTest {
             TestPropertyValues.of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgreSQLContainer.getUsername(),
                     "spring.datasource.password=" + postgreSQLContainer.getPassword(),
-                    "spring.liquibase.enabled=true",
-                    "spring.liquibase.change-log=classpath:db/changelog/v1/001_init_schema.yaml"
+                    "spring.liquibase.enabled=true"
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }
@@ -148,17 +147,17 @@ class PostCommentsControllerTest {
                 .andExpect(jsonPath("total").value(2))
 
                 .andExpect(jsonPath("$.data.length()").value(2))
-                .andExpect(jsonPath("$.data[*].id", containsInAnyOrder(100, 101)))
+                .andExpect(jsonPath("$.data[*].id", containsInAnyOrder(100, 102)))
 
                 .andExpect(jsonPath("$.data[?(@.id == 100)].comment_text")
                         .value("Parent comment text"))
                 .andExpect(jsonPath("$.data[?(@.id == 100)].author.id")
                         .value(2))
 
-                .andExpect(jsonPath("$.data[?(@.id == 101)].comment_text")
-                        .value("Sub comment text"))
-                .andExpect(jsonPath("$.data[?(@.id == 101)].author.id")
-                        .value(3))
+                .andExpect(jsonPath("$.data[?(@.id == 102)].comment_text")
+                        .value("Deleted comment"))
+                .andExpect(jsonPath("$.data[?(@.id == 102)].author.id")
+                        .value(1))
 
                 .andExpect(jsonPath("$.data[?(@.id == 100)].sub_comments.length()")
                         .value(1))

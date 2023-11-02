@@ -5,10 +5,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 import ru.skillbox.socialnet.dto.LogUploader;
+import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.other.Captcha;
+import ru.skillbox.socialnet.entity.postrelated.Post;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
+import ru.skillbox.socialnet.repository.LikesRepository;
+import ru.skillbox.socialnet.repository.PostsRepository;
 import ru.skillbox.socialnet.service.CoursesService;
 import ru.skillbox.socialnet.service.NotificationService;
 import ru.skillbox.socialnet.service.PersonService;
@@ -31,6 +36,8 @@ public class Scheduler {
     private final PersonService personService;
     private final CoursesService coursesService;
     private final WeatherService weatherService;
+    private final PostsRepository postsRepository;
+    private final LikesRepository likesRepository;
 
     @Value("${logger.path}")
     private String logPath;
@@ -38,40 +45,68 @@ public class Scheduler {
     @Value("${logger.expired}")
     private Duration expired;
 
+    @Value("${schedule.remove-deleted-posts-in:P1D}")
+    private Duration removeDeletedPosts;
+
+    @Scheduled(fixedDelayString = "PT01H")
+    @Transactional
+    public void removeDeletedPosts() {
+        List<Post> posts = postsRepository.findAllByIsDeletedAndTimeDeleteLessThan(
+                true,
+                LocalDateTime.now().minus(removeDeletedPosts)
+        );
+
+        posts.addAll(postsRepository.findAllByIsDeletedAndTimeDelete(
+                        true,
+                        null
+                )
+        );
+
+        posts.stream()
+                .peek(post -> post.getComments().forEach(
+                        postComment -> likesRepository.findAllByTypeAndEntityId(LikeType.Comment, postComment.getId())
+                                .forEach(likesRepository::delete)
+                ))
+                .peek(post -> likesRepository.findAllByTypeAndEntityId(LikeType.Post, post.getId())
+                        .forEach(likesRepository::delete)
+                )
+                .forEach(postsRepository::delete);
+    }
+
     @Scheduled(fixedDelayString = "PT02H")
-    private void deleteCaptcha() {
+    protected void deleteCaptcha() {
         LocalDateTime date = LocalDateTime.now();
         Optional<List<Captcha>> captchas = captchaRepository.findByTime(date.minusHours(2));
         captchas.ifPresent(captchaRepository::deleteAll);
     }
 
     @Scheduled(fixedDelayString = "PT24H")
-    private void uploadLog() {
+    protected void uploadLog() {
         logUploader.uploadLog(logPath);
     }
 
     @Scheduled(fixedDelayString = "PT24H")
-    private void deleteOldLogs() {
+    protected void deleteOldLogs() {
         logUploader.deleteExpiredLogs(expired);
     }
 
     @Scheduled(cron = "0 0 0 * * *")
-    private void sendBirthdayNotification() {
+    protected void sendBirthdayNotification() {
         notificationService.sendBirthdayNotification();
     }
 
     @Scheduled(fixedDelayString = "PT24H")
-    private void deleteInactiveUsers() {
+    protected void deleteInactiveUsers() {
         personService.deleteInactiveUsers();
     }
 
     @Scheduled(cron = "${schedule.currency-download}")
-    private void downloadCourses() throws ParserConfigurationException, IOException, SAXException {
+    protected void downloadCourses() throws ParserConfigurationException, IOException, SAXException {
         coursesService.downloadCourses();
     }
 
     @Scheduled(cron = "${schedule.weather-update}")
-    private void updateWeather() {
+    protected void updateWeather() {
         weatherService.updateAllCities();
     }
 }

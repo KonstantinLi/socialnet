@@ -36,7 +36,7 @@ public class DialogsController {
     }
 
     @FullSwaggerDescription(summary = "get dialogs by user")
-    @GetMapping(consumes = "application/json", produces = "application/json")
+    @GetMapping(produces = "application/json")
     public CommonRs<List<DialogRs>> getDialogs(@RequestHeader(name = "authorization") @Token String authorization) {
         return dialogService.getDialogs(authorization);
     }
