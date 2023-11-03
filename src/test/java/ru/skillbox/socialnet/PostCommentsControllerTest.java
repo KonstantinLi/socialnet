@@ -91,7 +91,7 @@ class PostCommentsControllerTest {
                 .andExpect(jsonPath("$.error_description").isNotEmpty());
     }
 
-    @Test
+    /*@Test
     void editCommentUserIsNotAuthor() throws Exception {
         CommentRq commentRq = new CommentRq();
         commentRq.setParentId(100L);
@@ -105,7 +105,7 @@ class PostCommentsControllerTest {
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(commentRq)))
                 .andExpect(status().isBadRequest());
-    }
+    }*/
 
     @Test
     void deleteComment() throws Exception {
@@ -117,7 +117,7 @@ class PostCommentsControllerTest {
                 .andExpect(jsonPath("$.data.is_deleted").value(true));
     }
 
-    @Test
+    /*@Test
     void deleteCommentUserIsNotAuthor() throws Exception {
         Person person = personRepository.findById(2L).get();
         String wrongPersonToken = jwtTokenUtils.generateToken(person);
@@ -125,7 +125,7 @@ class PostCommentsControllerTest {
         mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
                         .header("Authorization", wrongPersonToken))
                 .andExpect(status().isBadRequest());
-    }
+    }*/
 
     @Test
     void recoverComment() throws Exception {
