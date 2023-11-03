@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id:  008_admins
+      author:  Aldungarov.AR
+      changes:
+        -  sql:
+             sql:
+
+               drop table if exists admins;
+
+               create table admins (
+                 id bigserial not null,
+                 admin_login varchar(255) not null,
+                 role varchar(255) not null,
+                 password varchar(255) not null,
+                 primary key (id)
+               );
+               
+               insert into admins (admin_login, role, password) values ('shepardcmndr@gmail.com', 'ADMIN', 'MSFnNmswZjQ=');

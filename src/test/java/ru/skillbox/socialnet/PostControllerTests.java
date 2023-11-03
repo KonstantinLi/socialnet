@@ -75,11 +75,11 @@ class PostControllerTests {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
-        this.mockMvc.perform(get("/api/v1/post/1").header("authorization", token))
+        this.mockMvc.perform(get("/api/v1/post/2").header("authorization", token))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.title").value("post 1"))
-                .andExpect(jsonPath("$.data.post_text").value("text test post 1"));
+                .andExpect(jsonPath("$.data.title").value("post 2"))
+                .andExpect(jsonPath("$.data.post_text").value("text test post 2"));
     }
 
     @Test

@@ -33,7 +33,6 @@ public class AccountController {
     private final AccountService accountService;
     private final PersonSettingsService personSettingsService;
 
-    @BadRequestResponseDescription()
     @FullSwaggerDescription(summary = "user registration")
     @PostMapping(value = "/register", produces = "application/json", consumes = "application/json")
     public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) {
@@ -49,8 +48,7 @@ public class AccountController {
         return accountService.setPassword(passwordSetRq);
     }
 
-    @BadRequestResponseDescription
-    @Operation(summary = "send email with password recovery link")
+    @BadRequestResponseDescription(summary = "send email with password recovery link")
     @PutMapping(value = "/password/recovery", produces = "application/json", consumes = "application/json")
     public void passwordRecovery(@RequestBody PasswordRecoveryRq passwordRecoveryRq) {
 

@@ -155,10 +155,12 @@ public class NotificationService {
     public CommonRs<List<NotificationRs>> getAllNotifications(
             String token,
             Integer itemPerPage,
-            Integer offset) {
+            Integer offset,
+            Boolean isRead) {
 
         Long personId = jwtTokenUtils.getId(token);
-        List<Notification> notifications = notificationRepository.findAllByPerson_Id(personId);
+        List<Notification> notifications =
+                notificationRepository.findAllByPerson_IdAndIsRead(personId, isRead);
 
         return getListNotificationResponse(notifications, itemPerPage, offset);
     }
@@ -167,7 +169,8 @@ public class NotificationService {
         List<Notification> notifications = new ArrayList<>();
         if (all) {
             Long personId = jwtTokenUtils.getId(token);
-            notifications.addAll(notificationRepository.findAllByPerson_Id(personId));
+            notifications.addAll(notificationRepository
+                    .findAllByPerson_IdAndIsRead(personId, false));
         } else {
             notificationRepository.findById(id).ifPresent(notifications::add);
         }
