@@ -47,6 +47,8 @@ public class AuthService {
         String password = accountService.getDecodedPassword(person.getPassword());
         if (!loginRq.getPassword().equals(password)) {
             throw new AuthException("Пароли не совпадают");
+        } else if (person.getIsBlocked() != null && person.getIsBlocked()) {
+            throw new AuthException("Пользователь заблокирован");
         }
         CommonRs<PersonRs> commonRs = new CommonRs<>();
         PersonRs personRs = personMapper.personToPersonRs(person,
