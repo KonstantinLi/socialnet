@@ -34,6 +34,10 @@ spring:
       max-file-size=5MB
       max-request-size=5MB
 
+
+  kafka:
+    bootstrap-servers:  ${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
+
 jwt:
   secret: 6E76BC89F358872832CC3DBEC8A95
   lifetime: 12h
@@ -105,3 +109,8 @@ schedule:
 
 openweathermap:
   api_key: ${OPENWEATHERMAP_API_KEY:api-key}
+
+app:
+  kafka:
+    kafkaMessageTopic: message-topic
+    kafkaMessageGroupId: kafka-message-group-id
