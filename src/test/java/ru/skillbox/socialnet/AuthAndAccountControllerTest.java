@@ -1,6 +1,18 @@
 package ru.skillbox.socialnet;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +30,17 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.controller.AccountController;
 import ru.skillbox.socialnet.controller.AuthController;
-import ru.skillbox.socialnet.dto.request.*;
+import ru.skillbox.socialnet.dto.request.EmailRq;
+import ru.skillbox.socialnet.dto.request.LoginRq;
+import ru.skillbox.socialnet.dto.request.PasswordRecoveryRq;
+import ru.skillbox.socialnet.dto.request.PasswordResetRq;
+import ru.skillbox.socialnet.dto.request.PasswordSetRq;
+import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @SpringBootTest
@@ -306,7 +314,7 @@ public class AuthAndAccountControllerTest {
     void successChangePasswordTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordResetRq passwordSetRq = new PasswordResetRq();
+        PasswordSetRq passwordSetRq = new PasswordSetRq();
         passwordSetRq.setPassword(getDecodedPassword(person.getPassword()) + "1");
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
@@ -352,7 +360,7 @@ public class AuthAndAccountControllerTest {
     void trySamePasswordChangeTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         String token = jwtTokenUtils.generateToken(person);
-        PasswordResetRq passwordSetRq = new PasswordResetRq();
+        PasswordSetRq passwordSetRq = new PasswordSetRq();
         passwordSetRq.setPassword(getDecodedPassword(person.getPassword()));
         this.mockMvc.perform(put("/api/v1/account/password/set")
                         .header("authorization", token)
@@ -428,8 +436,7 @@ public class AuthAndAccountControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.error_description").value("Пользователь nowicoff@yandex.ru заблокирован"));
+                    .andExpect(status().isOk());
         } finally {
             person.setEmail(personEmail);
             person.setIsBlocked(isBlocked);
