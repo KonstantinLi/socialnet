@@ -25,7 +25,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "(select distinct round(random() * (select max(id) - 1 from persons)) + " +
             "1 as id from generate_series (1, 100)) t " +
             "where p.id = t.id and  t.id not in (:personIds) " +
-            " and p.is_deleted = false and p.is_blocked = false " +
+            "and (p.is_blocked = false or p.is_blocked is null) " +
+            "and (p.is_deleted = false or p.is_deleted is null) " +
             "fetch first :cnt rows only", nativeQuery = true)
     Iterable<Person> randomGenerateFriendsForPerson(@Param("personIds") List<Long> personIds,
                                                     @Param("cnt") long cnt);
@@ -56,7 +57,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "(select ff.dst_person_id from friendships ff " +
             "where ff.src_person_id = :personId and ff.status_name = 'FRIEND') " +
             "and f.dst_person_id != :personId " +
-            "and p.is_blocked = false and p.is_deleted = false", nativeQuery = true)
+            "and (p.is_blocked = false or p.is_blocked is null) " +
+            "and (p.is_deleted = false or p.is_deleted is null)", nativeQuery = true)
 
     Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
 
