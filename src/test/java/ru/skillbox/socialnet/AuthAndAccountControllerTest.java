@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -38,6 +39,7 @@ import ru.skillbox.socialnet.dto.request.PasswordSetRq;
 import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.kafka.KafkaService;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
@@ -52,10 +54,6 @@ public class AuthAndAccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private AuthController authController;
-    @Autowired
-    private AccountController accountController;
-    @Autowired
     private PersonRepository personRepository;
     @Autowired
     private CaptchaRepository captchaRepository;
@@ -63,6 +61,10 @@ public class AuthAndAccountControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
+
+    @MockBean
+    private KafkaService kafkaService;
+
 
     private final static long EXISTING_TEST_PERSON_ID = 1L;
 
