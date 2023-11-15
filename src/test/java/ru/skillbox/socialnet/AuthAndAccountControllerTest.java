@@ -1,10 +1,8 @@
 package ru.skillbox.socialnet;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -18,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -30,14 +29,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skillbox.socialnet.controller.AccountController;
 import ru.skillbox.socialnet.controller.AuthController;
-import ru.skillbox.socialnet.dto.request.EmailRq;
-import ru.skillbox.socialnet.dto.request.LoginRq;
-import ru.skillbox.socialnet.dto.request.PasswordRecoveryRq;
-import ru.skillbox.socialnet.dto.request.PasswordResetRq;
-import ru.skillbox.socialnet.dto.request.PasswordSetRq;
-import ru.skillbox.socialnet.dto.request.RegisterRq;
+import ru.skillbox.socialnet.dto.request.*;
+import ru.skillbox.socialnet.entity.enums.NotificationType;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
+import ru.skillbox.socialnet.kafka.KafkaService;
 import ru.skillbox.socialnet.repository.CaptchaRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
@@ -47,8 +43,13 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 @ContextConfiguration(initializers = {AuthAndAccountControllerTest.Initializer.class})
 @Testcontainers
 @AutoConfigureMockMvc
+
+
 @Sql(value = {"/auth-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AuthAndAccountControllerTest {
+
+    @MockBean
+    private KafkaService kafkaService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -107,12 +108,25 @@ public class AuthAndAccountControllerTest {
     }
 
     /**
+     * Вспомогательная функция. Создает и возвращает строку авторизации
+     * @param id ID пользователя, для которого будет создана строка
+     * @return
+     */
+    String getToken(Long id) {
+        Optional<Person> optPerson = personRepository.findById(id);
+        if (optPerson.isEmpty()) {
+            throw new RuntimeException("не удалось найти Person с идентификатором " + id);
+        }
+        return jwtTokenUtils.generateToken(optPerson.get());
+    }
+
+    /**
      * Тест: вводим верный логин и пароль и должны получить статус 200 и совпадающие email в ответе
      *
      * @throws Exception
      */
     @Test
-    public void trueLoginTest() throws Exception {
+    void trueLoginTest() throws Exception {
         Person person = personRepository.findByIdImpl(1L);
         LoginRq loginRq = getLoginRq(person);
         this.mockMvc.perform(post("/api/v1/auth/login")
@@ -130,7 +144,7 @@ public class AuthAndAccountControllerTest {
      * @throws Exception
      */
     @Test
-    public void wrongPersonLoginTest() throws Exception {
+    void wrongPersonLoginTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         LoginRq loginRq = getLoginRq(person);
         loginRq.setEmail("wrongemail@wrongemail.wrongemail");
@@ -149,7 +163,7 @@ public class AuthAndAccountControllerTest {
      * @throws Exception
      */
     @Test
-    public void wrongPasswordLoginTest() throws Exception {
+    void wrongPasswordLoginTest() throws Exception {
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         LoginRq loginRq = getLoginRq(person);
         loginRq.setPassword("wrong_password");
@@ -160,6 +174,38 @@ public class AuthAndAccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_description").value("Пароли не совпадают"));
+    }
+
+    /**
+     *  Тест: успешно разлогиниваемся по строке авторизации.
+     * @throws Exception
+     */
+    @Test
+    void successLogoutTest() throws Exception {
+        this.mockMvc.perform(post("/api/v1/auth/logout")
+                        .header("authorization", getToken(1L)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    /**
+     *  Тест: вводим неверную строку авторизации и пытаемся разлогиниться. Ожидаем ошибку 401
+     * @throws Exception
+     */
+    @Test
+    void wrongLogoutTest() throws Exception {
+        this.mockMvc.perform(post("/api/v1/auth/logout")
+                        .header("authorization", getToken(1L) + "wrong"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getCaptchaTest() throws Exception {
+        this.mockMvc.perform(get("/api/v1/auth/captcha"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     /**
@@ -221,7 +267,7 @@ public class AuthAndAccountControllerTest {
      * @throws Exception
      */
     @Test
-    public void trueRegistrationTest() throws Exception {
+    void trueRegistrationTest() throws Exception {
         RegisterRq registerRq = getRegisterRq();
         this.mockMvc.perform(post("/api/v1/account//register")
                         .content(new ObjectMapper().writeValueAsString(registerRq))
@@ -239,7 +285,7 @@ public class AuthAndAccountControllerTest {
      * @throws Exception
      */
     @Test
-    public void wrongRegistrationTestUserExists() throws Exception {
+    void wrongRegistrationTestUserExists() throws Exception {
         RegisterRq registerRq = getRegisterRq();
         Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
         registerRq.setEmail(person.getEmail());
@@ -260,7 +306,7 @@ public class AuthAndAccountControllerTest {
      * @throws Exception
      */
     @Test
-    public void wrongRegistrationNotSamePasswords() throws Exception {
+    void wrongRegistrationNotSamePasswords() throws Exception {
         RegisterRq registerRq = getRegisterRq();
         registerRq.setPasswd2(registerRq.getPasswd2() + "wrongText");
         this.mockMvc.perform(post("/api/v1/account/register")
@@ -280,7 +326,7 @@ public class AuthAndAccountControllerTest {
      * @throws Exception
      */
     @Test
-    public void wrongRegistrationCaptchaExpired() throws Exception {
+    void wrongRegistrationCaptchaExpired() throws Exception {
         RegisterRq registerRq = getRegisterRq();
         registerRq.setCode("0000000");
         registerRq.setCodeSecret(getBase64EncodedString("0000000"));
@@ -294,12 +340,12 @@ public class AuthAndAccountControllerTest {
     }
 
 
-    public String getEncodedPassword(String password) {
+    private static String getEncodedPassword(String password) {
         byte[] encodedBytes = Base64.getEncoder().encode(password.getBytes());
         return new String(encodedBytes);
     }
 
-    public String getDecodedPassword(String password) {
+    private static String getDecodedPassword(String password) {
         byte[] decodedBytes = Base64.getDecoder().decode(password);
         return new String(decodedBytes);
     }
@@ -591,6 +637,42 @@ public class AuthAndAccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_description").value("Пользователь с email: '" + person.getEmail() + "' уже зарегистрирован"));
+    }
+
+    /**
+     * Тест: получение настроек пользователя
+     * @throws Exception
+     */
+    @Test
+    void getPersonSettingsTest() throws Exception {
+        Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
+        String token = jwtTokenUtils.generateToken(person);
+        this.mockMvc.perform(get("/api/v1/account/notifications")
+                        .header("authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    /**
+     * Тест: изменение настроек пользователя
+     * @throws Exception
+     */
+    @Test
+    void editPersonSettingsTest() throws Exception {
+        Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
+        String token = jwtTokenUtils.generateToken(person);
+        PersonSettingsRq personSettingsRq = new PersonSettingsRq();
+        personSettingsRq.setEnable(true);
+        personSettingsRq.setNotificationType(NotificationType.POST_LIKE);
+        this.mockMvc.perform(put("/api/v1/account/notifications")
+                .header("authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(personSettingsRq))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }
 
