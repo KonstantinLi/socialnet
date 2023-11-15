@@ -11,10 +11,14 @@ import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
+    long countByIsDeletedFalseOrIsDeletedNull();
 
     /**
      * @param personIds - список персон, для которых будет сгенерирован список предложений в друзья
@@ -59,7 +63,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
             "and f.dst_person_id != :personId " +
             "and (p.is_blocked = false or p.is_blocked is null) " +
             "and (p.is_deleted = false or p.is_deleted is null)", nativeQuery = true)
-
     Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
 
     /**
@@ -88,13 +91,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                       @Param("status_name") String statusName);
 
     Optional<Person> findByEmail(String email);
-
-    //TODO 3 unused methods
-    Set<Person> findAllByFirstNameAndLastNameAndIsDeleted(String firstName, String lastName, boolean isDeleted);
-
-    Set<Person> findAllByFirstNameAndIsDeleted(String firstName, boolean isDeleted);
-
-    Set<Person> findAllByLastNameAndIsDeleted(String lastName, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
             select *

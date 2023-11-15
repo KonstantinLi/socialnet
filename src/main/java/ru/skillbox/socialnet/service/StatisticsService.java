@@ -28,7 +28,7 @@ public class StatisticsService {
     private final CitiesRepository citiesRepository;
 
     public Long getAllUsers() {
-        return personRepository.countByIsDeleted(false);
+        return personRepository.countByIsDeletedFalseOrIsDeletedNull();
     }
 
     public Long getAllUsersByCountry(String country) {
