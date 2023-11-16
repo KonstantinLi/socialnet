@@ -45,7 +45,7 @@ public class AwsProfileImageManager implements ProfileImageManager {
     public void uploadProfileImage(String type, MultipartFile image, String generatedFileName) throws IOException {
         initializeS3Client();
         checkImageForUpload(image);
-        deleteProfileImage(generatedFileName);
+        clearOldPhotos(generatedFileName);
 
         byte[] imageContent = image.getBytes();
 
@@ -115,14 +115,14 @@ public class AwsProfileImageManager implements ProfileImageManager {
         return Long.parseLong(maxImageSize);
     }
 
-    private void deleteProfileImage(String fileName) {
+    private void clearOldPhotos(String fileName) {
         String userId = fileName.split("_", 2)[0];
 
         List<String> fileNames = getBucketContentNames(imageBucketName);
 
         for (String name : fileNames) {
-            name = name.split("_", 2)[1];
-            if (name.equals(userId)) {
+            String photoOwnerId = name.split("_", 2)[0];
+            if (photoOwnerId.equals(userId)) {
                 deleteFile(name, imageBucketName);
             }
         }
@@ -132,7 +132,7 @@ public class AwsProfileImageManager implements ProfileImageManager {
     public void deleteProfileImage(Long userId) {
         initializeS3Client();
 
-        deleteProfileImage(userId + "_");
+        clearOldPhotos(userId + "_");
     }
 
     private List<String> getBucketContentNames(String bucketName) {
