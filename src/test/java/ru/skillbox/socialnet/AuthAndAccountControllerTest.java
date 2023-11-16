@@ -49,7 +49,7 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 public class AuthAndAccountControllerTest {
 
     @MockBean
-    private KafkaService kafkaService;
+    private KafkaService kafkaServiceMock;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
