@@ -51,7 +51,7 @@ public class AccountController {
     }
 
     @BadRequestResponseDescription(summary = "send email with password recovery link")
-    @PutMapping(value = "/password/recovery", produces = "application/json", consumes = "application/json")
+    @PutMapping(value = "/password/recovery", consumes = "application/json")
     public void passwordRecovery(@RequestBody PasswordRecoveryRq passwordRecoveryRq) throws JsonProcessingException {
 
         //accountService.passwordRecovery(passwordRecoveryRq);
@@ -67,7 +67,7 @@ public class AccountController {
     }
 
     @FullSwaggerDescription(summary = "change user email")
-    @PutMapping(value = "/email/recovery", consumes = "text/plain", produces = "application/json")
+    @PutMapping(value = "/email/recovery", consumes = "text/plain")
     public void emailRecovery(
             @RequestHeader("authorization") @Token String token,
             @RequestBody @Parameter(description = "user email to send recovery link"/*, example = "obivan.k@rmail.com"*/)
@@ -84,7 +84,7 @@ public class AccountController {
     }
 
     @FullSwaggerDescription(summary = "get user's notifications settings")
-    @GetMapping(value = "/notifications", produces = "application/json", consumes = "application/json")
+    @GetMapping(value = "/notifications", produces = "application/json")
     public CommonRs<List<PersonSettingsRs>> getSettings(
             @RequestHeader("Authorization") @Token String token) {
 
