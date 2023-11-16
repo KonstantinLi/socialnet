@@ -53,10 +53,6 @@ public class AuthAndAccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private AuthController authController;
-    @Autowired
-    private AccountController accountController;
-    @Autowired
     private PersonRepository personRepository;
     @Autowired
     private CaptchaRepository captchaRepository;
@@ -64,6 +60,10 @@ public class AuthAndAccountControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
+
+    @MockBean
+    private KafkaService kafkaService;
+
 
     private final static long EXISTING_TEST_PERSON_ID = 1L;
 
