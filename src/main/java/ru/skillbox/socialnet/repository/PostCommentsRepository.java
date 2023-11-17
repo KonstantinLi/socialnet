@@ -1,7 +1,9 @@
 package ru.skillbox.socialnet.repository;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.postrelated.PostComment;
 
@@ -34,5 +36,29 @@ public interface PostCommentsRepository extends CrudRepository<PostComment, Long
     );
     List<PostComment> findAllByPostIdAndParentId(
             long postId, Long parentId, Pageable pageable
+    );
+
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(c)
+            FROM post_comments c
+            WHERE c.post_id = :postId
+            and c.parent_id is null
+            and (not c.is_blocked or c.author_id = :userId)
+            """)
+    long countRootCommentsByPostId(
+            @Param("postId") long postId,
+            @Param("userId") long userId
+    );
+    @Query(nativeQuery = true, value = """
+            SELECT *
+            FROM post_comments c
+            WHERE c.post_id = :postId
+            and c.parent_id is null
+            and (not c.is_blocked or c.author_id = :userId)
+            """)
+    List<PostComment> findAllRootCommentsByPostId(
+            @Param("postId") long postId,
+            @Param("userId") long userId,
+            Pageable pageable
     );
 }
