@@ -91,41 +91,41 @@ class PostCommentsControllerTest {
                 .andExpect(jsonPath("$.error_description").isNotEmpty());
     }
 
-//    @Test
-//    void editCommentUserIsNotAuthor() throws Exception {
-//        CommentRq commentRq = new CommentRq();
-//        commentRq.setParentId(100L);
-//        commentRq.setCommentText("New comment text");
-//
-//        Person person = personRepository.findById(2L).get();
-//        String wrongPersonToken = jwtTokenUtils.generateToken(person);
-//
-//        mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
-//                        .header("Authorization", wrongPersonToken)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(commentRq)))
-//                .andExpect(status().isBadRequest());
-//    }
+    /*@Test
+    void editCommentUserIsNotAuthor() throws Exception {
+        CommentRq commentRq = new CommentRq();
+        commentRq.setParentId(100L);
+        commentRq.setCommentText("New comment text");
 
-//    @Test
-//    void deleteComment() throws Exception {
-//        mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
-//                        .header("Authorization", getToken()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.data.id").value(101))
-//                .andExpect(jsonPath("$.data.parent_id").value(100))
-//                .andExpect(jsonPath("$.data.is_deleted").value(true));
-//    }
+        Person person = personRepository.findById(2L).get();
+        String wrongPersonToken = jwtTokenUtils.generateToken(person);
 
-//    @Test
-//    void deleteCommentUserIsNotAuthor() throws Exception {
-//        Person person = personRepository.findById(2L).get();
-//        String wrongPersonToken = jwtTokenUtils.generateToken(person);
-//
-//        mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
-//                        .header("Authorization", wrongPersonToken))
-//                .andExpect(status().isBadRequest());
-//    }
+        mockMvc.perform(put("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
+                        .header("Authorization", wrongPersonToken)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(commentRq)))
+                .andExpect(status().isBadRequest());
+    }*/
+
+    @Test
+    void deleteComment() throws Exception {
+        mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
+                        .header("Authorization", getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(101))
+                .andExpect(jsonPath("$.data.parent_id").value(100))
+                .andExpect(jsonPath("$.data.is_deleted").value(true));
+    }
+
+    /*@Test
+    void deleteCommentUserIsNotAuthor() throws Exception {
+        Person person = personRepository.findById(2L).get();
+        String wrongPersonToken = jwtTokenUtils.generateToken(person);
+
+        mockMvc.perform(delete("/api/v1/post/{id}/comments/{comment_id}", 10, 101)
+                        .header("Authorization", wrongPersonToken))
+                .andExpect(status().isBadRequest());
+    }*/
 
     @Test
     void recoverComment() throws Exception {

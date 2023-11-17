@@ -59,13 +59,14 @@ sonarqube-check:
   stage: sonarqube-check
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    PROJECT_KEY: "${SONAR_PROJECT_KEY}"
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project,  required by the analysis task
   cache:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey=sqp_4f723671da00dab9a8b99bbe974cc3613b84405 -Dsonar.projectName='javaPro41Backend'
+    - mvn verify sonar:sonar -Dsonar.projectKey=PROJECT_KEY -Dsonar.projectName='javaPro41Backend'
   allow_failure: true
   only:
     - dev
@@ -103,3 +104,4 @@ build-docker-image:
     - (docker ps -a --format {{.Names}} | grep java-backend-app -w) && docker stop java-backend-app && docker rm java-backend-app || echo "Doesn't exist"
     - docker build -t java-pro41-backend:latest .
     - docker run --name java-backend-app -d -p 8086:8086 --env-file ${ENV_FILE} -t java-pro41-backend:latest
+    - docker system prune -a -f

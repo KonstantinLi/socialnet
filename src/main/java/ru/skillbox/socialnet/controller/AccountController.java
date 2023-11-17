@@ -1,6 +1,6 @@
 package ru.skillbox.socialnet.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +16,7 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.PersonSettingsRs;
 import ru.skillbox.socialnet.dto.response.RegisterRs;
 import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.kafka.KafkaService;
 import ru.skillbox.socialnet.service.AccountService;
 import ru.skillbox.socialnet.service.PersonSettingsService;
 
@@ -32,8 +33,8 @@ public class AccountController {
 
     private final AccountService accountService;
     private final PersonSettingsService personSettingsService;
+    private final KafkaService kafkaService;
 
-    @BadRequestResponseDescription()
     @FullSwaggerDescription(summary = "user registration")
     @PostMapping(value = "/register", produces = "application/json", consumes = "application/json")
     public RegisterRs<ComplexRs> register(@RequestBody RegisterRq registerRq) {
@@ -49,12 +50,12 @@ public class AccountController {
         return accountService.setPassword(passwordSetRq);
     }
 
-    @BadRequestResponseDescription
-    @Operation(summary = "send email with password recovery link")
-    @PutMapping(value = "/password/recovery", produces = "application/json", consumes = "application/json")
-    public void passwordRecovery(@RequestBody PasswordRecoveryRq passwordRecoveryRq) {
+    @BadRequestResponseDescription(summary = "send email with password recovery link")
+    @PutMapping(value = "/password/recovery", consumes = "application/json")
+    public void passwordRecovery(@RequestBody PasswordRecoveryRq passwordRecoveryRq) throws JsonProcessingException {
 
-        accountService.passwordRecovery(passwordRecoveryRq);
+        //accountService.passwordRecovery(passwordRecoveryRq);
+        kafkaService.sendMessage(passwordRecoveryRq);
     }
 
     @FullSwaggerDescription(summary = "reset user password")
@@ -66,7 +67,7 @@ public class AccountController {
     }
 
     @FullSwaggerDescription(summary = "change user email")
-    @PutMapping(value = "/email/recovery", consumes = "text/plain", produces = "application/json")
+    @PutMapping(value = "/email/recovery", consumes = "text/plain")
     public void emailRecovery(
             @RequestHeader("authorization") @Token String token,
             @RequestBody @Parameter(description = "user email to send recovery link"/*, example = "obivan.k@rmail.com"*/)
@@ -83,7 +84,7 @@ public class AccountController {
     }
 
     @FullSwaggerDescription(summary = "get user's notifications settings")
-    @GetMapping(value = "/notifications", produces = "application/json", consumes = "application/json")
+    @GetMapping(value = "/notifications", produces = "application/json")
     public CommonRs<List<PersonSettingsRs>> getSettings(
             @RequestHeader("Authorization") @Token String token) {
 
