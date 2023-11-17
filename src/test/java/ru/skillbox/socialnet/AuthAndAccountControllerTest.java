@@ -61,9 +61,6 @@ public class AuthAndAccountControllerTest {
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
 
-    @MockBean
-    private KafkaService kafkaService;
-
 
     private final static long EXISTING_TEST_PERSON_ID = 1L;
 
