@@ -1,8 +1,12 @@
 package ru.skillbox.socialnet;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
@@ -27,9 +31,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.skillbox.socialnet.controller.AccountController;
-import ru.skillbox.socialnet.controller.AuthController;
-import ru.skillbox.socialnet.dto.request.*;
+import ru.skillbox.socialnet.dto.request.EmailRq;
+import ru.skillbox.socialnet.dto.request.LoginRq;
+import ru.skillbox.socialnet.dto.request.PasswordRecoveryRq;
+import ru.skillbox.socialnet.dto.request.PasswordResetRq;
+import ru.skillbox.socialnet.dto.request.PasswordSetRq;
+import ru.skillbox.socialnet.dto.request.PersonSettingsRq;
+import ru.skillbox.socialnet.dto.request.RegisterRq;
 import ru.skillbox.socialnet.entity.enums.NotificationType;
 import ru.skillbox.socialnet.entity.other.Captcha;
 import ru.skillbox.socialnet.entity.personrelated.Person;
@@ -60,9 +68,6 @@ public class AuthAndAccountControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
-
-    @MockBean
-    private KafkaService kafkaService;
 
 
     private final static long EXISTING_TEST_PERSON_ID = 1L;

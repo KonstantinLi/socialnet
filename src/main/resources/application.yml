@@ -26,7 +26,7 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
+    drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
   servlet:
