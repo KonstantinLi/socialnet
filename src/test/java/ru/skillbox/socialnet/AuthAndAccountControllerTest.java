@@ -55,9 +55,9 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 @Sql(value = {"/auth-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AuthAndAccountControllerTest {
-//
-//    @MockBean
-//    private KafkaService kafkaService;
+
+    @MockBean
+    private KafkaService kafkaService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
