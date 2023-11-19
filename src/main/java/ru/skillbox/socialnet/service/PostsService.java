@@ -280,7 +280,7 @@ public class PostsService {
 
             fillAuthor(commentRs.getAuthor(), myId);
 
-            if (commentRs.getIsDeleted()) {
+            if (Boolean.TRUE.equals(commentRs.getIsDeleted())) {
                 commentRs.getSubComments().clear();
             }
 
@@ -314,7 +314,7 @@ public class PostsService {
     private Post fillTags(Post post) {
         post.setTags(
                 post.getTags().stream().map(tag -> {
-                    Optional<Tag> optionalTag = tagsRepository.findByTag(tag.getTag());
+                    Optional<Tag> optionalTag = tagsRepository.findByTagName(tag.getTagName());
 
                     if (optionalTag.isPresent()) {
                         return optionalTag.get();

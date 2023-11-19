@@ -9,12 +9,12 @@ import ru.skillbox.socialnet.entity.postrelated.Tag;
 )
 public interface TagMapper {
     default String tagToString(Tag tag) {
-        return tag.getTag();
+        return tag.getTagName();
     }
 
     default Tag stringToTag(String string) {
         Tag tag = new Tag();
-        tag.setTag(string);
+        tag.setTagName(string);
         return tag;
     }
 
