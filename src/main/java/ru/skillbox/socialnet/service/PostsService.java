@@ -266,13 +266,7 @@ public class PostsService {
 
         fillAuthor(postRs.getAuthor(), myId);
 
-        postRs.setType(String.valueOf(
-                        post.getIsDeleted()
-                                ? PostType.DELETED
-                                : post.getTime().isAfter(LocalDateTime.now())
-                                ? PostType.QUEUED
-                                : PostType.POSTED
-                )
+        postRs.setType(String.valueOf(postType(post))
         );
 
         postRs.setComments(postRs.getComments().stream()
@@ -299,6 +293,16 @@ public class PostsService {
         });
 
         return postRs;
+    }
+
+    private PostType postType(Post post) {
+        if (Boolean.TRUE.equals(post.getIsDeleted())) {
+            return PostType.DELETED;
+        } else if (post.getTime().isAfter(LocalDateTime.now())) {
+            return PostType.QUEUED;
+        } else {
+            return PostType.POSTED;
+        }
     }
 
     /**
