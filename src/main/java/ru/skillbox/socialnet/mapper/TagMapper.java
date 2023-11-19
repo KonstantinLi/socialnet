@@ -12,9 +12,10 @@ public interface TagMapper {
         return tag.getTag();
     }
 
-    default Tag stringToTag(String string) {
+    default Tag StringToTag(String string) {
         Tag tag = new Tag();
         tag.setTag(string);
         return tag;
     }
+
 }
