@@ -61,10 +61,6 @@ public class AuthAndAccountControllerTest {
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
 
-    @MockBean
-    private KafkaService kafkaService;
-
-
     private final static long EXISTING_TEST_PERSON_ID = 1L;
 
     @Container
@@ -538,13 +534,21 @@ public class AuthAndAccountControllerTest {
 
     /**
      * - Тест: успешный тест на сброс email
-     * ожидаем статус 200 и соответствующее сообщение
+     * ожидаем статус 200
      *
      * @throws Exception
      */
     @Test
     void successEmailRecoveryTest() throws Exception {
-
+        Person person = personRepository.findByIdImpl(EXISTING_TEST_PERSON_ID);
+        String token = jwtTokenUtils.generateToken(person);
+        this.mockMvc.perform(put("/api/v1/account/email/recovery")
+                        .header("authorization", token)
+                        .content(person.getEmail())
+                        .contentType(MediaType.TEXT_PLAIN_VALUE)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     /**

@@ -25,7 +25,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      * @param cnt       - кол-во сгенерированных записей (должно быть меньше 100)
      * @return - запрос сгенерирует cnt рандомных персон (как друзей) для списка персон personIds
      */
-    @Query(value = "select p.* from persons p, " +
+    @Query(value = "select distinct p.* from persons p, " +
             "(select distinct round(random() * (select max(id) - 1 from persons)) + " +
             "1 as id from generate_series (1, 100)) t " +
             "where p.id = t.id and  t.id not in (:personIds) " +
@@ -56,7 +56,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      * @param personId - id персоны
      * @return - запрос вернет друзей у друзей персоны, переданной в параметре
      */
-    @Query(value = "select p.* from friendships f, " +
+    @Query(value = "select distinct p.* from friendships f, " +
             "persons p where f.dst_person_id = p.id and f.src_person_id in  " +
             "(select ff.dst_person_id from friendships ff " +
             "where ff.src_person_id = :personId and ff.status_name = 'FRIEND') " +
