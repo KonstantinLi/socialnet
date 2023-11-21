@@ -58,6 +58,24 @@ public class MessageService {
         return result;
     }
 
+    public CommonRs<List<MessageRs>> getUnreadMessages(String authorization, Long dialogId) {
+        Long userId = jwtTokenUtils.getId(authorization);
+
+        List<Message> unreadMessages = messageRepository.getUnreadMessagesByDialogIdAndUserId(dialogId, userId);
+        List<MessageRs> data = unreadMessages.stream().map(m -> {
+            MessageRs messageRs = messageMapper.messageToMessageRs(m);
+            messageRs.setIsSentByMe(messageRs.getAuthorId().equals(userId));
+            return messageRs;
+        }).toList();
+
+        var result = new CommonRs<List<MessageRs>>();
+        ComplexRs complexRs = new ComplexRs();
+        complexRs.setId(userId);
+        complexRs.setCount((long) data.size());
+        result.setData(data);
+        return result;
+    }
+
     public CommonRs<ComplexRs> getCountUnreadedMessages(String authorization) {
         Long userId = jwtTokenUtils.getId(authorization);
 

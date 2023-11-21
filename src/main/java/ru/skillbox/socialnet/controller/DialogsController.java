@@ -63,4 +63,12 @@ public class DialogsController {
 
         return messageService.getMessagesByDialog(authorization, dialogId, offset, perPage);
     }
+
+    @FullSwaggerDescription(summary = "get unread messages from dialogs")
+    @GetMapping(value = "/{dialogId}/unread")
+    public CommonRs<List<MessageRs>> getUnreadMessagesFromDialog(@RequestHeader(name = "authorization") @Token String authorization,
+                                                                 @PathVariable Long dialogId) {
+
+        return messageService.getUnreadMessages(authorization, dialogId);
+    }
 }
