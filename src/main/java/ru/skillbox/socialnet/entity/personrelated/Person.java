@@ -3,6 +3,8 @@ package ru.skillbox.socialnet.entity.personrelated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.postrelated.Like;
 import ru.skillbox.socialnet.entity.postrelated.Post;
@@ -157,7 +159,6 @@ public class Person {
      */
     @Column(name = "telegram_id")
     private Long telegramId;
-
 
     @OneToMany(cascade = CascadeType.ALL,
             orphanRemoval = true,

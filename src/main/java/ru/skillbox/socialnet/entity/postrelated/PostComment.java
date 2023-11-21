@@ -49,7 +49,7 @@ public class PostComment {
     /**
      * Автор  поста
      */
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(
             name = "author_id",
             nullable = false,
@@ -65,6 +65,8 @@ public class PostComment {
     )
     private Set<PostComment> subComments = new HashSet<>();
 
-    @Column(name = "post_id")
-    private Long postId;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+    private Post post;
 }

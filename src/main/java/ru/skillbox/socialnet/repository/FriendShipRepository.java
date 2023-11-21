@@ -1,6 +1,7 @@
 package ru.skillbox.socialnet.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,13 +11,11 @@ import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
-
-    @Transactional
-    void deleteBySourcePerson_IdOrDestinationPerson_Id(Long id, Long id1);
 
     @Query(value = "select * from friendships f where " +
             "f.source_person = :src_person_id " +
@@ -58,4 +57,9 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
             @Param("destinationPersonId") Long destinationPersonI);
 
     Optional<FriendShip> findBySourcePerson_IdAndDestinationPerson_Id(Long srcPersonId, Long dstPersonId);
+
+    @Transactional
+    @Modifying
+    @Query("delete from FriendShip f where f.sourcePerson.id in (?1) or f.destinationPerson.id in (?1)")
+    void deleteBySourcePerson_IdOrDestinationPerson_IdIn(List<Long> inactiveUsersIds);
 }

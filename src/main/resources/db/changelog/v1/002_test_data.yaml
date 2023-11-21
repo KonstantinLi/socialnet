@@ -406,3 +406,9 @@ databaseChangeLog:
               ('2023-09-14 17:43:31', 'REQUEST', 15, 7),
               ('2023-09-05 13:35:56', 'FRIEND', 20, 16),
               ('2023-09-22 22:59:12', 'FRIEND', 15, 5);
+
+
+              insert into dialogs (last_active_time, last_message_id, first_person_id, second_person_id) values 
+              ('2023-09-22 22:59:12', null, 1, 2),
+              ('2023-09-22 22:59:12', null, 1, 3),
+              ('2023-09-22 22:59:12', null, 1, 4);

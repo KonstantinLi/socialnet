@@ -50,9 +50,13 @@ public class PostCommentsService {
             throw new PostCommentCreateException("Текст комментария отсутствует");
         }
 
+        Post post = postsRepository.findById(postId).orElseThrow(() ->
+                new PostNotFoundException("Ошибка при добавлении комментария к посту с id " + postId +
+                        ": пост не найден"));
+
         PostComment postComment = new PostComment();
 
-        postComment.setPostId(postId);
+        postComment.setPost(post);
         postComment.setAuthor(personRepository.findById(myId).orElseThrow());
         postComment.setTime(LocalDateTime.now());
         postComment.setIsBlocked(false);
@@ -149,7 +153,7 @@ public class PostCommentsService {
     private void savePostComment(PostComment postComment, CommentRq commentRq) {
         if (commentRq.getParentId() != null) {
             PostComment parentPostComment = fetchPostComment(
-                    commentRq.getParentId(), postComment.getPostId(), false
+                    commentRq.getParentId(), postComment.getPost().getId(), false
             );
 
             if (parentPostComment.getParentId() != null) {

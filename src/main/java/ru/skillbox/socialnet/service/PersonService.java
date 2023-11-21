@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.annotation.Debug;
 import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.dto.ProfileImageManager;
 import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
@@ -29,6 +28,8 @@ import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +52,8 @@ public class PersonService {
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
+    private final PostsRepository postsRepository;
+    private final PostCommentsRepository commentsRepository;
 
     public Person getPersonById(Long personId) {
         return personRepository.findById(personId).orElseThrow(
@@ -226,29 +229,61 @@ public class PersonService {
     }
 
     public void deleteInactiveUsers() {
-        List<Person> inactiveUsers = personRepository.findByDeletedTimeBefore(LocalDateTime.now().minusMonths(1));
 
-        /*inactiveUsers.ifPresent(persons -> persons.stream().map(Person::getId)
-                .forEach(personId ->
-                        friendShipRepository.deleteBySourcePerson_IdOrDestinationPerson_Id(personId, personId)));
-*/
-        /*inactiveUsers.ifPresent(persons -> persons.forEach(person -> {
-            Long personId = person.getId();
+        setDeletedTimeForUsersIfNotSet();
 
+        List<Long> inactiveUsersIds = getInactiveUsersIds();
+        if (inactiveUsersIds.isEmpty()) return;
+
+        commentsRepository.deleteByAuthor_IdIn(inactiveUsersIds);
+
+        List<Long> inactiveUsersPosts = postsRepository.findPosts_IdsByAuthors_Ids(inactiveUsersIds);
+        commentsRepository.deleteByPost_IdIn(inactiveUsersPosts);
+
+        postsRepository.deleteByIdIn(inactiveUsersPosts);
+
+        friendShipRepository.deleteBySourcePerson_IdOrDestinationPerson_IdIn(inactiveUsersIds);
+
+        inactiveUsersIds.forEach(personId -> {
             changePersonIdInDialogOnDeletion(personId);
-            personRepository.delete(person);
+            personRepository.deleteById(personId);
             profileImageManager.deleteProfileImage(personId);
-        }));*/
+        });
+    }
+
+    private List<Long> getInactiveUsersIds() {
+        List<Person> inactiveUsers = personRepository.
+                findByIsDeletedAndDeletedTimeBefore(true, LocalDateTime.now().minusMonths(1));
+
+        if (inactiveUsers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> inactiveUsersIds = new ArrayList<>();
+
+        for (Person person : inactiveUsers) {
+            if (person.getId().equals(defaultDeletedPersonId)) continue;
+            inactiveUsersIds.add(person.getId());
+        }
+
+        return inactiveUsersIds;
+    }
+
+    private void setDeletedTimeForUsersIfNotSet() {
+        personRepository.findByIsDeletedTrueAndDeletedTimeNull()
+                .forEach(person -> {
+                    person.setDeletedTime(LocalDateTime.now());
+                });
     }
 
     private void changePersonIdInDialogOnDeletion(Long personId) {
         Person defaultDeletedPerson = getDefaultDeletedPerson();
 
+        removeDialogsWithNoPersons();
+
         List<Dialog> dialogs = dialogRepository.findByFirstPerson_IdOrSecondPerson_Id(personId, personId);
         dialogs.forEach(dialog -> {
-
             Long firstPersonId = dialog.getFirstPerson().getId();
-            Long secondPersonId = dialog.getSecondPerson().getId();
 
             if (firstPersonId.equals(personId)) {
                 dialog.setFirstPerson(defaultDeletedPerson);
@@ -256,25 +291,17 @@ public class PersonService {
                 dialog.setSecondPerson(defaultDeletedPerson);
             }
 
-            if (deleteDialogIfBothPersonsDeleted(dialog, firstPersonId,
-                    defaultDeletedPerson, secondPersonId)) {
-                return;
+            if (dialog.getFirstPerson().getId().equals(defaultDeletedPersonId) &&
+                    dialog.getSecondPerson().getId().equals(defaultDeletedPersonId)) {
+                dialogRepository.delete(dialog);
             }
 
             dialogRepository.save(dialog);
         });
     }
 
-    private boolean deleteDialogIfBothPersonsDeleted(Dialog dialog, Long firstPersonId,
-                                                     Person defaultDeletedPerson, Long secondPersonId) {
-
-        if (firstPersonId.equals(defaultDeletedPerson.getId())
-                && secondPersonId.equals(defaultDeletedPerson.getId())) {
-            dialogRepository.delete(dialog);
-            return true;
-        }
-
-        return false;
+    private void removeDialogsWithNoPersons() {
+        dialogRepository.deleteByFirstPerson_IdAndSecondPerson_Id(defaultDeletedPersonId);
     }
 
     private Person getDefaultDeletedPerson() {

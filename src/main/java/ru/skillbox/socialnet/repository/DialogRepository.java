@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DialogRepository extends JpaRepository<Dialog, Long> {
-    @Transactional
     @Modifying
-    @Query("update Dialog d set d.firstPerson = ?1")
-    int updateFirstPersonBy(Person firstPerson);
+    @Transactional
+    @Query("delete Dialog d where d.firstPerson.id = ?1 and d.secondPerson.id = ?1")
+    void deleteByFirstPerson_IdAndSecondPerson_Id(Long id);
+
     List<Dialog> findByFirstPerson_IdOrSecondPerson_Id(Long id, Long id1);
 
     @Query(" select d from Dialog d where d.firstPerson.id = :userId or d.secondPerson.id = :userId")

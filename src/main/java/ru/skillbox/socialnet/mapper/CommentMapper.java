@@ -12,6 +12,8 @@ import ru.skillbox.socialnet.entity.postrelated.PostComment;
         }
 )
 public interface CommentMapper {
+
+    @Mapping(target = "postId", source = "post.id")
     CommentRs postCommentToCommentRs(PostComment postComment);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
