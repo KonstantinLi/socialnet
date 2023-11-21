@@ -14,6 +14,7 @@ import ru.skillbox.socialnet.repository.NotificationRepository;
 import ru.skillbox.socialnet.repository.PersonRepository;
 import ru.skillbox.socialnet.security.JwtTokenUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,9 @@ public class NotificationService {
     private final JwtTokenUtils jwtTokenUtils;
 
     public void sendBirthdayNotification() {
-        List<Person> birthdayPersons = personRepository.findAllByBirthDate(LocalDateTime.now());
+        LocalDate now = LocalDate.now();
+        List<Person> birthdayPersons =
+                personRepository.findAllByBirthDate(now.getMonthValue(), now.getDayOfMonth());
 
         for (Person person : birthdayPersons) {
             String contact = String.format(
