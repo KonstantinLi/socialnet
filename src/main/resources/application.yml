@@ -26,7 +26,8 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
+    #TODO remove this property
+    drop-first: false
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
   servlet:
@@ -114,3 +115,5 @@ app:
   kafka:
     kafkaMessageTopic: message-topic
     kafkaMessageGroupId: kafka-message-group-id
+
+default-deleted-user-id: 0

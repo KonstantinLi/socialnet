@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.personrelated.Person;
@@ -14,19 +15,16 @@ import java.util.Optional;
 @Repository
 public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
 
-    /**
-     * @param src_person_id - текущая персона (от имени которого запрашиваются данные)
-     * @param dst_person_id - искомая персона (его связи с текущей персоной)
-     * @param shipStatus    - тип связи между персонами (если передать NULL, то запрос вернет все связи)
-     * @return - запрос вернет записи в таблице friendships между двумя персонами
-     */
+    @Transactional
+    void deleteBySourcePerson_IdOrDestinationPerson_Id(Long id, Long id1);
+
     @Query(value = "select * from friendships f where " +
-            "f.src_person_id = :src_person_id " +
-            "and f.dst_person_id = :dst_person_id " +
+            "f.source_person = :src_person_id " +
+            "and f.destination_person = :dst_person_id " +
             "and (f.status_name = :shipStatus or :shipStatus = '')", nativeQuery = true)
-    //TODO long src_person_id и long dst_person_id не должны быть CamelCase?
-    Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
-                                                     @Param("dst_person_id") long dst_person_id,
+        //TODO long src_person_id и long dst_person_id не должны быть CamelCase?
+    Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long srcPersonId,
+                                                     @Param("dst_person_id") long dstPersonId,
                                                      @Param("shipStatus") String shipStatus);
 
     /**
@@ -59,5 +57,5 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
             @Param("sourcePersonId") Long sourcePersonI,
             @Param("destinationPersonId") Long destinationPersonI);
 
-    Optional<FriendShip> findBySrcPersonIdAndDstPersonId(Long srcPersonId, Long dstPersonId);
+    Optional<FriendShip> findBySourcePerson_IdAndDestinationPerson_Id(Long srcPersonId, Long dstPersonId);
 }

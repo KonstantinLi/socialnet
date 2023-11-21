@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
+    List<Person> findByDeletedTimeBefore(LocalDateTime deletedTime);
     long countByIsDeletedFalseOrIsDeletedNull();
 
     /**
@@ -140,7 +141,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     )
     Collection<RegionStatisticsRs> countCityStatistics();
 
-    @Query(value = "select * from persons p where p.deleted_time > :timeParam", nativeQuery = true)
+    @Query(value = "select * from persons p where p.deleted_time < :timeParam", nativeQuery = true)
     Optional<List<Person>> findAllInactiveUsersByDeletedTime(@Param("timeParam") LocalDateTime timeParam);
 
     @Query(nativeQuery = true, value = "select distinct city from persons")

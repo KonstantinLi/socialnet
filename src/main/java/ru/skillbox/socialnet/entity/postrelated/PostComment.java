@@ -49,7 +49,7 @@ public class PostComment {
     /**
      * Автор  поста
      */
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(
             name = "author_id",
             nullable = false,
@@ -58,7 +58,7 @@ public class PostComment {
     )
     private Person author;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(
             name = "parent_id",
             foreignKey = @ForeignKey(name = "fk_comment_parent_id")

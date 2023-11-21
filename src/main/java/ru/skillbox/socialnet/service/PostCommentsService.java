@@ -212,7 +212,7 @@ public class PostCommentsService {
 
     private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
         Optional<FriendShip> optionalFriendShip = friendShipRepository
-                .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
+                .findBySourcePerson_IdAndDestinationPerson_Id(personId, destinationPersonId);
 
         if (optionalFriendShip.isEmpty()) {
             return FriendShipStatus.UNKNOWN;
