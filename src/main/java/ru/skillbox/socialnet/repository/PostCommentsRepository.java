@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface PostCommentsRepository extends CrudRepository<PostComment, Long> {
-    Optional<PostComment> findByIdAndIsDeleted(long Id, boolean isDeleted);
+    Optional<PostComment> findByIdAndIsDeleted(long id, boolean isDeleted);
 
-    Optional<PostComment> findByIdAndPostIdAndIsDeleted(long Id, long postId, boolean isDeleted);
+    Optional<PostComment> findByIdAndPostIdAndIsDeleted(long id, long postId, boolean isDeleted);
 
     long countByPostIdAndIsDeleted(
             long postId, boolean isDeleted

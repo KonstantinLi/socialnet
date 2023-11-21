@@ -47,11 +47,8 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
-            //TODO exception message is in eng, should be rus
-            throw new PostCommentCreateException("Comment text is absent");
+            throw new PostCommentCreateException("Текст комментария отсутствует");
         }
-
-        Post post = fetchPost(postId, false);
 
         PostComment postComment = new PostComment();
 
@@ -71,7 +68,7 @@ public class PostCommentsService {
         return updatePostComment(
                 fetchPostComment(
                         commentId, id,
-                        commentRq.isDeleted != null && !commentRq.isDeleted
+                        commentRq.getIsDeleted() != null && !commentRq.getIsDeleted()
                 ),
                 commentRq, myId
         );
