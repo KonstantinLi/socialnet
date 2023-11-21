@@ -167,7 +167,7 @@ public class NotificationService {
 
     public CommonRs<List<NotificationRs>> readNotifications(String token, Long id, Boolean all) {
         List<Notification> notifications = new ArrayList<>();
-        if (all) {
+        if (Boolean.TRUE.equals(all)) {
             Long personId = jwtTokenUtils.getId(token);
             notifications.addAll(notificationRepository
                     .findAllByPerson_IdAndIsRead(personId, false));

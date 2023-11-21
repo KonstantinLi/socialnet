@@ -65,18 +65,6 @@ public class PostComment {
     )
     private Set<PostComment> subComments = new HashSet<>();
 
-    /**
-     * Пост
-     */
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "post_id",
-//            nullable = false,
-//            referencedColumnName = "id",
-//            foreignKey = @ForeignKey(name = "fk_comment_post")
-//    )
-//    private Post post;
-
     @Column(name = "post_id")
     private Long postId;
 }

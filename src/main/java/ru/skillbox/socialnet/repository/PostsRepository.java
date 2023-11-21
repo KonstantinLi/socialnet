@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface PostsRepository extends JpaRepository<Post, Long> {
-    Optional<Post> findByIdAndIsDeleted(long Id, boolean isDeleted);
+    Optional<Post> findByIdAndIsDeleted(long id, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
             select
