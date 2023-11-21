@@ -27,7 +27,7 @@ spring:
   liquibase:
     enabled: true
     #TODO remove this property
-    drop-first: false
+    drop-first: true
     change-log: classpath:db\changelog\socialnet_changelog.xml
 
   servlet:

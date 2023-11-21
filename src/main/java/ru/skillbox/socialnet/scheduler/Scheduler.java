@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
+import ru.skillbox.socialnet.annotation.Debug;
+import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.dto.LogUploader;
 import ru.skillbox.socialnet.entity.enums.LikeType;
 import ru.skillbox.socialnet.entity.other.Captcha;

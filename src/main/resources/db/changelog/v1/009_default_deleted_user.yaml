@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 009_default_deleted_user.yaml
+      id: 009_default_deleted_user
       author: Aldungarov.AR
       changes:
         - sql:

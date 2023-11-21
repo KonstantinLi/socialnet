@@ -13,5 +13,6 @@
   <include file="v1/006_notification_sender.yaml" relativeToChangelogFile="true"/>
   <!--<include file="v1/007_hibernate_cascade_delete.yaml" relativeToChangelogFile="true"/>-->
   <include file="v1/008_admins.yaml" relativeToChangelogFile="true"/>
+  <include file="v1/009_default_deleted_user.yaml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
