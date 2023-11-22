@@ -18,10 +18,9 @@ import java.util.Optional;
 public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
 
     @Query(value = "select * from friendships f where " +
-            "f.source_person = :src_person_id " +
-            "and f.destination_person = :dst_person_id " +
+            "f.src_person_id = :src_person_id " +
+            "and f.dst_person_id = :dst_person_id " +
             "and (f.status_name = :shipStatus or :shipStatus = '')", nativeQuery = true)
-        //TODO long src_person_id и long dst_person_id не должны быть CamelCase?
     Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long srcPersonId,
                                                      @Param("dst_person_id") long dstPersonId,
                                                      @Param("shipStatus") String shipStatus);

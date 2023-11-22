@@ -67,6 +67,6 @@ public class PostComment {
 
 
     @ManyToOne
-    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+    @JoinColumn(name = "post_id")
     private Post post;
 }
