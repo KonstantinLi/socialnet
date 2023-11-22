@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.postrelated.Post;
+import ru.skillbox.socialnet.entity.postrelated.PostComment;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -109,4 +110,27 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
             boolean isDeleted, boolean isBlocked, Pageable pageable
     );
     long countByIsDeletedAndIsBlocked(boolean isDeleted, boolean isBlocked);
+
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(p)
+            FROM posts p
+            WHERE not p.is_blocked
+            and not p.is_deleted
+            and p.author_id != :userId
+            """)
+    long countFeeds(
+            @Param("userId") long userId
+    );
+    @Query(nativeQuery = true, value = """
+            SELECT *
+            FROM posts p
+            WHERE not p.is_blocked
+            and not p.is_deleted
+            and p.author_id != :userId
+            ORDER BY p.time DESC
+            """)
+    List<Post> findFeeds(
+            @Param("userId") long userId,
+            Pageable pageable
+    );
 }

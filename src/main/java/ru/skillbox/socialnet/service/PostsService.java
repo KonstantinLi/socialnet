@@ -191,17 +191,14 @@ public class PostsService {
         List<Post> posts;
         long total;
 
-        posts = postsRepository.findAllByIsDeletedAndIsBlocked(
-                false,
-                false,
+        posts = postsRepository.findFeeds(
+                myId,
                 PageRequest.of(
-                        offset, perPage,
-                        Sort.by("time").descending()
+                        offset, perPage
                 )
         );
-        total = postsRepository.countByIsDeletedAndIsBlocked(
-                false,
-                false
+        total = postsRepository.countFeeds(
+                myId
         );
 
         return getListPostResponse(posts, total, myId, offset, posts.size());
