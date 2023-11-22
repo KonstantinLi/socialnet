@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
 
     /**
-     * @param src_person_id - текущая персона (от имени которого запрашиваются данные)
-     * @param dst_person_id - искомая персона (его связи с текущей персоной)
+     * @param srcPersonId - текущая персона (от имени которого запрашиваются данные)
+     * @param dstPersonId - искомая персона (его связи с текущей персоной)
      * @param shipStatus    - тип связи между персонами (если передать NULL, то запрос вернет все связи)
      * @return - запрос вернет записи в таблице friendships между двумя персонами
      */
@@ -24,9 +24,8 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
             "f.src_person_id = :src_person_id " +
             "and f.dst_person_id = :dst_person_id " +
             "and (f.status_name = :shipStatus or :shipStatus = '')", nativeQuery = true)
-    //TODO long src_person_id и long dst_person_id не должны быть CamelCase?
-    Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long src_person_id,
-                                                     @Param("dst_person_id") long dst_person_id,
+    Optional<FriendShip> getFriendShipByIdsAndStatus(@Param("src_person_id") long srcPersonId,
+                                                     @Param("dst_person_id") long dstPersonId,
                                                      @Param("shipStatus") String shipStatus);
 
     /**

@@ -20,7 +20,7 @@ public class Tag {
      * Название тега
      */
     @Column(name = "tag")
-    private String tag;
+    private String tagName;
 
 
     @ManyToMany(mappedBy = "tags")

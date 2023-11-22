@@ -266,13 +266,7 @@ public class PostsService {
 
         fillAuthor(postRs.getAuthor(), myId);
 
-        postRs.setType(String.valueOf(
-                        post.getIsDeleted()
-                                ? PostType.DELETED
-                                : post.getTime().isAfter(LocalDateTime.now())
-                                ? PostType.QUEUED
-                                : PostType.POSTED
-                )
+        postRs.setType(String.valueOf(postType(post))
         );
 
         postRs.setComments(postRs.getComments().stream()
@@ -286,7 +280,7 @@ public class PostsService {
 
             fillAuthor(commentRs.getAuthor(), myId);
 
-            if (commentRs.getIsDeleted()) {
+            if (Boolean.TRUE.equals(commentRs.getIsDeleted())) {
                 commentRs.getSubComments().clear();
             }
 
@@ -301,6 +295,16 @@ public class PostsService {
         return postRs;
     }
 
+    private PostType postType(Post post) {
+        if (Boolean.TRUE.equals(post.getIsDeleted())) {
+            return PostType.DELETED;
+        } else if (post.getTime().isAfter(LocalDateTime.now())) {
+            return PostType.QUEUED;
+        } else {
+            return PostType.POSTED;
+        }
+    }
+
     /**
      * Fills tags list of the post entity with correct tag entities, found by tag string.
      *
@@ -310,7 +314,7 @@ public class PostsService {
     private Post fillTags(Post post) {
         post.setTags(
                 post.getTags().stream().map(tag -> {
-                    Optional<Tag> optionalTag = tagsRepository.findByTag(tag.getTag());
+                    Optional<Tag> optionalTag = tagsRepository.findByTagName(tag.getTagName());
 
                     if (optionalTag.isPresent()) {
                         return optionalTag.get();

@@ -10,6 +10,7 @@ import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,7 +117,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                   @Param("lastName") String lastName,
                                   Pageable nextPage);
 
-    List<Person> findAllByBirthDate(LocalDateTime birthDate);
+    @Query("SELECT p FROM Person p WHERE MONTH(p.birthDate) = :month AND DAY(p.birthDate) = :day")
+    List<Person> findAllByBirthDate(@Param("month") int month, @Param("day") int day);
 
     long countByIsDeleted(boolean isDeleted);
 
