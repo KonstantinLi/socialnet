@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.skillbox.socialnet.entity.postrelated.Post;
-import ru.skillbox.socialnet.entity.postrelated.PostComment;
 
 import java.time.LocalDateTime;
 import java.util.List;
