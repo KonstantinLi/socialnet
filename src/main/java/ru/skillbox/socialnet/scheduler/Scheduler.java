@@ -64,11 +64,15 @@ public class Scheduler {
 
         posts.stream()
                 .peek(post -> post.getComments().forEach(
-                        postComment -> likesRepository.findAllByTypeAndEntityId(LikeType.Comment, postComment.getId())
-                                .forEach(likesRepository::delete)
+                        postComment -> likesRepository.findAllByTypeAndEntityId(
+                                LikeType.Comment,
+                                postComment.getId()
+                        ).forEach(likesRepository::delete)
                 ))
-                .peek(post -> likesRepository.findAllByTypeAndEntityId(LikeType.Post, post.getId())
-                        .forEach(likesRepository::delete)
+                .peek(post -> likesRepository.findAllByTypeAndEntityId(
+                                LikeType.Post,
+                                post.getId()
+                        ).forEach(likesRepository::delete)
                 )
                 .forEach(postsRepository::delete);
     }

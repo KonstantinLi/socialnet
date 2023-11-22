@@ -135,6 +135,7 @@ public class PostsService {
                 getPostsSearchPs.getTags() == null,
                 getPostsSearchPs.getTags(),
                 getPostsSearchPs.getText(),
+                currentUserId,
                 nextPage);
         result.setData(postMapper.listPostToListPostRs(postPage.getContent()));
         result.setTotal(postPage.getTotalElements());
@@ -154,16 +155,31 @@ public class PostsService {
         List<Post> posts;
         long total;
 
-        posts = postsRepository.findAllByAuthorId(
-                person.getId(),
-                PageRequest.of(
-                        offset, perPage,
-                        Sort.by("time").descending()
-                )
-        );
-        total = postsRepository.countByAuthorId(
-                person.getId()
-        );
+        if (myId.equals(person.getId())) {
+            posts = postsRepository.findAllByAuthorId(
+                    person.getId(),
+                    PageRequest.of(
+                            offset, perPage,
+                            Sort.by("time").descending()
+                    )
+            );
+            total = postsRepository.countByAuthorId(
+                    person.getId()
+            );
+        } else {
+            posts = postsRepository.findAllByAuthorIdAndIsBlocked(
+                    person.getId(),
+                    false,
+                    PageRequest.of(
+                            offset, perPage,
+                            Sort.by("time").descending()
+                    )
+            );
+            total = postsRepository.countByAuthorIdAndIsBlocked(
+                    person.getId(),
+                    false
+            );
+        }
 
         return getListPostResponse(posts, total, myId, offset, posts.size());
     }
@@ -171,21 +187,18 @@ public class PostsService {
     @Transactional
     public CommonRs<List<PostRs>> getFeeds(String authorization, Integer offset, Integer perPage) {
         Long myId = jwtTokenUtils.getId(authorization);
-        Person person = fetchPerson(myId);
 
         List<Post> posts;
         long total;
 
-        posts = postsRepository.findAllByIsDeleted(
-                false,
+        posts = postsRepository.findFeeds(
+                myId,
                 PageRequest.of(
-                        offset, perPage,
-                        Sort.by("time").descending()
+                        offset, perPage
                 )
         );
-        total = postsRepository.countByIsDeletedAndTimeGreaterThan(
-                false,
-                person.getLastOnlineTime()
+        total = postsRepository.countFeeds(
+                myId
         );
 
         return getListPostResponse(posts, total, myId, offset, posts.size());

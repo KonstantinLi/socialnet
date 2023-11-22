@@ -38,6 +38,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
                         on p.id = pt.post_id
             where
                 not p.is_deleted
+                and (not p.is_blocked or p.author_id = :userId)
                 and (cast(:author as varchar) is null
                     or a.first_name ilike concat('%', cast(:author as varchar), '%')
                     or a.last_name ilike concat('%', cast(:author as varchar), '%')
@@ -60,14 +61,21 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
                                 @Param("tagsNull") boolean tagsNull,
                                 @Param("tags") String[] tags,
                                 @Param("text") String text,
+                                @Param("userId") long userId,
                                 Pageable nextPage);
 
     long countByAuthorIdAndIsDeleted(
             long authorId, boolean isDeleted
     );
-
     List<Post> findAllByAuthorIdAndIsDeleted(
             long authorId, boolean isDeleted, Pageable pageable
+    );
+
+    long countByAuthorIdAndIsBlocked(
+            long authorId, boolean isBlocked
+    );
+    List<Post> findAllByAuthorIdAndIsBlocked(
+            long authorId, boolean isBlocked, Pageable pageable
     );
 
     long countByAuthorId(
@@ -80,7 +88,6 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     long countByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time
     );
-
     List<Post> findAllByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time, Pageable pageable
     );
@@ -96,6 +103,33 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByIsDeleted(
             boolean isDeleted, Pageable pageable
     );
-
     long countByIsDeleted(boolean isDeleted);
+
+    List<Post> findAllByIsDeletedAndIsBlocked(
+            boolean isDeleted, boolean isBlocked, Pageable pageable
+    );
+    long countByIsDeletedAndIsBlocked(boolean isDeleted, boolean isBlocked);
+
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(p)
+            FROM posts p
+            WHERE not p.is_blocked
+            and not p.is_deleted
+            and p.author_id != :userId
+            """)
+    long countFeeds(
+            @Param("userId") long userId
+    );
+    @Query(nativeQuery = true, value = """
+            SELECT *
+            FROM posts p
+            WHERE not p.is_blocked
+            and not p.is_deleted
+            and p.author_id != :userId
+            ORDER BY p.time DESC
+            """)
+    List<Post> findFeeds(
+            @Param("userId") long userId,
+            Pageable pageable
+    );
 }
