@@ -1,7 +1,11 @@
 package ru.skillbox.socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.annotation.AuthRequired;
+import ru.skillbox.socialnet.annotation.FullSwaggerDescription;
+import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.annotation.OnlineStatusUpdate;
 import ru.skillbox.socialnet.dto.request.CommentRq;
 import ru.skillbox.socialnet.dto.response.CommentRs;
@@ -10,14 +14,17 @@ import ru.skillbox.socialnet.service.PostCommentsService;
 
 import java.util.List;
 
+@Tag(name = "PostCommentsController", description = "Create, delete, read, edit and recover comments")
 @RestController
 @RequestMapping("/api/v1/post")
 @RequiredArgsConstructor
+@Info
 public class PostCommentsController {
     private final PostCommentsService postCommentsService;
 
     @OnlineStatusUpdate
-    @PutMapping("/{id}/comments/{comment_id}")
+    @AuthRequired(summary = "edit comment by id")
+    @PutMapping(value = "/{id}/comments/{comment_id}", produces = "application/json", consumes = "application/json")
     public CommonRs<CommentRs> editComment(
             @RequestHeader String authorization,
             @PathVariable Long id,
@@ -28,7 +35,8 @@ public class PostCommentsController {
     }
 
     @OnlineStatusUpdate
-    @DeleteMapping("/{id}/comments/{comment_id}")
+    @AuthRequired(summary = "delete comment by id")
+    @DeleteMapping(value = "/{id}/comments/{comment_id}", produces = "application/json")
     public CommonRs<CommentRs> deleteComment(
             @RequestHeader String authorization,
             @PathVariable Long id,
@@ -38,7 +46,8 @@ public class PostCommentsController {
     }
 
     @OnlineStatusUpdate
-    @PutMapping("/{id}/comments/{comment_id}/recover")
+    @AuthRequired(summary = "recover comment by id")
+    @PutMapping(value = "/{id}/comments/{comment_id}/recover", produces = "application/json")
     public CommonRs<CommentRs> recoverComment(
             @RequestHeader String authorization,
             @PathVariable Long id,
@@ -48,7 +57,8 @@ public class PostCommentsController {
     }
 
     @OnlineStatusUpdate
-    @GetMapping("/{postId}/comments")
+    @FullSwaggerDescription(summary = "get comment by id")
+    @GetMapping(value = "/{postId}/comments", produces = "application/json")
     public CommonRs<List<CommentRs>> getComments(
             @RequestHeader String authorization,
             @PathVariable Long postId,
@@ -59,7 +69,8 @@ public class PostCommentsController {
     }
 
     @OnlineStatusUpdate
-    @PostMapping("/{postId}/comments")
+    @FullSwaggerDescription(summary = "create comment")
+    @PostMapping(value = "/{postId}/comments", produces = "application/json", consumes = "application/json")
     public CommonRs<CommentRs> createComment(
             @RequestHeader String authorization,
             @PathVariable Long postId,

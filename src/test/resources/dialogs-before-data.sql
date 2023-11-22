@@ -2,6 +2,7 @@ drop table if exists person_settings cascade;
 drop table if exists persons cascade;
 drop table if exists dialogs cascade;
 drop table if exists messages cascade;
+drop table if exists countries cascade;
 
 
     create table person_settings (
@@ -66,6 +67,16 @@ drop table if exists messages cascade;
           primary key (id)
     );
 
+    CREATE TABLE countries (
+      "id" SERIAL,
+      "code2" VARCHAR(255) NULL,
+      "full_name" VARCHAR(255) NULL,
+      "international_name" VARCHAR(255) NULL,
+      "name" VARCHAR(255) NULL,
+      "external_id" BIGINT NULL,
+      CONSTRAINT "countries_pkey" PRIMARY KEY ("id")
+    );
+
 
     insert into person_settings (comment_comment, friend_birthday, friend_request, post_like, message, post_comment, post) values (false, false, true, false, false, false, true);
     insert into person_settings (comment_comment, friend_birthday, friend_request, post_like, message, post_comment, post) values (true, true, false, false, false, false, true);
@@ -85,3 +96,6 @@ drop table if exists messages cascade;
     INSERT INTO messages (is_deleted, message_text, read_status, "time", author_id, dialog_id, recipient_id) VALUES(false, 'Привет', 'READ', '2023-11-02 05:11:38.281', 3, 2, 2);
     INSERT INTO messages (is_deleted, message_text, read_status, "time", author_id, dialog_id, recipient_id) VALUES(false, 'Привет, какая у вас погода?', 'READ', '2023-11-02 10:58:38.410', 2, 2, 3);
     INSERT INTO messages (is_deleted, message_text, read_status, "time", author_id, dialog_id, recipient_id) VALUES(false, 'У нас снег', 'UNREAD', '2023-11-02 15:04:43.713', 3, 2, 2);
+
+    INSERT INTO countries ("id", "code2", "full_name", "international_name", "name", "external_id") VALUES ('148', 'RU', 'Россия', 'Russia', 'Россия', '1');
+

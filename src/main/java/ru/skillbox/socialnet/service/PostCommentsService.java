@@ -50,6 +50,8 @@ public class PostCommentsService {
             throw new PostCommentCreateException("Текст комментария отсутствует");
         }
 
+        fetchPost(postId, false);
+
         PostComment postComment = new PostComment();
 
         postComment.setPostId(postId);
@@ -95,17 +97,18 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
         Post post = fetchPost(postId, false);
 
-        List<PostComment> postComments = postCommentsRepository.findAllByPostIdAndParentId(
+        List<PostComment> postComments = postCommentsRepository
+                .findAllRootCommentsByPostId(
                 post.getId(),
-                null,
+                myId,
                 PageRequest.of(
                         offset, perPage,
                         Sort.by("time").descending()
                 )
         );
 
-        long total = postCommentsRepository.countByPostIdAndParentId(
-                post.getId(), null
+        long total = postCommentsRepository.countRootCommentsByPostId(
+                post.getId(), myId
         );
 
         return getListPostCommentResponse(postComments, total, myId, offset, postComments.size());
