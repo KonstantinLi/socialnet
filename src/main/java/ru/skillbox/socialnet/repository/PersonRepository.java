@@ -57,13 +57,20 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      * @param personId - id персоны
      * @return - запрос вернет друзей у друзей персоны, переданной в параметре
      */
-    @Query(value = "select distinct p.* from friendships f, " +
-            "persons p where f.dst_person_id = p.id and f.src_person_id in  " +
-            "(select ff.dst_person_id from friendships ff " +
-            "where ff.src_person_id = :personId and ff.status_name = 'FRIEND') " +
-            "and f.dst_person_id != :personId " +
-            "and (p.is_blocked = false or p.is_blocked is null) " +
-            "and (p.is_deleted = false or p.is_deleted is null)", nativeQuery = true)
+    @Query(value =
+        "SELECT DISTINCT P.* FROM FRIENDSHIPS F, PERSONS P WHERE F.DST_PERSON_ID = P.ID " +
+        "AND F.SRC_PERSON_ID IN (SELECT FF.DST_PERSON_ID FROM FRIENDSHIPS FF WHERE FF.SRC_PERSON_ID = :personId " +
+        "AND FF.STATUS_NAME = 'FRIEND') AND F.DST_PERSON_ID != :personId  " +
+        "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
+        "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+        "UNION " +
+        "SELECT DISTINCT P.* FROM PERSONS P, " +
+        "(SELECT DISTINCT ROUND(RANDOM() * (SELECT MAX(ID) - 1 FROM PERSONS)) + 1 AS ID " +
+        "FROM GENERATE_SERIES (1, 100)) T WHERE P.ID = T.ID AND T.ID != :personId " +
+        "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
+        "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+        "FETCH FIRST 10 ROWS ONLY"
+            , nativeQuery = true)
     Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
 
     /**
