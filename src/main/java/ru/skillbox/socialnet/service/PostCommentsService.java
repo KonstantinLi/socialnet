@@ -47,7 +47,7 @@ public class PostCommentsService {
         Long myId = jwtTokenUtils.getId(authorization);
 
         if (commentRq.getCommentText() == null || commentRq.getCommentText().isBlank()) {
-            throw new PostCommentCreateException("Отсутствует текст комментария");
+            throw new PostCommentCreateException("Текст комментария отсутствует");
         }
 
         fetchPost(postId, false);
@@ -70,7 +70,7 @@ public class PostCommentsService {
         return updatePostComment(
                 fetchPostComment(
                         commentId, id,
-                        commentRq.isDeleted != null && !commentRq.isDeleted
+                        commentRq.getIsDeleted() != null && !commentRq.getIsDeleted()
                 ),
                 commentRq, myId
         );

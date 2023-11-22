@@ -30,8 +30,6 @@ public class LikesService {
 
     @Transactional
     public CommonRs<LikeRs> getLikes(String authorization, Long itemId, LikeType type) {
-        Long myId = jwtTokenUtils.getId(authorization);
-
         Like like = new Like();
         like.setType(type);
         like.setEntityId(itemId);

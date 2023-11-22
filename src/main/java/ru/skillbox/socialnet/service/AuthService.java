@@ -43,12 +43,12 @@ public class AuthService {
 
     public CommonRs<PersonRs> login(LoginRq loginRq) {
         Person person = personRepository.findByEmail(loginRq.getEmail()).orElseThrow(
-                () -> new AuthException("Пользователь не найден"));
+                () -> AuthException.userNotFoundByEmail(loginRq.getEmail()));
         String password = accountService.getDecodedPassword(person.getPassword());
         if (!loginRq.getPassword().equals(password)) {
-            throw new AuthException("Пароли не совпадают");
+            throw AuthException.incorrectPassword();
         } else if (person.getIsBlocked() != null && person.getIsBlocked()) {
-            throw new AuthException("Пользователь заблокирован");
+            throw AuthException.userIsBlocked();
         }
         CommonRs<PersonRs> commonRs = new CommonRs<>();
         PersonRs personRs = personMapper.personToPersonRs(person,

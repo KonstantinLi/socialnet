@@ -77,7 +77,6 @@ public class JwtTokenUtils {
         return getSubject(token).split(",")[1];
     }
 
-    //TODO Сонар жалуется, но я не понимаю как исправить
     public List<String> getRoles(String token) {
         return getClaims(token).get("roles", List.class);
     }
