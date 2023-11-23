@@ -1,7 +1,11 @@
 package ru.skillbox.socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.skillbox.socialnet.annotation.AuthRequired;
+import ru.skillbox.socialnet.annotation.FullSwaggerDescription;
+import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.annotation.OnlineStatusUpdate;
 import ru.skillbox.socialnet.dto.parameters.GetPostsSearchPs;
 import ru.skillbox.socialnet.dto.request.PostRq;
@@ -12,16 +16,19 @@ import ru.skillbox.socialnet.service.PostsService;
 
 import java.util.List;
 
+@Tag(name = "PostsController", description = "Get feeds. Get, update, delete, recover, find post, get users post, create post")
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Info
 public class PostsController {
 
     private final JwtTokenUtils jwtTokenUtils;
     private final PostsService postsService;
 
     @OnlineStatusUpdate
-    @GetMapping("/post/{id}")
+    @FullSwaggerDescription(summary = "get post by id")
+    @GetMapping(value = "/post/{id}", produces = "application/json")
     public CommonRs<PostRs> getPostById(
             @RequestHeader String authorization,
             @PathVariable Long id
@@ -30,7 +37,8 @@ public class PostsController {
     }
 
     @OnlineStatusUpdate
-    @PutMapping("/post/{id}")
+    @AuthRequired(summary = "update post by id")
+    @PutMapping(value = "/post/{id}", produces = "application/json", consumes = "application/json")
     public CommonRs<PostRs> updateById(
             @RequestHeader String authorization,
             @PathVariable Long id,
@@ -40,7 +48,8 @@ public class PostsController {
     }
 
     @OnlineStatusUpdate
-    @DeleteMapping("/post/{id}")
+    @AuthRequired(summary = "delete post by id")
+    @DeleteMapping(value = "/post/{id}", produces = "application/json")
     public CommonRs<PostRs> deleteById(
             @RequestHeader String authorization,
             @PathVariable Long id
@@ -49,7 +58,8 @@ public class PostsController {
     }
 
     @OnlineStatusUpdate
-    @PutMapping("/post/{id}/recover")
+    @AuthRequired(summary = "recover post by id")
+    @PutMapping(value = "/post/{id}/recover", produces = "application/json")
     public CommonRs<PostRs> recoverPostById(
             @RequestHeader String authorization,
             @PathVariable Long id
@@ -58,7 +68,8 @@ public class PostsController {
     }
 
     @OnlineStatusUpdate
-    @GetMapping("/users/{id}/wall")
+    @FullSwaggerDescription(summary = "get all post by author id")
+    @GetMapping(value = "/users/{id}/wall", produces = "application/json")
     public CommonRs<List<PostRs>> getWall(
             @RequestHeader String authorization,
             @PathVariable Long id,
@@ -69,7 +80,8 @@ public class PostsController {
     }
 
     @OnlineStatusUpdate
-    @PostMapping("/users/{id}/wall")
+    @FullSwaggerDescription(summary = "create new post")
+    @PostMapping(value = "/users/{id}/wall", produces = "application/json", consumes = "application/json")
     public CommonRs<PostRs> createPost(
             @RequestHeader String authorization,
             @RequestParam(value = "publish_date", required = false) Long publishDate,
@@ -80,7 +92,8 @@ public class PostsController {
     }
 
     @OnlineStatusUpdate
-    @GetMapping("/post")
+    @FullSwaggerDescription(summary = "get posts by query")
+    @GetMapping(value = "/post", produces = "application/json")
     public CommonRs<List<PostRs>> getPostsByQuery(@RequestHeader(value = "authorization") String token,
                                                   @RequestParam(value = "author", required = false) String author,
                                                   @RequestParam(value = "date_from",
@@ -104,7 +117,8 @@ public class PostsController {
                 perPage);
     }
 
-    @GetMapping("/feeds")
+    @FullSwaggerDescription(summary = "get all news")
+    @GetMapping(value = "/feeds", produces = "application/json")
     public CommonRs<List<PostRs>> getFeeds(
             @RequestHeader String authorization,
             @RequestParam(defaultValue = "0") Integer offset,

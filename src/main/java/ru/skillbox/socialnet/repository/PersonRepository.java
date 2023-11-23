@@ -10,6 +10,7 @@ import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      * @param cnt       - кол-во сгенерированных записей (должно быть меньше 100)
      * @return - запрос сгенерирует cnt рандомных персон (как друзей) для списка персон personIds
      */
-    @Query(value = "select p.* from persons p, " +
+    @Query(value = "select distinct p.* from persons p, " +
             "(select distinct round(random() * (select max(id) - 1 from persons)) + " +
             "1 as id from generate_series (1, 100)) t " +
             "where p.id = t.id and  t.id not in (:personIds) " +
@@ -64,13 +65,20 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      * @param personId - id персоны
      * @return - запрос вернет друзей у друзей персоны, переданной в параметре
      */
-    @Query(value = "select p.* from friendships f, " +
-            "persons p where f.dst_person_id = p.id and f.src_person_id in  " +
-            "(select ff.dst_person_id from friendships ff " +
-            "where ff.src_person_id = :personId and ff.status_name = 'FRIEND') " +
-            "and f.dst_person_id != :personId " +
-            "and (p.is_blocked = false or p.is_blocked is null) " +
-            "and (p.is_deleted = false or p.is_deleted is null)", nativeQuery = true)
+    @Query(value =
+        "SELECT DISTINCT P.* FROM FRIENDSHIPS F, PERSONS P WHERE F.DST_PERSON_ID = P.ID " +
+        "AND F.SRC_PERSON_ID IN (SELECT FF.DST_PERSON_ID FROM FRIENDSHIPS FF WHERE FF.SRC_PERSON_ID = :personId " +
+        "AND FF.STATUS_NAME = 'FRIEND') AND F.DST_PERSON_ID != :personId  " +
+        "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
+        "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+        "UNION " +
+        "SELECT DISTINCT P.* FROM PERSONS P, " +
+        "(SELECT DISTINCT ROUND(RANDOM() * (SELECT MAX(ID) - 1 FROM PERSONS)) + 1 AS ID " +
+        "FROM GENERATE_SERIES (1, 100)) T WHERE P.ID = T.ID AND T.ID != :personId " +
+        "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
+        "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+        "FETCH FIRST 10 ROWS ONLY"
+            , nativeQuery = true)
     Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
 
     /**
@@ -124,7 +132,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
                                   @Param("lastName") String lastName,
                                   Pageable nextPage);
 
-    List<Person> findAllByBirthDate(LocalDateTime birthDate);
+    @Query("SELECT p FROM Person p WHERE MONTH(p.birthDate) = :month AND DAY(p.birthDate) = :day")
+    List<Person> findAllByBirthDate(@Param("month") int month, @Param("day") int day);
 
     long countByIsDeleted(boolean isDeleted);
 

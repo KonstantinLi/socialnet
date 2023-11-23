@@ -52,6 +52,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
                         on p.id = pt.post_id
             where
                 not p.is_deleted
+                and (not p.is_blocked or p.author_id = :userId)
                 and (cast(:author as varchar) is null
                     or a.first_name ilike concat('%', cast(:author as varchar), '%')
                     or a.last_name ilike concat('%', cast(:author as varchar), '%')
@@ -74,6 +75,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
                                 @Param("tagsNull") boolean tagsNull,
                                 @Param("tags") String[] tags,
                                 @Param("text") String text,
+                                @Param("userId") long userId,
                                 Pageable nextPage);
 
     long countByAuthorIdAndIsDeleted(
@@ -84,10 +86,16 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
             long authorId, boolean isDeleted, Pageable pageable
     );
 
+    long countByAuthorIdAndIsBlocked(
+            long authorId, boolean isBlocked
+    );
+    List<Post> findAllByAuthorIdAndIsBlocked(
+            long authorId, boolean isBlocked, Pageable pageable
+    );
+
     long countByAuthorId(
             long authorId
     );
-
     List<Post> findAllByAuthorId(
             long authorId, Pageable pageable
     );
@@ -117,4 +125,32 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Query("delete from Post p where p.author.id in ?1")
     void deleteByAuthor_IdIn(List<Long> inactiveUsersIds);
+
+    List<Post> findAllByIsDeletedAndIsBlocked(
+            boolean isDeleted, boolean isBlocked, Pageable pageable
+    );
+    long countByIsDeletedAndIsBlocked(boolean isDeleted, boolean isBlocked);
+
+    @Query(nativeQuery = true, value = """
+            SELECT COUNT(p)
+            FROM posts p
+            WHERE not p.is_blocked
+            and not p.is_deleted
+            and p.author_id != :userId
+            """)
+    long countFeeds(
+            @Param("userId") long userId
+    );
+    @Query(nativeQuery = true, value = """
+            SELECT *
+            FROM posts p
+            WHERE not p.is_blocked
+            and not p.is_deleted
+            and p.author_id != :userId
+            ORDER BY p.time DESC
+            """)
+    List<Post> findFeeds(
+            @Param("userId") long userId,
+            Pageable pageable
+    );
 }
