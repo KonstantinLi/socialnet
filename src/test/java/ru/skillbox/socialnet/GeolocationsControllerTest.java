@@ -145,9 +145,8 @@ class GeolocationsControllerTest {
         var res = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), CommonRs.class);
         var data = (List<LinkedHashMap<String,String>>) res.getData();
 
-        // TODO: Switched off till VK_SERVICE_KEY is available
-        //assertFalse(data.isEmpty());
-        //assertTrue(data.stream().anyMatch(t->t.get("title").equals("Пермь")));
+        assertFalse(data.isEmpty());
+        assertTrue(data.stream().anyMatch(t->t.get("title").equals("Пермь")));
     }
 
     private String getToken(Long userId) {
