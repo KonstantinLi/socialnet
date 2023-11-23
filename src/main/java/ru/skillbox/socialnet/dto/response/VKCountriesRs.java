@@ -9,20 +9,20 @@ import java.util.List;
 @Setter
 public class VKCountriesRs {
 
-  private VKCountriesResponse response;
+    private VKCountriesResponse response;
 
-  @Getter
-  @Setter
-  public static class VKCountriesResponse{
-    private Integer count;
-    private List<VKCountry> items;
-  }
+    @Getter
+    @Setter
+    public static class VKCountriesResponse {
+        private Integer count;
+        private List<VKCountry> items;
+    }
 
-  @Getter
-  @Setter
-  public static class VKCountry{
-    private Long id;
-    private String title;
-  }
+    @Getter
+    @Setter
+    public static class VKCountry {
+        private Long id;
+        private String title;
+    }
 
 }

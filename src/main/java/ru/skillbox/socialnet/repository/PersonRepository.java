@@ -3,11 +3,9 @@ package ru.skillbox.socialnet.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
@@ -22,8 +20,10 @@ import java.util.Optional;
 public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query("select p from Person p where p.isDeleted = true and p.deletedTime is null")
     List<Person> findByIsDeletedTrueAndDeletedTimeNull();
+
     @Query("select p from Person p where p.isDeleted = ?1 and p.deletedTime < ?2")
     List<Person> findByIsDeletedAndDeletedTimeBefore(Boolean isDeleted, LocalDateTime deletedTime);
+
     List<Person> findByDeletedTimeBefore(LocalDateTime deletedTime);
 
     long countByIsDeletedFalseOrIsDeletedNull();

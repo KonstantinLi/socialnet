@@ -18,7 +18,6 @@ public interface CitiesRepository extends JpaRepository<City, Long> {
     List<RegionStatisticsRs> countRegionStatistics();
 
 
-
     @Query("select c from City c where c.country.name = :country and c.name like %:starts ")
     List<City> getCitiesByCountryAndStarts(String country, String starts);
 

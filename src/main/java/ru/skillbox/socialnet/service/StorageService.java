@@ -1,14 +1,10 @@
 package ru.skillbox.socialnet.service;
 
-import jakarta.servlet.MultipartConfigElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skillbox.socialnet.dto.ProfileImageManager;
 import ru.skillbox.socialnet.dto.response.CommonRs;
@@ -29,22 +25,11 @@ public class StorageService {
     private final StorageRepository storageRepository;
     private final PersonService personService;
 
-    @Value("${aws.max-image-file-size}")
-    private String maxImageFileSize;
+    /*@Value("${aws.max-image-file-size}")
+    private String maxImageFileSize;*/
 
     @Value("${aws.photo-url-prefix}")
     private String photoURLPrefix;
-
-
-    //TODO move to config
-    @Bean
-    public MultipartConfigElement multipartConfigElement() {
-        long maxFileSize = getMaxImageFileSize();
-        MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize(DataSize.ofBytes(maxFileSize));
-        factory.setMaxRequestSize(DataSize.ofBytes(maxFileSize));
-        return factory.createMultipartConfig();
-    }
 
     public CommonRs<Storage> uploadProfileImage(String type, MultipartFile file) throws IOException {
 
@@ -81,7 +66,7 @@ public class StorageService {
         return response;
     }
 
-    public void deleteProfileImage (long userId) {
+    public void deleteProfileImage(long userId) {
         profileImageManager.deleteProfileImage(userId);
     }
 
@@ -93,9 +78,5 @@ public class StorageService {
         String[] split = originalFilename.split("\\.");
         String extension = split[split.length - 1];
         return userId + "_" + System.currentTimeMillis() + "." + extension;
-    }
-
-    private Long getMaxImageFileSize() {
-        return Long.parseLong(maxImageFileSize);
     }
 }

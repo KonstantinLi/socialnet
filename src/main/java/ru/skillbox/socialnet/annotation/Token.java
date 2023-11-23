@@ -1,14 +1,15 @@
 package ru.skillbox.socialnet.annotation;
 
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import org.springframework.core.annotation.AliasFor;
+
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({PARAMETER})
 @Retention(RUNTIME)

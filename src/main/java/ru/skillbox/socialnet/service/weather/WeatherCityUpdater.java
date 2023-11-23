@@ -12,7 +12,7 @@ import ru.skillbox.socialnet.repository.WeatherRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class WeatherCityUpdater extends Thread{
+public class WeatherCityUpdater extends Thread {
 
     private final String city;
     private final String apiKey;
@@ -39,7 +39,7 @@ public class WeatherCityUpdater extends Thread{
         weather.setDate(LocalDateTime.now());
         StringBuilder clouds = new StringBuilder();
         StringBuilder ids = new StringBuilder();
-        for (OpenWeatherMapRs.Weather openWeatherWeather: openWeatherMapRs.getWeather()) {
+        for (OpenWeatherMapRs.Weather openWeatherWeather : openWeatherMapRs.getWeather()) {
             clouds.append(clouds.isEmpty() ? "" : ", ")
                     .append(openWeatherWeather.getDescription());
             ids.append(ids.isEmpty() ? "" : ", ")

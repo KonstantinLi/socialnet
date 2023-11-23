@@ -35,9 +35,9 @@ public class FriendsController {
     @PostMapping("/{id}")
     public CommonRs<ComplexRs> sendFriendshipRequest(
             @RequestHeader(name = "authorization")
-            @Parameter(description = "Access Token", example = "JWT Token", required = true)  String authorization,
+            @Parameter(description = "Access Token", example = "JWT Token", required = true) String authorization,
             @PathVariable(name = "id")
-            @Parameter(description = "id", example = "1", required = true)  Long id)
+            @Parameter(description = "id", example = "1", required = true) Long id)
             throws PersonNotFoundException {
         return friendShipService.sendFriendshipRequest(id, authorization);
     }
@@ -75,7 +75,7 @@ public class FriendsController {
         return friendShipService.declineFriendshipRequestById(id, authorization);
     }
 
-//    @FullSwaggerDescription(summary = "block or unblock (if user in block) user by user id")
+    //    @FullSwaggerDescription(summary = "block or unblock (if user in block) user by user id")
     @Operation(summary = "block or unblock (if user in block) user by user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",

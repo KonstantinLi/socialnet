@@ -22,6 +22,7 @@ public interface PostCommentsRepository extends CrudRepository<PostComment, Long
     @Transactional
     @Modifying
     void deleteByAuthor_IdIn(Collection<Long> ids);
+
     Optional<PostComment> findByIdAndIsDeleted(long id, boolean isDeleted);
 
     Optional<PostComment> findByIdAndPostIdAndIsDeleted(long id, long postId, boolean isDeleted);
@@ -37,6 +38,7 @@ public interface PostCommentsRepository extends CrudRepository<PostComment, Long
     long countByPostIdAndIsDeletedAndParentId(
             long postId, boolean isDeleted, Long parentId
     );
+
     List<PostComment> findAllByPostIdAndIsDeletedAndParentId(
             long postId, boolean isDeleted, Long parentId, Pageable pageable
     );
@@ -44,6 +46,7 @@ public interface PostCommentsRepository extends CrudRepository<PostComment, Long
     long countByPostIdAndParentId(
             long postId, Long parentId
     );
+
     List<PostComment> findAllByPostIdAndParentId(
             long postId, Long parentId, Pageable pageable
     );

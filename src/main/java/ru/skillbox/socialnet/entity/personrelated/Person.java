@@ -3,8 +3,6 @@ package ru.skillbox.socialnet.entity.personrelated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.postrelated.Like;
 import ru.skillbox.socialnet.entity.postrelated.Post;

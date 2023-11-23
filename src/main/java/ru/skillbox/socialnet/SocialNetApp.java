@@ -35,9 +35,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableAspectJAutoProxy
 @Slf4j
+@RequiredArgsConstructor
 public class SocialNetApp {
-    @Autowired
-    ApplicationContext applicationContext;
+
+    private final ApplicationContext applicationContext;
 
     @EventListener(ApplicationStartedEvent.class)
     private void logDatabaseSource() {

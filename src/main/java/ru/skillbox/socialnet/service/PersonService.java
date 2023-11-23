@@ -271,9 +271,7 @@ public class PersonService {
 
     private void setDeletedTimeForUsersIfNotSet() {
         personRepository.findByIsDeletedTrueAndDeletedTimeNull()
-                .forEach(person -> {
-                    person.setDeletedTime(LocalDateTime.now());
-                });
+                .forEach(person -> person.setDeletedTime(LocalDateTime.now()));
     }
 
     private void changePersonIdInDialogOnDeletion(Long personId) {

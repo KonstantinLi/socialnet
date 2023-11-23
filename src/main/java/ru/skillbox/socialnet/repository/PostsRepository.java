@@ -27,6 +27,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
 
     @Transactional
     void deleteByAuthor_Id(Long id);
+
     Optional<Post> findByIdAndIsDeleted(long id, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
@@ -86,6 +87,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     long countByAuthorId(
             long authorId
     );
+
     List<Post> findAllByAuthorId(
             long authorId, Pageable pageable
     );
