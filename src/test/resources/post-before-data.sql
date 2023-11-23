@@ -65,6 +65,7 @@ insert into persons (first_name, last_name, e_mail, phone, reg_date, birth_date,
 
 insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (1, false, true, '2023-04-29 06:21:49', 'post 1', 'text test post 1');
 insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (2, true, false, '2023-07-25 23:47:43', 'post 2', 'text test post 2');
+insert into posts (author_id, is_blocked, is_deleted, time, title, post_text) values (2, false, false, '2023-07-26 23:47:43', 'feeds post', 'feeds test post text');
 
 
 

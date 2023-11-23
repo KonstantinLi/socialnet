@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = {PostControllerTests.Initializer.class})
 @Testcontainers
 @AutoConfigureMockMvc
-//@TestPropertySource("/application-test.yml")
 @Sql(value = {"/post-before-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/post-after-data.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class PostControllerTests {
@@ -87,7 +86,7 @@ class PostControllerTests {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
-        this.mockMvc.perform(get("/api/v1/post/3").header("authorization", token))
+        this.mockMvc.perform(get("/api/v1/post/4").header("authorization", token))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_description").isNotEmpty());
@@ -137,7 +136,7 @@ class PostControllerTests {
                 "}";
 
         Post post = postsRepository.findById(Long.valueOf(2)).get();
-        this.mockMvc.perform(put("/api/v1/post/3")
+        this.mockMvc.perform(put("/api/v1/post/4")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -170,7 +169,7 @@ class PostControllerTests {
         Person person = personRepository.findById(Long.valueOf(1)).get();
         String token = jwtTokenUtils.generateToken(person);
 
-        this.mockMvc.perform(delete("/api/v1/post/3").header("authorization", token))
+        this.mockMvc.perform(delete("/api/v1/post/4").header("authorization", token))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error_description").isNotEmpty());
@@ -321,8 +320,8 @@ class PostControllerTests {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].title").value("NEW TITLE СreatePost"))
-                .andExpect(jsonPath("$.data[0].post_text").value("some new text СreatePost"));
+                .andExpect(jsonPath("$.data[0].title").value("feeds post"))
+                .andExpect(jsonPath("$.data[0].post_text").value("feeds test post text"));
     }
 
 }
