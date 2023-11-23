@@ -25,9 +25,6 @@ public class StorageService {
     private final StorageRepository storageRepository;
     private final PersonService personService;
 
-    /*@Value("${aws.max-image-file-size}")
-    private String maxImageFileSize;*/
-
     @Value("${aws.photo-url-prefix}")
     private String photoURLPrefix;
 

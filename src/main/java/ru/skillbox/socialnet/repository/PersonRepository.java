@@ -10,7 +10,6 @@ import ru.skillbox.socialnet.dto.response.RegionStatisticsRs;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,18 +65,18 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      * @return - запрос вернет друзей у друзей персоны, переданной в параметре
      */
     @Query(value =
-        "SELECT DISTINCT P.* FROM FRIENDSHIPS F, PERSONS P WHERE F.DST_PERSON_ID = P.ID " +
-        "AND F.SRC_PERSON_ID IN (SELECT FF.DST_PERSON_ID FROM FRIENDSHIPS FF WHERE FF.SRC_PERSON_ID = :personId " +
-        "AND FF.STATUS_NAME = 'FRIEND') AND F.DST_PERSON_ID != :personId  " +
-        "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
-        "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
-        "UNION " +
-        "SELECT DISTINCT P.* FROM PERSONS P, " +
-        "(SELECT DISTINCT ROUND(RANDOM() * (SELECT MAX(ID) - 1 FROM PERSONS)) + 1 AS ID " +
-        "FROM GENERATE_SERIES (1, 100)) T WHERE P.ID = T.ID AND T.ID != :personId " +
-        "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
-        "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
-        "FETCH FIRST 10 ROWS ONLY"
+            "SELECT DISTINCT P.* FROM FRIENDSHIPS F, PERSONS P WHERE F.DST_PERSON_ID = P.ID " +
+                    "AND F.SRC_PERSON_ID IN (SELECT FF.DST_PERSON_ID FROM FRIENDSHIPS FF WHERE FF.SRC_PERSON_ID = :personId " +
+                    "AND FF.STATUS_NAME = 'FRIEND') AND F.DST_PERSON_ID != :personId  " +
+                    "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
+                    "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+                    "UNION " +
+                    "SELECT DISTINCT P.* FROM PERSONS P, " +
+                    "(SELECT DISTINCT ROUND(RANDOM() * (SELECT MAX(ID) - 1 FROM PERSONS)) + 1 AS ID " +
+                    "FROM GENERATE_SERIES (1, 100)) T WHERE P.ID = T.ID AND T.ID != :personId " +
+                    "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
+                    "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+                    "FETCH FIRST 10 ROWS ONLY"
             , nativeQuery = true)
     Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
 
