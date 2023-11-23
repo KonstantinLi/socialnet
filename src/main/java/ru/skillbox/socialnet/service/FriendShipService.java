@@ -400,17 +400,8 @@ public class FriendShipService {
             ArrayList<Person> persons = getRandomPersonsList(personsIds, 10);
             personsData = updatePersonsData(persons, currentPerson);
         } else {
-            // если друзья есть, то предлагать друзей, и если их кол-во < 10, то дополнять рандомом до 10
+            // если друзья есть, то предлагать из их друзей, и если их кол-во < 10, то дополнять рандомом до 10
             ArrayList<Person> persons = getFriendsOfFriendsByPerson(currentPerson.getId());
-            int size = persons.size();
-            if (size < 10) {
-                personsIds.add(currentPerson.getId());
-                for (Person person : persons) {
-                    personsIds.add(person.getId());
-                }
-                ArrayList<Person> persons2 = getRandomPersonsList(personsIds, 10 - size);
-                persons.addAll(persons2);
-            }
             personsData = updatePersonsData(persons, currentPerson);
         }
 
