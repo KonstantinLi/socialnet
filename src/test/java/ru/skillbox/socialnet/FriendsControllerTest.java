@@ -213,13 +213,13 @@ class FriendsControllerTest {
                 .andExpect(jsonPath("$.data[1].last_name").value("Morena"));
     }
 
-    /*@Test
+    @Test
     void getRecommendationFriendsTest() throws Exception {
         this.mockMvc.perform(get("/api/v1/friends/recommendations").header("authorization", getToken(1L)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].id").value("3"));
-    }*/
+                .andExpect(jsonPath("$.data[0].id").value("6"));
+    }
 
     @Test
     void getOutgoingRequestsByUserTest() throws Exception {
