@@ -17,6 +17,7 @@ public interface LikesRepository extends CrudRepository<Like, Long> {
     void deleteByPersonIdAndTypeAndEntityId(long personId, LikeType type, long entityId);
 
     long countByTypeAndEntityId(LikeType type, long entityId);
+
     boolean existsByTypeAndEntityIdAndPersonId(LikeType type, long entityId, long personId);
 
     boolean existsByPersonId(long personId);

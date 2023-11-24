@@ -17,32 +17,19 @@ public class FriendShip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Дата и время отправки
-     */
     @Column(name = "sent_time")
     private LocalDateTime sentTime;
 
-    @Column(name = "dst_person_id", insertable = false, updatable = false)
-    private Long dstPersonId;
-
-    @Column(name = "src_person_id", insertable = false, updatable = false)
-    private Long srcPersonId;
-
-    /**
-     * статус
-     */
     @Column(name = "status_name")
     @Enumerated(EnumType.STRING)
     private FriendShipStatus status;
 
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "dst_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_friendship_person_dst"))
     private Person destinationPerson;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "src_person_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_friendship_person_src"))
     private Person sourcePerson;
-
 }

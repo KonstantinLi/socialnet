@@ -11,10 +11,11 @@ import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
@@ -49,16 +50,16 @@ public class SwaggerConfig {
 
         String securitySchemeName = "JWTToken";
         return new OpenAPI()
-            .components(
-                new Components()
-                    .addSecuritySchemes(securitySchemeName,
-                        new SecurityScheme()
-                            .type(Type.APIKEY)
-                            .name("Authorization")
-                            .in(In.HEADER)
-                    )
-            )
-            .security(List.of(new SecurityRequirement().addList(securitySchemeName))).info(info).tags(tagList).servers(List.of(devServer, prodServer));
+                .components(
+                        new Components()
+                                .addSecuritySchemes(securitySchemeName,
+                                        new SecurityScheme()
+                                                .type(Type.APIKEY)
+                                                .name("Authorization")
+                                                .in(In.HEADER)
+                                )
+                )
+                .security(List.of(new SecurityRequirement().addList(securitySchemeName))).info(info).tags(tagList).servers(List.of(devServer, prodServer));
     }
 
 }

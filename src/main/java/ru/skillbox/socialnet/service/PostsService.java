@@ -343,7 +343,7 @@ public class PostsService {
 
     private FriendShipStatus getFriendshipStatus(Long personId, Long destinationPersonId) {
         Optional<FriendShip> optionalFriendship = friendShipRepository
-                .findBySrcPersonIdAndDstPersonId(personId, destinationPersonId);
+                .findBySourcePerson_IdAndDestinationPerson_Id(personId, destinationPersonId);
 
         if (optionalFriendship.isEmpty()) {
             return FriendShipStatus.UNKNOWN;

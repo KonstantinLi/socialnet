@@ -29,7 +29,8 @@ public class CoursesService {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse("http://www.cbr.ru/scripts/XML_daily.asp");
-        doc.getDocumentElement().normalize();NodeList nList = doc.getElementsByTagName("ValCurs");
+        doc.getDocumentElement().normalize();
+        NodeList nList = doc.getElementsByTagName("ValCurs");
         Node n = nList.item(0);
         String date = null;
         if (n.getNodeType() == Node.ELEMENT_NODE) {

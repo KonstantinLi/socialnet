@@ -58,13 +58,15 @@ public class PostComment {
     )
     private Person author;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(
             name = "parent_id",
             foreignKey = @ForeignKey(name = "fk_comment_parent_id")
     )
     private Set<PostComment> subComments = new HashSet<>();
 
-    @Column(name = "post_id")
-    private Long postId;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 }

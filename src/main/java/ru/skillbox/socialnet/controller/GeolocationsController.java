@@ -16,30 +16,30 @@ import java.util.List;
 @RequestMapping("/api/v1/geolocations")
 public class GeolocationsController {
 
-  private final GeolocationsService geolocationsService;
+    private final GeolocationsService geolocationsService;
 
-  @GetMapping("/countries")
-  public CommonRs<List<GeolocationRs>> getCountries(){
-    return geolocationsService.getCountries();
-  }
+    @GetMapping("/countries")
+    public CommonRs<List<GeolocationRs>> getCountries() {
+        return geolocationsService.getCountries();
+    }
 
-  @GetMapping("/cities/uses")
-  public CommonRs<List<GeolocationRs>> getCitiesUses(@RequestParam(name = "country") String country){
-    return geolocationsService.getCitiesUses(country);
-  }
+    @GetMapping("/cities/uses")
+    public CommonRs<List<GeolocationRs>> getCitiesUses(@RequestParam(name = "country") String country) {
+        return geolocationsService.getCitiesUses(country);
+    }
 
-  @GetMapping("/cities/db")
-  public CommonRs<List<GeolocationRs>> getCitiesDB(
-      @RequestParam(name = "country") String country,
-      @RequestParam(name = "starts") String starts){
-    return geolocationsService.getCitiesDB(country, starts);
-  }
+    @GetMapping("/cities/db")
+    public CommonRs<List<GeolocationRs>> getCitiesDB(
+            @RequestParam(name = "country") String country,
+            @RequestParam(name = "starts") String starts) {
+        return geolocationsService.getCitiesDB(country, starts);
+    }
 
-  @GetMapping("/cities/api")
-  public CommonRs<List<GeolocationRs>> getCitiesApi(
-      @RequestParam(name = "country") String country,
-      @RequestParam(name = "starts") String starts){
-    return geolocationsService.getCitiesApi(country, starts);
-  }
+    @GetMapping("/cities/api")
+    public CommonRs<List<GeolocationRs>> getCitiesApi(
+            @RequestParam(name = "country") String country,
+            @RequestParam(name = "starts") String starts) {
+        return geolocationsService.getCitiesApi(country, starts);
+    }
 
 }

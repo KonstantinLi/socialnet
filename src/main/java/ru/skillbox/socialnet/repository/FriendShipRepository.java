@@ -1,25 +1,22 @@
 package ru.skillbox.socialnet.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.personrelated.FriendShip;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.FriendShipNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
 
-    /**
-     * @param srcPersonId - текущая персона (от имени которого запрашиваются данные)
-     * @param dstPersonId - искомая персона (его связи с текущей персоной)
-     * @param shipStatus    - тип связи между персонами (если передать NULL, то запрос вернет все связи)
-     * @return - запрос вернет записи в таблице friendships между двумя персонами
-     */
     @Query(value = "select * from friendships f where " +
             "f.src_person_id = :src_person_id " +
             "and f.dst_person_id = :dst_person_id " +
@@ -58,5 +55,10 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
             @Param("sourcePersonId") Long sourcePersonI,
             @Param("destinationPersonId") Long destinationPersonI);
 
-    Optional<FriendShip> findBySrcPersonIdAndDstPersonId(Long srcPersonId, Long dstPersonId);
+    Optional<FriendShip> findBySourcePerson_IdAndDestinationPerson_Id(Long srcPersonId, Long dstPersonId);
+
+    @Transactional
+    @Modifying
+    @Query("delete from FriendShip f where f.sourcePerson.id in (?1) or f.destinationPerson.id in (?1)")
+    void deleteBySourcePerson_IdOrDestinationPerson_IdIn(List<Long> inactiveUsersIds);
 }

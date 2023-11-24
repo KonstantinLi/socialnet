@@ -69,14 +69,14 @@ public class StatisticsService {
         Person firstUser = personRepository.findById(firstUserId).orElseThrow(
                 () -> new PersonNotFoundException(firstUserId)
         );
-        if (firstUser.getIsDeleted()) {
+        if (Boolean.TRUE.equals(firstUser.getIsDeleted())) {
             throw new PersonIsDeletedException(firstUserId);
         }
 
         Person secondUser = personRepository.findById(secondUserId).orElseThrow(
                 () -> new PersonNotFoundException(secondUserId)
         );
-        if (secondUser.getIsDeleted()) {
+        if (Boolean.TRUE.equals(secondUser.getIsDeleted())) {
             throw new PersonIsDeletedException(secondUserId);
         }
 
