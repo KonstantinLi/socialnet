@@ -21,7 +21,7 @@ public class WeatherService {
 
     public void updateAllCities() {
         List<String> cities = personRepository.findDistinctCity();
-        for (String city: cities) {
+        for (String city : cities) {
             updateCity(city);
         }
     }

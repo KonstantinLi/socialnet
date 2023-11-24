@@ -158,7 +158,6 @@ public class Person {
     @Column(name = "telegram_id")
     private Long telegramId;
 
-
     @OneToMany(cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY

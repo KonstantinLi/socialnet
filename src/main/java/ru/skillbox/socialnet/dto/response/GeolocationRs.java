@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class GeolocationRs {
-  String title;
+    String title;
 }

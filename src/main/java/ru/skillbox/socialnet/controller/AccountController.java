@@ -54,7 +54,6 @@ public class AccountController {
     @PutMapping(value = "/password/recovery", consumes = "application/json")
     public void passwordRecovery(@RequestBody PasswordRecoveryRq passwordRecoveryRq) throws JsonProcessingException {
 
-        //accountService.passwordRecovery(passwordRecoveryRq);
         kafkaService.sendMessage(passwordRecoveryRq);
     }
 

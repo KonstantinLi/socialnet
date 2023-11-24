@@ -3,17 +3,31 @@ package ru.skillbox.socialnet.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skillbox.socialnet.entity.postrelated.Post;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PostsRepository extends JpaRepository<Post, Long> {
+    @Transactional
+    @Modifying
+    @Query("delete from Post p where p.id in ?1")
+    void deleteByIdIn(Collection<Long> ids);
+
+    @Query("select p.id from Post p where p.author.id in ?1")
+    List<Long> findPosts_IdsByAuthors_Ids(Collection<Long> ids);
+
+    @Transactional
+    void deleteByAuthor_Id(Long id);
+
     Optional<Post> findByIdAndIsDeleted(long id, boolean isDeleted);
 
     @Query(nativeQuery = true, value = """
@@ -67,6 +81,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     long countByAuthorIdAndIsDeleted(
             long authorId, boolean isDeleted
     );
+
     List<Post> findAllByAuthorIdAndIsDeleted(
             long authorId, boolean isDeleted, Pageable pageable
     );
@@ -88,6 +103,7 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     long countByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time
     );
+
     List<Post> findAllByIsDeletedAndTimeGreaterThan(
             boolean isDeleted, LocalDateTime time, Pageable pageable
     );
@@ -103,7 +119,12 @@ public interface PostsRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByIsDeleted(
             boolean isDeleted, Pageable pageable
     );
+
     long countByIsDeleted(boolean isDeleted);
+
+    @Modifying
+    @Query("delete from Post p where p.author.id in ?1")
+    void deleteByAuthor_IdIn(List<Long> inactiveUsersIds);
 
     List<Post> findAllByIsDeletedAndIsBlocked(
             boolean isDeleted, boolean isBlocked, Pageable pageable

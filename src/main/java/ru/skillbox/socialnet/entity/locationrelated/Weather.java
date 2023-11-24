@@ -41,7 +41,7 @@ public class Weather {
     private LocalDateTime date;
 
     /**
-    * Температура
+     * Температура
      */
     @Column(name = "temp")
     private Double temp;

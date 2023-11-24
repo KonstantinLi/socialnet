@@ -6,32 +6,36 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.skillbox.socialnet.annotation.Debug;
+import ru.skillbox.socialnet.annotation.Info;
 import ru.skillbox.socialnet.dto.ProfileImageManager;
 import ru.skillbox.socialnet.dto.parameters.GetUsersSearchPs;
 import ru.skillbox.socialnet.dto.request.UserRq;
-import ru.skillbox.socialnet.dto.response.*;
+import ru.skillbox.socialnet.dto.response.CommonRs;
+import ru.skillbox.socialnet.dto.response.ComplexRs;
+import ru.skillbox.socialnet.dto.response.CurrencyRs;
+import ru.skillbox.socialnet.dto.response.PersonRs;
+import ru.skillbox.socialnet.entity.dialogrelated.Dialog;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.personrelated.Person;
 import ru.skillbox.socialnet.exception.BadRequestException;
+import ru.skillbox.socialnet.exception.DefaultDeletedUserNotFoundException;
 import ru.skillbox.socialnet.exception.PersonIsBlockedException;
 import ru.skillbox.socialnet.exception.PersonNotFoundException;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
-import ru.skillbox.socialnet.repository.CurrencyRepository;
-import ru.skillbox.socialnet.repository.FriendShipRepository;
-import ru.skillbox.socialnet.repository.PersonRepository;
-import ru.skillbox.socialnet.repository.WeatherRepository;
+import ru.skillbox.socialnet.repository.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Debug
+@Info
 public class PersonService {
 
     private final PersonRepository personRepository;
@@ -41,9 +45,15 @@ public class PersonService {
     private final ProfileImageManager profileImageManager;
     private final WeatherRepository weatherRepository;
     private final WeatherMapper weatherMapper;
+    private final DialogRepository dialogRepository;
+
+    @Value("${default-deleted-user-id}")
+    private Long defaultDeletedPersonId;
 
     @Value("${aws.default-photo-url}")
     private String defaultPhotoUrl;
+    private final PostsRepository postsRepository;
+    private final PostCommentsRepository commentsRepository;
 
     public Person getPersonById(Long personId) {
         return personRepository.findById(personId).orElseThrow(
@@ -168,13 +178,6 @@ public class PersonService {
         return response;
     }
 
-    /**
-     * Method checks if user is present and not blocked or deleted
-     *
-     * @param personOptional - user to check
-     *                       <p>
-     *                       throws exceptions if user is not presented, blocked or deleted
-     */
     private Person checkAvailability(
             @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Person> personOptional)
             throws PersonNotFoundException, PersonIsBlockedException {
@@ -226,12 +229,82 @@ public class PersonService {
     }
 
     public void deleteInactiveUsers() {
-        Optional<List<Person>> inactiveUsers = personRepository.findAllInactiveUsersByDeletedTime(
-                LocalDateTime.now().minusMonths(1));
 
-        inactiveUsers.ifPresent(persons -> persons.forEach(person -> {
-            personRepository.delete(person);
-            profileImageManager.deleteProfileImage(person.getId());
-        }));
+        setDeletedTimeForUsersIfNotSet();
+
+        List<Long> inactiveUsersIds = getInactiveUsersIds();
+        if (inactiveUsersIds.isEmpty()) return;
+
+        commentsRepository.deleteByAuthor_IdIn(inactiveUsersIds);
+
+        List<Long> inactiveUsersPosts = postsRepository.findPosts_IdsByAuthors_Ids(inactiveUsersIds);
+        commentsRepository.deleteByPost_IdIn(inactiveUsersPosts);
+
+        postsRepository.deleteByIdIn(inactiveUsersPosts);
+
+        friendShipRepository.deleteBySourcePerson_IdOrDestinationPerson_IdIn(inactiveUsersIds);
+
+        inactiveUsersIds.forEach(personId -> {
+            changePersonIdInDialogOnDeletion(personId);
+            personRepository.deleteById(personId);
+            profileImageManager.deleteProfileImage(personId);
+        });
+    }
+
+    private List<Long> getInactiveUsersIds() {
+        List<Person> inactiveUsers = personRepository.
+                findByIsDeletedAndDeletedTimeBefore(true, LocalDateTime.now().minusMonths(1));
+
+        if (inactiveUsers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> inactiveUsersIds = new ArrayList<>();
+
+        for (Person person : inactiveUsers) {
+            if (person.getId().equals(defaultDeletedPersonId)) continue;
+            inactiveUsersIds.add(person.getId());
+        }
+
+        return inactiveUsersIds;
+    }
+
+    private void setDeletedTimeForUsersIfNotSet() {
+        personRepository.findByIsDeletedTrueAndDeletedTimeNull()
+                .forEach(person -> person.setDeletedTime(LocalDateTime.now()));
+    }
+
+    private void changePersonIdInDialogOnDeletion(Long personId) {
+        Person defaultDeletedPerson = getDefaultDeletedPerson();
+
+        removeDialogsWithNoPersons();
+
+        List<Dialog> dialogs = dialogRepository.findByFirstPerson_IdOrSecondPerson_Id(personId, personId);
+        dialogs.forEach(dialog -> {
+            Long firstPersonId = dialog.getFirstPerson().getId();
+
+            if (firstPersonId.equals(personId)) {
+                dialog.setFirstPerson(defaultDeletedPerson);
+            } else {
+                dialog.setSecondPerson(defaultDeletedPerson);
+            }
+
+            if (dialog.getFirstPerson().getId().equals(defaultDeletedPersonId) &&
+                    dialog.getSecondPerson().getId().equals(defaultDeletedPersonId)) {
+                dialogRepository.delete(dialog);
+            }
+
+            dialogRepository.save(dialog);
+        });
+    }
+
+    private void removeDialogsWithNoPersons() {
+        dialogRepository.deleteByFirstPerson_IdAndSecondPerson_Id(defaultDeletedPersonId);
+    }
+
+    private Person getDefaultDeletedPerson() {
+        Optional<Person> defaultDeletedPersonOptional = personRepository.findById(defaultDeletedPersonId);
+        return defaultDeletedPersonOptional.orElseThrow(
+                () -> new DefaultDeletedUserNotFoundException("Ошибка удаления диалогов"));
     }
 }
