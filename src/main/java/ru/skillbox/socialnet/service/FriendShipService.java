@@ -22,6 +22,7 @@ import ru.skillbox.socialnet.security.JwtTokenUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -330,50 +331,27 @@ public class FriendShipService {
     }
 
     /**
-     * @param personIds - лист из ID персон, которых НЕ надо включать в список
-     * @param cnt       - количество персон в списке (поддерживается до 100 персон)
-     * @return - вспомогательный метод (вернет рандомный список персон)
-     */
-    private ArrayList<Person> getRandomPersonsList(List<Long> personIds, int cnt) {
-
-        Iterable<Person> personsIterable = personRepository.randomGenerateFriendsForPerson(personIds, cnt);
-        ArrayList<Person> persons = new ArrayList<>();
-        personsIterable.forEach(persons::add);
-
-        return persons;
-    }
-
-    /**
-     * @param personId - ID персоны
-     * @return - вспомогательный метод (вернет список персон, которые в друзьях у друзей персоны)
-     */
-    private ArrayList<Person> getFriendsOfFriendsByPerson(long personId) {
-
-        Iterable<Person> personsIterable = personRepository.getFriendsOfFriendsByPersonId(personId);
-        ArrayList<Person> persons = new ArrayList<>();
-        personsIterable.forEach(persons::add);
-
-        return persons;
-    }
-
-    /**
      * @param persons       - список персон в формате ArrayList<Person>
      * @param currentPerson - текущая персона
      * @return - вспомогательный метод (вычисляет "статус дружбы" между персонами из списка и текущей персоной и
      * возвращает объект списка в формате ArrayList<PersonRs>
      */
-    private ArrayList<PersonRs> updatePersonsData(ArrayList<Person> persons, Person currentPerson) {
+    private ArrayList<PersonRs> updatePersonsData(List<Person> persons, Person currentPerson) {
 
         ArrayList<PersonRs> personsData = new ArrayList<>();
+        HashSet<Person> personSet = new HashSet();
         for (Person person : persons) {
-            Optional<FriendShipStatus> optionalStatus =
-                    friendShipRepository.getFriendShipStatusBetweenPersons(currentPerson, person);
-            FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
-            PersonRs personRs = personMapper.personToPersonRs(
-                    person,
-                    status.name(),
-                    status == FriendShipStatus.BLOCKED);
-            personsData.add(personRs);
+            if (!(personSet.contains(person)) && (personSet.size() < 10)) {
+                personSet.add(person);
+                Optional<FriendShipStatus> optionalStatus =
+                        friendShipRepository.getFriendShipStatusBetweenPersons(currentPerson, person);
+                FriendShipStatus status = optionalStatus.orElse(FriendShipStatus.UNKNOWN);
+                PersonRs personRs = personMapper.personToPersonRs(
+                        person,
+                        status.name(),
+                        status == FriendShipStatus.BLOCKED);
+                personsData.add(personRs);
+            }
         }
 
         return personsData;
@@ -388,22 +366,12 @@ public class FriendShipService {
             throws PersonNotFoundException {
 
         Person currentPerson = getAuthorizedUser(authorization);
-        ArrayList<Long> personsIds = new ArrayList<>();
-        ArrayList<PersonRs> personsData;
+        List<PersonRs> personsData;
         // Список рекомендованных друзей решил получать так:
-        // посмотрим, есть ли у персоны друзья?
-        long friendsCount = personRepository.findCountPersonsByFriendship(
-                currentPerson.getId(), FriendShipStatus.FRIEND.name());
-        // если нет друзей, то предлагаем рандомом из таблицы Person 10 записей.
-        if (friendsCount == 0) {
-            personsIds.add(currentPerson.getId());
-            ArrayList<Person> persons = getRandomPersonsList(personsIds, 10);
-            personsData = updatePersonsData(persons, currentPerson);
-        } else {
-            // если друзья есть, то предлагать из их друзей, и если их кол-во < 10, то дополнять рандомом до 10
-            ArrayList<Person> persons = getFriendsOfFriendsByPerson(currentPerson.getId());
-            personsData = updatePersonsData(persons, currentPerson);
-        }
+        // Если друзей нет, то генерировать рандомный список
+        // Если друзья есть, то предлагать из их друзей, и если их кол-во < 10, то дополнять рандомом до 10
+        List<Person> persons = personRepository.getRecomendationsByPersonId(currentPerson.getId());
+        personsData = updatePersonsData(persons, currentPerson);
 
         return generatePersonsList(personsData,
                 0,
@@ -418,7 +386,7 @@ public class FriendShipService {
      * @param total       - "всего"
      * @return - вспомогательный метод. Вернёт отформатированный список персон
      */
-    private CommonRs<List<PersonRs>> generatePersonsList(ArrayList<PersonRs> personsData,
+    private CommonRs<List<PersonRs>> generatePersonsList(List<PersonRs> personsData,
                                                          int offSet,
                                                          int perPage,
                                                          long total) {
