@@ -72,7 +72,7 @@ email:
   smtp-host: smtp.gmail.com
   smtp-port: 587
   smtp-ssl-trust: true
-  recovery-base-url: http://localhost:8080/
+  recovery-base-url: http://217.107.219.242:8080/
   recovery-email-blueprint: emailBlueprint.html
 
 vk:
