@@ -29,21 +29,6 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     long countByIsDeletedFalseOrIsDeletedNull();
 
     /**
-     * @param personIds - список персон, для которых будет сгенерирован список предложений в друзья
-     * @param cnt       - кол-во сгенерированных записей (должно быть меньше 100)
-     * @return - запрос сгенерирует cnt рандомных персон (как друзей) для списка персон personIds
-     */
-    @Query(value = "select distinct p.* from persons p, " +
-            "(select distinct round(random() * (select max(id) - 1 from persons)) + " +
-            "1 as id from generate_series (1, 100)) t " +
-            "where p.id = t.id and  t.id not in (:personIds) " +
-            "and (p.is_blocked = false or p.is_blocked is null) " +
-            "and (p.is_deleted = false or p.is_deleted is null) " +
-            "fetch first :cnt rows only", nativeQuery = true)
-    Iterable<Person> randomGenerateFriendsForPerson(@Param("personIds") List<Long> personIds,
-                                                    @Param("cnt") long cnt);
-
-    /**
      * @param id - ID персоны
      * @return - дефолтный метод-обертка вернет персону или сгенерирует исключение
      * @throws PersonNotFoundException - может быть сгенерировано исключение,
@@ -62,23 +47,24 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     /**
      * @param personId - id персоны
-     * @return - запрос вернет друзей у друзей персоны, переданной в параметре
+     * @return - запрос вернет рекомендации друзей у персоны, переданной в параметре
      */
     @Query(value =
-            "SELECT DISTINCT P.* FROM FRIENDSHIPS F, PERSONS P WHERE F.DST_PERSON_ID = P.ID " +
-                    "AND F.SRC_PERSON_ID IN (SELECT FF.DST_PERSON_ID FROM FRIENDSHIPS FF WHERE FF.SRC_PERSON_ID = :personId " +
-                    "AND FF.STATUS_NAME = 'FRIEND') AND F.DST_PERSON_ID != :personId  " +
+            "SELECT P.* FROM (SELECT DISTINCT P.ID, 0 AS ORDERBY FROM FRIENDSHIPS F, PERSONS P " +
+                    "WHERE F.DST_PERSON_ID = P.ID AND F.SRC_PERSON_ID IN (SELECT FF.DST_PERSON_ID FROM FRIENDSHIPS FF " +
+                    "WHERE FF.SRC_PERSON_ID = :personId AND FF.STATUS_NAME = 'FRIEND') AND F.DST_PERSON_ID != :personId " +
                     "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
-                    "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
+                    "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.DST_PERSON_ID = P.ID AND F1.SRC_PERSON_ID = " +
+                    ":personId AND F1.STATUS_NAME IN ('FRIEND', 'REQUEST')) " +
                     "UNION " +
-                    "SELECT DISTINCT P.* FROM PERSONS P, " +
-                    "(SELECT DISTINCT ROUND(RANDOM() * (SELECT MAX(ID) - 1 FROM PERSONS)) + 1 AS ID " +
-                    "FROM GENERATE_SERIES (1, 100)) T WHERE P.ID = T.ID AND T.ID != :personId " +
+                    "SELECT DISTINCT P.ID, 1 AS ORDERBY FROM PERSONS P, (SELECT DISTINCT ROUND(RANDOM() * (SELECT MAX(ID) -1 " +
+                    "FROM PERSONS)) + 1 AS ID FROM GENERATE_SERIES (1, 100)) T WHERE P.ID = T.ID AND T.ID != :personId " +
                     "AND (P.IS_BLOCKED = FALSE OR P.IS_BLOCKED IS NULL) AND (P.IS_DELETED = FALSE OR P.IS_DELETED IS NULL) " +
-                    "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.SRC_PERSON_ID = P.ID AND F1.STATUS_NAME = 'FRIEND') " +
-                    "FETCH FIRST 10 ROWS ONLY"
+                    "AND NOT EXISTS (SELECT 1 FROM FRIENDSHIPS F1 WHERE F1.DST_PERSON_ID = P.ID AND F1.SRC_PERSON_ID = " +
+                    ":personId AND F1.STATUS_NAME IN ('FRIEND', 'REQUEST')) ORDER BY ORDERBY " +
+                    "FETCH FIRST 15 ROWS ONLY) T, PERSONS P WHERE P.ID= T.ID ORDER BY ORDERBY"
             , nativeQuery = true)
-    Iterable<Person> getFriendsOfFriendsByPersonId(@Param("personId") long personId);
+    List<Person> getRecomendationsByPersonId(@Param("personId") long personId);
 
     /**
      * @param currentPersonId - текущая персона
