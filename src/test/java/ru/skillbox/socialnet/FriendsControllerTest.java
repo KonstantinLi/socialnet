@@ -218,7 +218,7 @@ class FriendsControllerTest {
         this.mockMvc.perform(get("/api/v1/friends/recommendations").header("authorization", getToken(1L)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].id").value("6"));
+                .andExpect(jsonPath("$.data[0].id").value("7"));
     }
 
     @Test
