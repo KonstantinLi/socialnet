@@ -15,14 +15,12 @@ import ru.skillbox.socialnet.dto.response.ComplexRs;
 import ru.skillbox.socialnet.dto.response.CurrencyRs;
 import ru.skillbox.socialnet.dto.response.PersonRs;
 import ru.skillbox.socialnet.entity.dialogrelated.Dialog;
+import ru.skillbox.socialnet.entity.dialogrelated.Message;
 import ru.skillbox.socialnet.entity.enums.FriendShipStatus;
 import ru.skillbox.socialnet.entity.enums.MessagePermission;
 import ru.skillbox.socialnet.entity.locationrelated.Weather;
 import ru.skillbox.socialnet.entity.personrelated.Person;
-import ru.skillbox.socialnet.exception.BadRequestException;
-import ru.skillbox.socialnet.exception.DefaultDeletedUserNotFoundException;
-import ru.skillbox.socialnet.exception.PersonIsBlockedException;
-import ru.skillbox.socialnet.exception.PersonNotFoundException;
+import ru.skillbox.socialnet.exception.*;
 import ru.skillbox.socialnet.mapper.PersonMapper;
 import ru.skillbox.socialnet.mapper.WeatherMapper;
 import ru.skillbox.socialnet.repository.*;
@@ -54,6 +52,7 @@ public class PersonService {
     private String defaultPhotoUrl;
     private final PostsRepository postsRepository;
     private final PostCommentsRepository commentsRepository;
+    private final MessageRepository messageRepository;
 
     public Person getPersonById(Long personId) {
         return personRepository.findById(personId).orElseThrow(
@@ -114,7 +113,9 @@ public class PersonService {
         Optional<Person> personOptional = personRepository.findById(userId);
         Person person = checkAvailability(personOptional);
 
-        updatePersonInfo(person, userData);
+        validateNewBirthDate(userData.getBirthDate());
+
+        updatePersonRecord(person, userData);
         Person savedPerson = personRepository.save(person);
 
         CommonRs<PersonRs> response = new CommonRs<>();
@@ -122,6 +123,19 @@ public class PersonService {
         response.setData(personRs);
 
         return response;
+    }
+
+    private static void validateNewBirthDate(String newBirthDateString) {
+        if (newBirthDateString == null)
+            return;
+
+        if (newBirthDateString.contains("+")) {
+            newBirthDateString = newBirthDateString.substring(0, newBirthDateString.indexOf("+"));
+        }
+        LocalDateTime newBirthDate = LocalDateTime.parse(newBirthDateString);
+        if (newBirthDate.isAfter(LocalDateTime.now())) {
+            throw new IllegalBirthDateDateException("Дата рождения еще не наступила!");
+        }
     }
 
     public void updateUserPhoto(Long userId, String url) {
@@ -192,7 +206,7 @@ public class PersonService {
         return person;
     }
 
-    private void updatePersonInfo(Person person, UserRq userData) {
+    private void updatePersonRecord(Person person, UserRq userData) {
 
         if (userData.getAbout() != null) {
             person.setAbout(userData.getAbout());
@@ -246,6 +260,7 @@ public class PersonService {
 
         inactiveUsersIds.forEach(personId -> {
             changePersonIdInDialogOnDeletion(personId);
+            changePersonIdInMessagesOnDeletion(personId);
             personRepository.deleteById(personId);
             profileImageManager.deleteProfileImage(personId);
         });
@@ -296,6 +311,35 @@ public class PersonService {
 
             dialogRepository.save(dialog);
         });
+    }
+
+    private void changePersonIdInMessagesOnDeletion(Long personId) {
+        Person defaultDeletedPerson = getDefaultDeletedPerson();
+
+        removeMessagesWithNoPersons();
+
+        List<Message> messages = messageRepository.findByAuthor_IdOrRecipient_Id(personId, personId);
+
+        messages.forEach(message -> {
+            Long authorId = message.getAuthor().getId();
+
+            if (authorId.equals(personId)) {
+                message.setAuthor(defaultDeletedPerson);
+            } else {
+                message.setRecipient(defaultDeletedPerson);
+            }
+
+            if (message.getAuthor().getId().equals(defaultDeletedPersonId) &&
+                    message.getRecipient().getId().equals(defaultDeletedPersonId)) {
+                messageRepository.delete(message);
+            }
+
+            messageRepository.save(message);
+        });
+    }
+
+    private void removeMessagesWithNoPersons() {
+        messageRepository.deleteByAuthor_IdAndRecipient_Id(defaultDeletedPersonId);
     }
 
     private void removeDialogsWithNoPersons() {
