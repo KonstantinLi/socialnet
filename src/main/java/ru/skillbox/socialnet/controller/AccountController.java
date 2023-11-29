@@ -66,7 +66,7 @@ public class AccountController {
     }
 
     @FullSwaggerDescription(summary = "change user email")
-    @PutMapping(value = "/email/recovery", consumes = "text/plain")
+    @PutMapping(value = "/email/recovery")
     public void emailRecovery(
             @RequestHeader("authorization") @Token String token,
             @RequestBody @Parameter(description = "user email to send recovery link"/*, example = "obivan.k@rmail.com"*/)
