@@ -12,8 +12,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/socialnet
-    username: root
-    password: root
+    username: apcSK8qsmqVodkfx
+    password: mrmr8xkqUsa534v
 
   jpa:
     database: postgresql
