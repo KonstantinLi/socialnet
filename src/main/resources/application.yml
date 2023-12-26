@@ -11,9 +11,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/socialnet
-    username: apcSK8qsmqVodkfx
-    password: mrmr8xkqUsa534v
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/socialnet
+    username: ${POSTGRESQL_USER:postgres}
+    password: ${POSTGRESQL_PASSWORD:123123}
 
   jpa:
     database: postgresql
@@ -65,8 +65,8 @@ aws:
   log-url-prefix: https://socialnet-logs.s3.eu-north-1.amazonaws.com/
 
 email:
-  project-email: ${PROJECT_EMAIL}
-  project-email-password: ${PROJECT_EMAIL_PASSWORD}
+  project-email: ${PROJECT_EMAIL:email}
+  project-email-password: ${PROJECT_EMAIL_PASSWORD:password}
   smtp-auth: true
   smtp-starttls-enable: true
   smtp-host: smtp.gmail.com
@@ -115,3 +115,7 @@ app:
     kafkaMessageGroupId: kafka-message-group-id
 
 default-deleted-user-id: 0
+
+sonar:
+  login: admin
+  password: 123123
