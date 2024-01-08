@@ -1,12 +1,12 @@
 HELP.md
 target/
 backup/
-config/
 scripts/
 logs/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.env
 
 ### STS ###
 .apt_generated
@@ -41,5 +41,5 @@ build/
 src/main/resources/application-*.yml
 =======
 
-!/src/main/java/ru/skillbox/socialnet/controller/TestController.java
+!/src/main/java/com/socialnet/controller/TestController.java
 >>>>>>> dev
